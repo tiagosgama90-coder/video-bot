@@ -1,0 +1,47 @@
+name: Horóscopo Diário SidusAstro
+
+on:
+  schedule:
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+
+jobs:
+  gerar-e-publicar:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Instalar FFmpeg
+        run: choco install ffmpeg -y
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Configurar credenciais Firebase
+        shell: bash
+        run: echo "$FIREBASE_ADMIN_JSON" > firebase-admin.json
+        env:
+          FIREBASE_ADMIN_JSON: ${{ secrets.FIREBASE_ADMIN_JSON }}
+
+      - name: Gerar e publicar 3 vídeos diários
+        run: npx ts-node gerar-e-publicar.ts
+        env:
+          BUFFER_ACCESS_TOKEN: ${{ secrets.BUFFER_ACCESS_TOKEN }}
+          BUFFER_CHANNEL_ID: ${{ secrets.BUFFER_CHANNEL_ID }}
+          FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+
+      - name: Guardar vídeos como artefacto
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: videos-diarios
+          path: output/*.mp4
+          retention-days: 7

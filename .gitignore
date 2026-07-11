@@ -1,0 +1,15 @@
+node_modules
+dist
+.DS_Store
+.env
+.netlify
+
+# Ignore the output video from Git but not videos you import into src/.
+out
+output/
+public/narracao.mp3
+public/fundo-ia.jpg
+public/props-temporarias.json
+public/musica-*.mp3
+firebase-admin.json
+video-bot/
