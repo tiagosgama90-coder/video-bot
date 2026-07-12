@@ -5,16 +5,16 @@ import axios from 'axios';
 import dotenv from 'dotenv';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
-import { getStorage } from 'firebase-admin/storage';
-import say from 'say';
+import {
+  montarLegendaBuffer,
+  publicarEmTodosOsCanais,
+} from './src/lib/buffer';
+import { gerarNarracaoPtPt } from './src/lib/voz';
 import type { TipoMusica } from './src/types/horoscopo';
 
 dotenv.config();
 
 const serviceAccount = require('./firebase-admin.json');
-
-const VOZ_PT_PT = 'Microsoft Helia';
-const VELOCIDADE_NARRACAO = 0.85;
 
 const SIGNOS_ZODIACO = [
   'carneiro',
@@ -134,28 +134,6 @@ function montarUrlPollinations(tema: string, seed: number): string {
   );
 }
 
-function montarLegendaBuffer(signo: string): string {
-  const nomeSigno = NOMES_SIGNOS[signo as (typeof SIGNOS_ZODIACO)[number]] ?? signo;
-  return (
-    'Previsão astrológica diária para o signo de ' +
-    nomeSigno +
-    '! ✨ 🔗 Visite o nosso site para ver o seu mapa completo: sidusastro.com ' +
-    '#astrologia #horoscopo #sidusastro #signos #mapaastral #meditacao #zen'
-  );
-}
-
-function gerarNarracao(texto: string, destino: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    say.export(texto, VOZ_PT_PT, VELOCIDADE_NARRACAO, destino, (err) => {
-      if (err) {
-        reject(new Error(String(err)));
-        return;
-      }
-      resolve();
-    });
-  });
-}
-
 async function descarregarFicheiro(url: string, destino: string): Promise<void> {
   const resposta = await axios.get<ArrayBuffer>(url, {
     responseType: 'arraybuffer',
@@ -179,11 +157,8 @@ async function garantirMusicasAmbiente(): Promise<void> {
       await descarregarFicheiro(url, ficheiro);
       console.log('✅ Música ' + tipo + ' pronta.');
     } catch (erro) {
-      console.log('⚠️ Falha ao descarregar música ' + tipo + '. A usar fallback local.');
+      console.log('⚠️ Falha ao descarregar música ' + tipo + '.');
       console.log(String(erro));
-      if (fs.existsSync('./public/narracao.mp3')) {
-        fs.copyFileSync('./public/narracao.mp3', ficheiro);
-      }
     }
   }
 }
@@ -243,90 +218,6 @@ function renderizarVideo(signo: string): void {
   console.log('✨ Vídeo concluído: ' + outputPath);
 }
 
-async function uploadVideoPublico(caminhoLocal: string, signo: string): Promise<string> {
-  const bucketName = process.env.FIREBASE_STORAGE_BUCKET;
-
-  if (!bucketName) {
-    throw new Error('FIREBASE_STORAGE_BUCKET não definido no .env');
-  }
-
-  const bucket = getStorage().bucket(bucketName);
-  const data = obterDataHoje();
-  const destino = 'videos/' + data + '/' + signo + '-diario.mp4';
-
-  await bucket.upload(caminhoLocal, {
-    destination: destino,
-    metadata: { contentType: 'video/mp4', cacheControl: 'public, max-age=31536000' },
-  });
-
-  await bucket.file(destino).makePublic();
-
-  return 'https://storage.googleapis.com/' + bucket.name + '/' + destino;
-}
-
-async function publicarNoBuffer(signo: string, caminhoVideo: string): Promise<void> {
-  const accessToken = process.env.BUFFER_ACCESS_TOKEN;
-  const channelId = process.env.BUFFER_CHANNEL_ID;
-
-  if (!accessToken || !channelId) {
-    console.log('⚠️ BUFFER_ACCESS_TOKEN ou BUFFER_CHANNEL_ID em falta. Publicação ignorada.');
-    return;
-  }
-
-  const legenda = montarLegendaBuffer(signo);
-  const videoUrl = await uploadVideoPublico(caminhoVideo, signo);
-
-  console.log('📤 A publicar no Buffer: ' + videoUrl);
-
-  const mutation = `
-    mutation CreatePost($input: CreatePostInput!) {
-      createPost(input: $input) {
-        ... on PostActionSuccess {
-          post { id text }
-        }
-        ... on MutationError {
-          message
-        }
-      }
-    }
-  `;
-
-  const resposta = await axios.post(
-    'https://api.buffer.com',
-    {
-      query: mutation,
-      variables: {
-        input: {
-          text: legenda,
-          channelId,
-          schedulingType: 'automatic',
-          mode: 'addToQueue',
-          assets: [{ video: { url: videoUrl } }],
-        },
-      },
-    },
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + accessToken,
-      },
-      timeout: 60_000,
-    },
-  );
-
-  const erros = resposta.data?.errors;
-  if (erros?.length) {
-    throw new Error('Buffer GraphQL: ' + JSON.stringify(erros));
-  }
-
-  const resultado = resposta.data?.data?.createPost;
-  if (resultado?.message) {
-    throw new Error('Buffer: ' + resultado.message);
-  }
-
-  console.log('✅ Publicado no Buffer. Post ID: ' + (resultado?.post?.id ?? 'ok'));
-}
-
 async function processarSigno(signo: (typeof SIGNOS_ZODIACO)[number], data: string): Promise<void> {
   console.log('\n══════════════════════════════════════');
   console.log('🔮 A processar signo: ' + NOMES_SIGNOS[signo]);
@@ -340,10 +231,7 @@ async function processarSigno(signo: (typeof SIGNOS_ZODIACO)[number], data: stri
   const imagemFundoUrl = await obterImagemFundo(tema, seed);
   const tipoMusica = escolherTipoMusica();
 
-  console.log('🗣️ A gerar narração com voz ' + VOZ_PT_PT + ' (speed ' + VELOCIDADE_NARRACAO + ')...');
-  const audioPath = path.resolve('./public/narracao.mp3');
-  await gerarNarracao(previsao, audioPath);
-  console.log('🎵 Narração gravada em ./public/narracao.mp3');
+  await gerarNarracaoPtPt(previsao, './public/narracao.mp3');
 
   const props: PropsVideo = {
     signo: NOMES_SIGNOS[signo],
@@ -357,8 +245,10 @@ async function processarSigno(signo: (typeof SIGNOS_ZODIACO)[number], data: stri
 
   try {
     renderizarVideo(signo);
-    const caminhoOutput = './output/' + signo + '-diario.mp4';
-    await publicarNoBuffer(signo, caminhoOutput);
+    const caminhoOutput = path.resolve('./output/' + signo + '-diario.mp4');
+    await publicarEmTodosOsCanais(signo, caminhoOutput, data, (s) =>
+      montarLegendaBuffer(s, NOMES_SIGNOS),
+    );
   } finally {
     if (fs.existsSync(caminhoProps)) {
       fs.unlinkSync(caminhoProps);
@@ -385,7 +275,7 @@ async function executarRoboSidusAstro(): Promise<void> {
     await processarSigno(signo, data);
   }
 
-  console.log('\n🏁 Automação concluída com sucesso para os 3 signos do dia!');
+  console.log('\n🏁 Automação concluída — 3 vídeos publicados em Instagram + TikTok!');
 }
 
 executarRoboSidusAstro().catch((erro) => {

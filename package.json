@@ -29,7 +29,8 @@
   "scripts": {
     "dev": "remotion studio",
     "build": "remotion bundle",
-    "gerar": "ts-node gerar-e-publicar.ts",
+    "gerar": "npx ts-node gerar-e-publicar.ts",
+    "canais": "npx ts-node listar-canais-buffer.ts",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc"
   }
