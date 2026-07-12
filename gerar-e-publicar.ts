@@ -4,11 +4,11 @@ import { execSync } from 'child_process';
 import axios from 'axios';
 import dotenv from 'dotenv';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
 import {
   montarLegendaBuffer,
   publicarEmTodosOsCanais,
 } from './src/lib/buffer';
+import { obterTextoHoroscopo } from './src/lib/horoscopo';
 import { gerarNarracaoPtPt } from './src/lib/voz';
 import type { TipoMusica } from './src/types/horoscopo';
 
@@ -82,16 +82,6 @@ if (getApps().length === 0) {
   });
 }
 
-const db = getFirestore();
-
-interface DadosHoroscopoFirestore {
-  pack?: {
-    horoscopes?: {
-      pt?: Record<string, string>;
-    };
-  };
-}
-
 interface PropsVideo {
   signo: string;
   previsao: string;
@@ -105,11 +95,12 @@ function garantirPasta(pasta: string): void {
   }
 }
 
-function escolherTresSignosAleatorios(): (typeof SIGNOS_ZODIACO)[number][] {
+function escolherSignosAleatoriosDoDia(): (typeof SIGNOS_ZODIACO)[number][] {
   const pool = [...SIGNOS_ZODIACO];
+  const quantidade = Math.random() < 0.5 ? 2 : 3;
   const escolhidos: (typeof SIGNOS_ZODIACO)[number][] = [];
 
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < quantidade; i++) {
     const indice = Math.floor(Math.random() * pool.length);
     escolhidos.push(pool.splice(indice, 1)[0]);
   }
@@ -160,26 +151,6 @@ async function garantirMusicasAmbiente(): Promise<void> {
       console.log('⚠️ Falha ao descarregar música ' + tipo + '.');
       console.log(String(erro));
     }
-  }
-}
-
-async function obterTextoHoroscopo(signo: string, data: string): Promise<string> {
-  const fallback = 'Os astros guiam o seu caminho hoje no SidusAstro.';
-
-  try {
-    const snapshot = await db.collection('siteDaily').doc(data).get();
-
-    if (!snapshot.exists) {
-      console.log('⚠️ Documento ' + data + ' não encontrado. A usar fallback.');
-      return fallback;
-    }
-
-    const dados = snapshot.data() as DadosHoroscopoFirestore | undefined;
-    return dados?.pack?.horoscopes?.pt?.[signo] ?? fallback;
-  } catch (erro) {
-    console.log('⚠️ Erro Firestore para ' + signo + '. A usar fallback.');
-    console.log(String(erro));
-    return fallback;
   }
 }
 
@@ -264,9 +235,10 @@ async function executarRoboSidusAstro(): Promise<void> {
   garantirPasta('./output');
   await garantirMusicasAmbiente();
 
-  const signosDoDia = escolherTresSignosAleatorios();
+  const signosDoDia = escolherSignosAleatoriosDoDia();
   console.log(
-    '🎲 Signos escolhidos hoje: ' + signosDoDia.map((s) => NOMES_SIGNOS[s]).join(', '),
+    '🎲 Signos escolhidos hoje (' + signosDoDia.length + '): ' +
+      signosDoDia.map((s) => NOMES_SIGNOS[s]).join(', '),
   );
 
   const data = obterDataHoje();
@@ -275,7 +247,7 @@ async function executarRoboSidusAstro(): Promise<void> {
     await processarSigno(signo, data);
   }
 
-  console.log('\n🏁 Automação concluída — 3 vídeos publicados em Instagram + TikTok!');
+  console.log('\n🏁 Automação concluída — vídeos publicados em Instagram + TikTok!');
 }
 
 executarRoboSidusAstro().catch((erro) => {
