@@ -147,15 +147,32 @@ export async function uploadVideoPublico(
 
   const bucket = getStorage().bucket(bucketName);
   const destino = 'videos/' + data + '/' + signo + '-diario.mp4';
+  const ficheiro = bucket.file(destino);
+
+  console.log('☁️ A enviar vídeo para Firebase Storage: ' + destino);
 
   await bucket.upload(caminhoLocal, {
     destination: destino,
     metadata: { contentType: 'video/mp4', cacheControl: 'public, max-age=31536000' },
   });
 
-  await bucket.file(destino).makePublic();
+  try {
+    await ficheiro.makePublic();
+    const urlPublica = 'https://storage.googleapis.com/' + bucket.name + '/' + destino;
+    console.log('✅ Vídeo público (storage.googleapis.com)');
+    return urlPublica;
+  } catch (erroMakePublic) {
+    console.log('⚠️ makePublic falhou — a usar URL assinada (30 dias) para o Buffer.');
+    console.log(String(erroMakePublic));
 
-  return 'https://storage.googleapis.com/' + bucket.name + '/' + destino;
+    const [urlAssinada] = await ficheiro.getSignedUrl({
+      action: 'read',
+      expires: Date.now() + 30 * 24 * 60 * 60 * 1000,
+    });
+
+    console.log('✅ URL assinada gerada para o Buffer.');
+    return urlAssinada;
+  }
 }
 
 export async function publicarVideoNoCanal(
@@ -197,6 +214,11 @@ export async function publicarEmTodosOsCanais(
   }
 
   const canais = await resolverCanaisPublicacao();
+  console.log(
+    '📱 Canais selecionados: ' +
+      canais.map((c) => c.service + '=' + c.name + ' (ID:' + c.id + ')').join(' | '),
+  );
+
   const legenda = obterLegenda();
   const videoUrl = await uploadVideoPublico(caminhoVideo, signo, data);
 

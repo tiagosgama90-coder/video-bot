@@ -22,6 +22,13 @@ jobs:
       - name: Instalar FFmpeg
         run: choco install ffmpeg -y
 
+      - name: Verificar ferramentas
+        shell: pwsh
+        run: |
+          Write-Host "Node:" (node --version)
+          Write-Host "FFmpeg:" (ffmpeg -version | Select-Object -First 1)
+          Write-Host "FFprobe:" (ffprobe -version | Select-Object -First 1)
+
       - name: Instalar dependências
         run: npm ci
 
@@ -62,6 +69,16 @@ jobs:
           node -e "const j=JSON.parse(require('fs').readFileSync('firebase-admin.json','utf8')); if(!j.project_id) throw new Error('project_id em falta'); console.log('firebase-admin.json OK — project:', j.project_id)"
         env:
           FIREBASE_ADMIN_JSON: ${{ secrets.FIREBASE_ADMIN_JSON }}
+
+      - name: Validar IDs Buffer (Instagram + TikTok)
+        run: npm run verificar
+        env:
+          BUFFER_ACCESS_TOKEN: ${{ secrets.BUFFER_ACCESS_TOKEN }}
+          BUFFER_INSTAGRAM_CHANNEL_ID: ${{ secrets.BUFFER_INSTAGRAM_CHANNEL_ID }}
+          BUFFER_TIKTOK_CHANNEL_ID: ${{ secrets.BUFFER_TIKTOK_CHANNEL_ID }}
+          FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+          AZURE_SPEECH_REGION: northeurope
 
       - name: Gerar e publicar vídeos diários
         run: npx ts-node gerar-e-publicar.ts
