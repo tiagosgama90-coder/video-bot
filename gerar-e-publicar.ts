@@ -31,6 +31,7 @@ if (getApps().length === 0) {
 interface PropsVideo {
   signo: string;
   previsao: string;
+  fechoTexto: string;
   imagemFundoUrl: string;
   musicaFundoArquivo: string;
   duracaoFrames: number;
@@ -96,6 +97,7 @@ async function processarSigno(signo: SignoZodiaco, data: string): Promise<void> 
   const props: PropsVideo = {
     signo: NOMES_SIGNOS[signo],
     previsao,
+    fechoTexto: fechoNarracao.trim(),
     imagemFundoUrl,
     musicaFundoArquivo,
     duracaoFrames,

@@ -9,12 +9,12 @@ function StarsFall(): React.ReactElement {
   const frame = useCurrentFrame();
   const { width, height, durationInFrames } = useVideoConfig();
 
-  const stars = Array.from({ length: 70 }, (_, i) => {
+  const stars = Array.from({ length: 140 }, (_, i) => {
     const x = random(`star-x-${i}`) * width;
     const y0 = (random(`star-y-${i}`) * (height + 400)) - 200;
-    const size = 1 + random(`star-s-${i}`) * 3.4;
-    const speed = 2.2 + random(`star-v-${i}`) * 6.5;
-    const alpha = 0.25 + random(`star-a-${i}`) * 0.55;
+    const size = 1.4 + random(`star-s-${i}`) * 5.2;
+    const speed = 3.2 + random(`star-v-${i}`) * 9.5;
+    const alpha = 0.35 + random(`star-a-${i}`) * 0.65;
     const twinkle = 0.5 + 0.5 * Math.sin((frame / 8) + random(`star-t-${i}`) * 20);
     const y = ((y0 + frame * speed) % (height + 500)) - 250;
 
@@ -22,7 +22,10 @@ function StarsFall(): React.ReactElement {
     const fadeOut = clamp((durationInFrames - frame) / 30, 0, 1);
     const opacity = alpha * twinkle * fadeIn * fadeOut;
 
-    return { x, y, size, opacity };
+    const streak = random(`star-streak-${i}`) > 0.6;
+    const tail = streak ? 10 + random(`star-tail-${i}`) * 40 : 0;
+
+    return { x, y, size, opacity, streak, tail };
   });
 
   return (
@@ -34,13 +37,13 @@ function StarsFall(): React.ReactElement {
             position: 'absolute',
             left: s.x,
             top: s.y,
-            width: s.size,
-            height: s.size,
+            width: s.streak ? s.size * 0.9 : s.size,
+            height: s.streak ? s.size + s.tail : s.size,
             borderRadius: 999,
             opacity: s.opacity,
             background:
               'radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0.0) 70%)',
-            boxShadow: '0 0 10px rgba(255,255,255,0.55)',
+            boxShadow: '0 0 16px rgba(255,255,255,0.75)',
             transform: 'translate(-50%, -50%)',
           }}
         />
@@ -58,8 +61,8 @@ function StaticAndGlitch(): React.ReactElement {
   const jitterX = glitchOn ? (random(`jitterx-${Math.floor(frame / 2)}`) - 0.5) * 18 : 0;
   const jitterY = glitchOn ? (random(`jittery-${Math.floor(frame / 2)}`) - 0.5) * 10 : 0;
 
-  const noiseOpacity = glitchOn ? 0.16 : 0.08;
-  const scanlineOpacity = glitchOn ? 0.10 : 0.06;
+  const noiseOpacity = glitchOn ? 0.20 : 0.10;
+  const scanlineOpacity = glitchOn ? 0.12 : 0.07;
 
   return (
     <AbsoluteFill

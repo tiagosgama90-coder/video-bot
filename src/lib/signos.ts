@@ -89,12 +89,11 @@ function baralharComSeed<T>(lista: T[], seed: number): T[] {
   return copia;
 }
 
-/** 2 ou 3 signos diferentes por dia (Lisboa) — muda todos os dias, usado no GitHub Actions */
+/** 3 signos diferentes por dia (Lisboa) — muda todos os dias, usado no GitHub Actions */
 export function escolherSignosDoDia(data: string): SignoZodiaco[] {
   const seed = hashString('sidusastro-' + data);
   const baralhado = baralharComSeed([...SIGNOS_ZODIACO], seed);
-  const quantidade = 2 + (seed % 2);
-  return baralhado.slice(0, quantidade);
+  return baralhado.slice(0, 3);
 }
 
 function escolherSignoAleatorio(excluir: SignoZodiaco[] = []): SignoZodiaco {
