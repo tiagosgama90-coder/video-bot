@@ -3,9 +3,9 @@ import crypto from 'crypto';
 import { NOMES_SIGNOS, type SignoZodiaco } from './signos';
 
 export const FINAL_CLOSINGS = [
-  'Aprofunda esta análise no sidusastro.com.',
-  'Vê o teu mapa completo em sidusastro.com.',
-  'Mais detalhes sobre o teu dia em sidusastro.com.',
+  'Aprofunda esta análise no sidusastro.com',
+  'Vê o teu mapa completo em sidusastro.com',
+  'Mais detalhes sobre o teu dia em sidusastro.com',
 ] as const;
 
 const HOOKS_LEGENDA: Array<(nomeSigno: string) => string> = [
