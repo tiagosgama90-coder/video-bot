@@ -124,7 +124,10 @@ async function executarRoboSidusAstro(): Promise<void> {
   garantirPasta('./output');
 
   const signosJaGerados = obterSignosJaGerados();
-  const signosDoDia = escolherSignosParaExecucao(data, signosJaGerados);
+  
+  // Obtém os signos calculados para o dia e força o limite máximo de 3 signos por execução
+  let signosDoDia = escolherSignosParaExecucao(data, signosJaGerados);
+  signosDoDia = signosDoDia.slice(0, 3); // 👈 ADICIONADO: Garante estritamente o limite de 3 vídeos
 
   if (process.env.TESTE_LOCAL === '1') {
     console.log('🧪 Modo teste local: 1 signo aleatório por execução');
