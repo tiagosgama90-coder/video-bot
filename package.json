@@ -37,6 +37,7 @@
     "canais": "npx ts-node listar-canais-buffer.ts",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc",
-    "verificar": "npx ts-node verificar-config.ts"
+    "verificar": "npx ts-node verificar-config.ts",
+    "testar-buffer": "npx ts-node testar-upload-buffer.ts"
   }
 }

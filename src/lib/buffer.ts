@@ -194,10 +194,25 @@ export async function uploadVideoPublico(
 }
 
 export async function publicarVideoNoCanal(
-  channelId: string,
+  canal: BufferChannel,
   legenda: string,
   videoUrl: string,
 ): Promise<string> {
+  const metadata: Record<string, unknown> = {};
+
+  if (canal.service.toLowerCase() === 'instagram') {
+    metadata.instagram = {
+      type: 'reel',
+      shouldShareToFeed: true,
+    };
+  }
+
+  if (canal.service.toLowerCase() === 'tiktok') {
+    metadata.tiktok = {
+      isAiGenerated: true,
+    };
+  }
+
   const payload = await chamarBuffer<{
     data?: {
       createPost?: { post?: { id?: string }; message?: string };
@@ -205,20 +220,23 @@ export async function publicarVideoNoCanal(
   }>(CREATE_POST_MUTATION, {
     input: {
       text: legenda,
-      channelId,
+      channelId: canal.id,
       schedulingType: 'automatic',
       mode: 'addToQueue',
+      metadata,
       assets: [{ video: { url: videoUrl } }],
     },
   });
 
   const resultado = payload.data?.createPost;
   if (resultado?.message) {
-    throw new Error('Buffer: ' + resultado.message);
+    throw new Error('Buffer [' + canal.service + ']: ' + resultado.message);
   }
 
   if (!resultado?.post?.id) {
-    throw new Error('Buffer: resposta inesperada — ' + JSON.stringify(payload.data));
+    throw new Error(
+      'Buffer [' + canal.service + ']: resposta inesperada — ' + JSON.stringify(payload.data),
+    );
   }
 
   return resultado.post.id;
@@ -246,7 +264,7 @@ export async function publicarEmTodosOsCanais(
 
   for (const canal of canais) {
     console.log('📱 A publicar em ' + canal.service + ' (' + canal.name + ')...');
-    const postId = await publicarVideoNoCanal(canal.id, legenda, videoUrl);
+    const postId = await publicarVideoNoCanal(canal, legenda, videoUrl);
     console.log('✅ Enfileirado no Buffer [' + canal.service + '] Post ID: ' + postId);
   }
 }

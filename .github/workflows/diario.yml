@@ -37,6 +37,9 @@ jobs:
       - name: Instalar dependências
         run: npm ci
 
+      - name: Instalar Chrome para Remotion
+        run: npx remotion browser ensure
+
       - name: Validar secrets obrigatórios
         run: |
           faltam=""
