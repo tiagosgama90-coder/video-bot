@@ -16,6 +16,22 @@ export const CHAVES_FIRESTORE_PT: Record<string, string> = {
   peixes: 'Peixes',
 };
 
+/** Ordem de tentativa — o site mostra "Caranguejo" mas o Firestore pode usar "Câncer" ou "Caranguejo" */
+export const ALIAS_CHAVES_FIRESTORE: Record<string, string[]> = {
+  carneiro: ['Carneiro'],
+  touro: ['Touro'],
+  gemeos: ['Gémeos', 'Gemeos', 'Gêmeos'],
+  caranguejo: ['Câncer', 'Caranguejo', 'Cancer'],
+  leao: ['Leão', 'Leao'],
+  virgem: ['Virgem'],
+  balanca: ['Libra', 'Balança', 'Balanca'],
+  escorpiao: ['Escorpião', 'Escorpiao'],
+  sagitario: ['Sagitário', 'Sagitario'],
+  capricornio: ['Capricórnio', 'Capricornio'],
+  aquario: ['Aquário', 'Aquario'],
+  peixes: ['Peixes'],
+};
+
 export const SIGNOS_ZODIACO = [
   'carneiro',
   'touro',

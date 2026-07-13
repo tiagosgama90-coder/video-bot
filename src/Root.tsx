@@ -7,6 +7,7 @@ const defaultProps: HoroscopoProps = {
   imagemFundoUrl:
     'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/NGC_604.jpg/1080px-NGC_604.jpg',
   musicaFundoArquivo: 'musica-peixes.mp3',
+  duracaoFrames: 450,
 };
 
 export const RemotionRoot: React.FC = () => {
@@ -21,6 +22,9 @@ export const RemotionRoot: React.FC = () => {
         width={1080}
         height={1920}
         defaultProps={defaultProps}
+        calculateMetadata={({ props }) => ({
+          durationInFrames: Number(props.duracaoFrames) || 450,
+        })}
       />
     </>
   );

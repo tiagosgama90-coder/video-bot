@@ -7,6 +7,7 @@ import { publicarEmTodosOsCanais } from './src/lib/buffer';
 import { obterTextoHoroscopo } from './src/lib/horoscopo';
 import { escolherFechoNarracao, gerarLegenda } from './src/lib/legenda';
 import { obterImagemFundo } from './src/lib/imagem-fundo';
+import { calcularDuracaoFrames } from './src/lib/duracao-video';
 import { prepararMusicaParaVideo } from './src/lib/musicas';
 import {
   escolherSignosParaExecucao,
@@ -32,6 +33,7 @@ interface PropsVideo {
   previsao: string;
   imagemFundoUrl: string;
   musicaFundoArquivo: string;
+  duracaoFrames: number;
 }
 
 function garantirPasta(pasta: string): void {
@@ -86,6 +88,8 @@ async function processarSigno(signo: SignoZodiaco, data: string): Promise<void> 
   console.log('🎙️ Fecho narração:' + fechoNarracao);
   await gerarNarracaoPtPt(textoNarracao, './public/narracao.mp3');
 
+  const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3');
+
   const legenda = gerarLegenda(signo, previsao);
   console.log('📋 Legenda:\n' + legenda);
 
@@ -94,6 +98,7 @@ async function processarSigno(signo: SignoZodiaco, data: string): Promise<void> 
     previsao,
     imagemFundoUrl,
     musicaFundoArquivo,
+    duracaoFrames,
   };
 
   const caminhoProps = './public/props-temporarias.json';
