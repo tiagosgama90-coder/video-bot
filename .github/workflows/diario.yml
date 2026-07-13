@@ -25,13 +25,43 @@ jobs:
       - name: Instalar dependências
         run: npm ci
 
+      - name: Validar secrets obrigatórios
+        shell: pwsh
+        run: |
+          $obrigatorios = @(
+            'FIREBASE_ADMIN_JSON',
+            'BUFFER_ACCESS_TOKEN',
+            'BUFFER_INSTAGRAM_CHANNEL_ID',
+            'BUFFER_TIKTOK_CHANNEL_ID',
+            'FIREBASE_STORAGE_BUCKET',
+            'AZURE_SPEECH_KEY'
+          )
+          $faltam = @()
+          foreach ($nome in $obrigatorios) {
+            $valor = [Environment]::GetEnvironmentVariable($nome)
+            if ([string]::IsNullOrWhiteSpace($valor)) { $faltam += $nome }
+          }
+          if ($faltam.Count -gt 0) {
+            Write-Error "Secrets em falta no GitHub: $($faltam -join ', ')"
+            exit 1
+          }
+        env:
+          FIREBASE_ADMIN_JSON: ${{ secrets.FIREBASE_ADMIN_JSON }}
+          BUFFER_ACCESS_TOKEN: ${{ secrets.BUFFER_ACCESS_TOKEN }}
+          BUFFER_INSTAGRAM_CHANNEL_ID: ${{ secrets.BUFFER_INSTAGRAM_CHANNEL_ID }}
+          BUFFER_TIKTOK_CHANNEL_ID: ${{ secrets.BUFFER_TIKTOK_CHANNEL_ID }}
+          FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+
       - name: Configurar credenciais Firebase
-        shell: bash
-        run: echo "$FIREBASE_ADMIN_JSON" > firebase-admin.json
+        shell: pwsh
+        run: |
+          $env:FIREBASE_ADMIN_JSON | Set-Content -Path firebase-admin.json -Encoding utf8 -NoNewline
+          node -e "JSON.parse(require('fs').readFileSync('firebase-admin.json','utf8')); console.log('firebase-admin.json OK')"
         env:
           FIREBASE_ADMIN_JSON: ${{ secrets.FIREBASE_ADMIN_JSON }}
 
-      - name: Gerar e publicar 3 vídeos diários
+      - name: Gerar e publicar vídeos diários
         run: npx ts-node gerar-e-publicar.ts
         env:
           BUFFER_ACCESS_TOKEN: ${{ secrets.BUFFER_ACCESS_TOKEN }}
