@@ -55,7 +55,7 @@ function StickerCtaFinal(): React.ReactElement {
     <div
       style={{
         position: 'absolute',
-        bottom: 120,
+        top: 480,
         left: 50,
         right: 50,
         zIndex: 25,
@@ -78,6 +78,7 @@ function StickerCtaFinal(): React.ReactElement {
           lineHeight: 1.35,
           boxShadow: '0 12px 40px rgba(0,0,0,0.55)',
           fontFamily: 'system-ui, sans-serif',
+          width: '100%',
         }}
       >
         Descobre o teu mapa completo em sidusastro.com ✨
