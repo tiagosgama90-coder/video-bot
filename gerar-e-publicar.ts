@@ -9,6 +9,7 @@ import {
   publicarEmTodosOsCanais,
 } from './src/lib/buffer';
 import { obterTextoHoroscopo } from './src/lib/horoscopo';
+import { garantirMusicasAmbiente } from './src/lib/musicas';
 import { gerarNarracaoPtPt } from './src/lib/voz';
 import type { TipoMusica } from './src/types/horoscopo';
 
@@ -59,21 +60,6 @@ const TEMAS_MISTICOS = [
 
 const IMAGEM_FALLBACK_WIKI =
   'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/NGC_604.jpg/1080px-NGC_604.jpg';
-
-const MUSICAS_DOWNLOAD: Record<TipoMusica, { ficheiro: string; url: string }> = {
-  zen: {
-    ficheiro: './public/musica-zen.mp3',
-    url: 'https://assets.mixkit.co/music/preview/mixkit-spiritual-369.mp3',
-  },
-  celta: {
-    ficheiro: './public/musica-celta.mp3',
-    url: 'https://assets.mixkit.co/music/preview/mixkit-harp-celebration-627.mp3',
-  },
-  meditacao: {
-    ficheiro: './public/musica-meditacao.mp3',
-    url: 'https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3',
-  },
-};
 
 if (getApps().length === 0) {
   initializeApp({
@@ -132,26 +118,6 @@ async function descarregarFicheiro(url: string, destino: string): Promise<void> 
     headers: { 'User-Agent': 'SidusAstro-VideoBot/1.0' },
   });
   fs.writeFileSync(destino, Buffer.from(resposta.data));
-}
-
-async function garantirMusicasAmbiente(): Promise<void> {
-  garantirPasta('./public');
-
-  for (const tipo of TIPOS_MUSICA) {
-    const { ficheiro, url } = MUSICAS_DOWNLOAD[tipo];
-    if (fs.existsSync(ficheiro)) {
-      continue;
-    }
-
-    try {
-      console.log('🎵 A descarregar música ' + tipo + '...');
-      await descarregarFicheiro(url, ficheiro);
-      console.log('✅ Música ' + tipo + ' pronta.');
-    } catch (erro) {
-      console.log('⚠️ Falha ao descarregar música ' + tipo + '.');
-      console.log(String(erro));
-    }
-  }
 }
 
 async function obterImagemFundo(tema: string, seed: number): Promise<string> {
