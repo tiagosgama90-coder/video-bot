@@ -2,7 +2,7 @@ name: Horóscopo Diário SidusAstro
 
 on:
   schedule:
-    - cron: '0 7 * * *'
+    - cron: '30 6 * * *' # 👈 ALTERADO: Acorda às 06:30 UTC (07:30 AM de Portugal Continental)
   workflow_dispatch:
 
 jobs:
