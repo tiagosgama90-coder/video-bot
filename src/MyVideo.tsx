@@ -43,17 +43,21 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
       <AbsoluteFill
         style={{
           padding: '90px 44px 200px',
-          justifyContent: 'space-between',
+          display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
+          justifyContent: 'flex-start',
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        {/* 1. LOGÓTIPO */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 20 }}>
           <Img
             src={logoSidus}
             style={{ width: 260, height: 260, marginBottom: 24, objectFit: 'contain' }}
           />
         </div>
 
+        {/* 2. TITULO DO SIGNO */}
         <div
           style={{
             color: '#f3cc63',
@@ -61,11 +65,13 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
             fontWeight: 900,
             letterSpacing: 2,
             textShadow: '0 0 25px rgba(243,204,99,0.5)',
+            marginBottom: 20,
           }}
         >
           {signo.toUpperCase()}
         </div>
 
+        {/* 3. CAIXA DO TEXTO DA PREVISÃO */}
         <div
           style={{
             backgroundColor: 'rgba(255, 255, 255, 0.07)',
@@ -80,6 +86,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
             boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
             maxHeight: 520,
             overflow: 'hidden',
+            width: '100%',
           }}
         >
           &quot;{previsao}&quot;
