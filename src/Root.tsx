@@ -7,7 +7,7 @@ const defaultProps: HoroscopoProps = {
   imagemFundoUrl:
     'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/NGC_604.jpg/1080px-NGC_604.jpg',
   musicaFundoArquivo: 'musica-peixes.mp3',
-  duracaoFrames: 450,
+  duracaoFrames: 600,
 };
 
 export const RemotionRoot: React.FC = () => {
@@ -17,13 +17,13 @@ export const RemotionRoot: React.FC = () => {
         id="HoroscopoComposition"
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- compatibilidade Remotion v4 props tipadas
         component={HoroscopoVideo as any}
-        durationInFrames={450}
+        durationInFrames={600}
         fps={30}
         width={1080}
         height={1920}
         defaultProps={defaultProps}
         calculateMetadata={({ props }) => ({
-          durationInFrames: Number(props.duracaoFrames) || 450,
+          durationInFrames: Number(props.duracaoFrames) || 600,
         })}
       />
     </>
