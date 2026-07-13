@@ -50,7 +50,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <Img
             src={logoSidus}
-            style={{ width: 160, height: 160, marginBottom: 20, objectFit: 'contain' }}
+            style={{ width: 260, height: 260, marginBottom: 24, objectFit: 'contain' }}
           />
         </div>
 

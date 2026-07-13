@@ -9,9 +9,10 @@ import { escolherFechoNarracao, gerarLegenda } from './src/lib/legenda';
 import { obterImagemFundo } from './src/lib/imagem-fundo';
 import { prepararMusicaParaVideo } from './src/lib/musicas';
 import {
-  escolherSignosDoDia,
+  escolherSignosParaExecucao,
   NOMES_SIGNOS,
   obterDataLisboa,
+  SIGNOS_ZODIACO,
   type SignoZodiaco,
 } from './src/lib/signos';
 import { gerarNarracaoPtPt } from './src/lib/voz';
@@ -51,6 +52,24 @@ function renderizarVideo(signo: string): void {
   console.log('✨ Vídeo concluído: ' + outputPath);
 }
 
+function obterSignosJaGerados(): SignoZodiaco[] {
+  if (!fs.existsSync('./output')) {
+    return [];
+  }
+
+  const gerados: SignoZodiaco[] = [];
+  for (const ficheiro of fs.readdirSync('./output')) {
+    if (!ficheiro.endsWith('-diario.mp4')) {
+      continue;
+    }
+    const chave = ficheiro.replace('-diario.mp4', '') as SignoZodiaco;
+    if (SIGNOS_ZODIACO.includes(chave)) {
+      gerados.push(chave);
+    }
+  }
+  return gerados;
+}
+
 async function processarSigno(signo: SignoZodiaco, data: string): Promise<void> {
   console.log('\n══════════════════════════════════════');
   console.log('🔮 A processar signo: ' + NOMES_SIGNOS[signo]);
@@ -67,7 +86,7 @@ async function processarSigno(signo: SignoZodiaco, data: string): Promise<void> 
   console.log('🎙️ Fecho narração:' + fechoNarracao);
   await gerarNarracaoPtPt(textoNarracao, './public/narracao.mp3');
 
-  const legenda = gerarLegenda(signo);
+  const legenda = gerarLegenda(signo, previsao);
   console.log('📋 Legenda:\n' + legenda);
 
   const props: PropsVideo = {
@@ -98,7 +117,16 @@ async function executarRoboSidusAstro(): Promise<void> {
 
   garantirPasta('./public');
   garantirPasta('./output');
-  const signosDoDia = escolherSignosDoDia(data);
+
+  const signosJaGerados = obterSignosJaGerados();
+  const signosDoDia = escolherSignosParaExecucao(data, signosJaGerados);
+
+  if (process.env.TESTE_LOCAL === '1') {
+    console.log('🧪 Modo teste local: 1 signo aleatório por execução');
+  } else if (process.env.CI !== 'true') {
+    console.log('💻 Modo local: signos pendentes do dia (já gerados: ' + (signosJaGerados.join(', ') || 'nenhum') + ')');
+  }
+
   console.log(
     '🎲 Signos do dia (' +
       signosDoDia.length +

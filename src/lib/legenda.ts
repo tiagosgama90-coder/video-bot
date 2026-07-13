@@ -1,4 +1,5 @@
 /* eslint-disable @remotion/deterministic-randomness -- usado apenas no script Node, não no render Remotion */
+import crypto from 'crypto';
 import { NOMES_SIGNOS, type SignoZodiaco } from './signos';
 
 export const FINAL_CLOSINGS = [
@@ -24,22 +25,26 @@ function normalizarHashtag(texto: string): string {
     .replace(/\s+/g, '');
 }
 
-/** Fecho aleatório da narração — independente da legenda do post */
+/** Sempre uma das 3 frases de fecho definidas */
 export function escolherFechoNarracao(): string {
-  const indice = Math.floor(Math.random() * FINAL_CLOSINGS.length);
+  const indice = crypto.randomInt(0, FINAL_CLOSINGS.length);
   return ' ' + FINAL_CLOSINGS[indice];
 }
 
-/** Legenda do Buffer (Instagram/TikTok) — gerada separadamente da voz */
-export function gerarLegenda(signo: SignoZodiaco): string {
+/** Legenda fiel ao signo do vídeo — hook + resumo + link + hashtags */
+export function gerarLegenda(signo: SignoZodiaco, previsao: string): string {
   const nomeSigno = NOMES_SIGNOS[signo];
-  const indiceHook = Math.floor(Math.random() * HOOKS_LEGENDA.length);
+  const indiceHook = crypto.randomInt(0, HOOKS_LEGENDA.length);
   const hook = HOOKS_LEGENDA[indiceHook](nomeSigno);
   const tagSigno = '#' + normalizarHashtag(nomeSigno);
   const tagPrevisoes = '#previsoes' + normalizarHashtag(nomeSigno);
+  const resumo =
+    previsao.length > 140 ? previsao.slice(0, 137).trim() + '...' : previsao;
 
   return (
     hook +
+    '\n\n' +
+    resumo +
     '\n\n🔗 sidusastro.com\n\n' +
     '#astrologia #sidusastro #horoscopo #tarot ' +
     tagSigno +

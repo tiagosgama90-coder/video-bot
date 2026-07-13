@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 /** Chaves internas do bot → nomes exatos no Firestore siteDaily.horoscopes.pt */
 export const CHAVES_FIRESTORE_PT: Record<string, string> = {
   carneiro: 'Carneiro',
@@ -71,7 +73,7 @@ function baralharComSeed<T>(lista: T[], seed: number): T[] {
   return copia;
 }
 
-/** 2 ou 3 signos diferentes, determinísticos por dia (Lisboa) — muda todos os dias */
+/** 2 ou 3 signos diferentes por dia (Lisboa) — muda todos os dias, usado no GitHub Actions */
 export function escolherSignosDoDia(data: string): SignoZodiaco[] {
   const seed = hashString('sidusastro-' + data);
   const baralhado = baralharComSeed([...SIGNOS_ZODIACO], seed);
@@ -79,6 +81,47 @@ export function escolherSignosDoDia(data: string): SignoZodiaco[] {
   return baralhado.slice(0, quantidade);
 }
 
-export function seedImagemSigno(data: string, signo: string): number {
-  return hashString(data + '-' + signo + '-' + Date.now()) % 999_999;
+function escolherSignoAleatorio(excluir: SignoZodiaco[] = []): SignoZodiaco {
+  const candidatos = SIGNOS_ZODIACO.filter((s) => !excluir.includes(s));
+  const pool = candidatos.length > 0 ? candidatos : [...SIGNOS_ZODIACO];
+  return pool[crypto.randomInt(0, pool.length)];
+}
+
+/**
+ * Local (TESTE_LOCAL=1): 1 signo aleatório por execução — diferente a cada npm run gerar.
+ * Local (produção simulada): signos do dia que ainda não têm vídeo em output/.
+ * GitHub Actions (CI): 2 ou 3 signos fixos do dia.
+ */
+export function escolherSignosParaExecucao(
+  data: string,
+  signosJaGerados: SignoZodiaco[] = [],
+): SignoZodiaco[] {
+  if (process.env.CI === 'true') {
+    return escolherSignosDoDia(data);
+  }
+
+  if (process.env.TESTE_LOCAL === '1') {
+    const signo = escolherSignoAleatorio(signosJaGerados);
+    return [signo];
+  }
+
+  const signosDoDia = escolherSignosDoDia(data);
+  const pendentes = signosDoDia.filter((s) => !signosJaGerados.includes(s));
+
+  if (pendentes.length > 0) {
+    return pendentes;
+  }
+
+  return [escolherSignoAleatorio(signosJaGerados)];
+}
+
+export function signoChaveFromNome(nome: string): SignoZodiaco | undefined {
+  const alvo = nome.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  for (const [chave, valor] of Object.entries(NOMES_SIGNOS)) {
+    const norm = valor.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    if (norm === alvo) {
+      return chave as SignoZodiaco;
+    }
+  }
+  return undefined;
 }
