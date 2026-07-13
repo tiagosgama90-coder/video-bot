@@ -1,12 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
-import axios from 'axios';
 import dotenv from 'dotenv';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { publicarEmTodosOsCanais } from './src/lib/buffer';
 import { obterTextoHoroscopo } from './src/lib/horoscopo';
 import { escolherFechoNarracao, gerarLegenda } from './src/lib/legenda';
+import { obterImagemFundo } from './src/lib/imagem-fundo';
 import { prepararMusicaParaVideo } from './src/lib/musicas';
 import {
   escolherSignosDoDia,
@@ -18,24 +18,6 @@ import { gerarNarracaoPtPt } from './src/lib/voz';
 dotenv.config();
 
 const serviceAccount = require('./firebase-admin.json');
-
-const TEMAS_MISTICOS = [
-  'zen meditation room zodiac wheel astrology symbols candles purple gold',
-  'mystical wizard fortune teller crystal ball tarot esoteric dark',
-  'ancient astrology chart horoscope symbols celestial map stars',
-  'cosmic nebula galaxy zodiac constellations meditation zen atmosphere',
-  'vidente tarot cards oracle mystical smoke candles astrology',
-  'magician alchemist spell books glowing potions zodiac symbols',
-  'temple of stars esoteric astrology wheel zen peaceful night',
-  'mystic seer reading horoscope chart crystal ball candles',
-  'astrology observatory zodiac gold symbols cosmic energy zen',
-  'fortune teller neon mystical tarot astrology purple ambiance',
-  'wizard tower star map horoscope symbols meditation zen fantasy',
-  'esoteric sanctuary zodiac mandala candles astrology spiritual',
-];
-
-const IMAGEM_FALLBACK_WIKI =
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/NGC_604.jpg/1080px-NGC_604.jpg';
 
 if (getApps().length === 0) {
   initializeApp({
@@ -54,56 +36,6 @@ interface PropsVideo {
 function garantirPasta(pasta: string): void {
   if (!fs.existsSync(pasta)) {
     fs.mkdirSync(pasta, { recursive: true });
-  }
-}
-
-function montarUrlPollinations(tema: string, seed: number): string {
-  return (
-    'https://image.pollinations.ai/prompt/' +
-    encodeURIComponent(tema) +
-    '?width=1080&height=1920&nologo=true&seed=' +
-    seed
-  );
-}
-
-async function descarregarFicheiro(url: string, destino: string): Promise<void> {
-  const resposta = await axios.get<ArrayBuffer>(url, {
-    responseType: 'arraybuffer',
-    timeout: 120_000,
-    headers: { 'User-Agent': 'SidusAstro-VideoBot/1.0' },
-  });
-  fs.writeFileSync(destino, Buffer.from(resposta.data));
-}
-
-async function obterImagemFundo(signo: SignoZodiaco, data: string): Promise<string> {
-  const indiceTema = Math.floor(Math.random() * TEMAS_MISTICOS.length);
-  const tema = TEMAS_MISTICOS[indiceTema];
-  const seed =
-    Math.floor(Math.random() * 999_999) +
-    data.split('-').join('').charCodeAt(0) +
-    signo.charCodeAt(0);
-
-  const nomeFicheiro = 'fundo-' + signo + '.jpg';
-  const imagemLocal = './public/' + nomeFicheiro;
-  const urlPollinations = montarUrlPollinations(tema, seed);
-
-  console.log('🎨 Tema IA [' + signo + ']: ' + tema);
-  console.log('🎨 URL: ' + urlPollinations);
-
-  try {
-    await descarregarFicheiro(urlPollinations, imagemLocal);
-    console.log('✅ Imagem única guardada: ' + nomeFicheiro);
-    return nomeFicheiro;
-  } catch (erroPoll) {
-    console.log('⚠️ Pollinations indisponível. A tentar Wikipedia...');
-    console.log(String(erroPoll));
-  }
-
-  try {
-    await descarregarFicheiro(IMAGEM_FALLBACK_WIKI, imagemLocal);
-    return nomeFicheiro;
-  } catch {
-    return IMAGEM_FALLBACK_WIKI;
   }
 }
 

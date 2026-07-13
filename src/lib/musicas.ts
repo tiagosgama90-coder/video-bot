@@ -1,13 +1,44 @@
 /* eslint-disable @remotion/deterministic-randomness -- usado apenas no script Node, não no render Remotion */
+import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import axios from 'axios';
 
-/** Faixas royalty-free (SoundHelix) — uma escolhida aleatoriamente por vídeo */
-const POOL_MUSICAS_AMBIENTE: string[] = Array.from({ length: 16 }, (_, i) => {
-  return 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-' + (i + 1) + '.mp3';
-});
+/** 12+ faixas zen/calmas — SoundHelix royalty-free */
+const POOL_MUSICAS_ZEN: string[] = [
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-14.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3',
+];
+
+/**
+ * Faixas mais rítmicas/upbeat — estilo "viral TikTok" mas royalty-free.
+ * Sons virais reais do TikTok são copyright e não podem ser usados automaticamente.
+ * ~30% dos vídeos escolhem deste pool.
+ */
+const POOL_MUSICAS_ESTILO_VIRAL: string[] = [
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3',
+];
+
+/** Probabilidade de escolher faixa estilo viral (royalty-free) */
+const PROBABILIDADE_ESTILO_VIRAL = 0.3;
 
 function caminhoPublico(nomeFicheiro: string): string {
   return path.resolve('./public/' + nomeFicheiro);
@@ -46,35 +77,45 @@ function gerarMusicaOffline(destino: string, indice: number): void {
   );
 }
 
-function escolherIndiceMusica(signo: string, data: string): number {
-  const mistura = data + '-' + signo + '-' + Date.now() + '-' + Math.random();
-  let hash = 0;
+function escolherPoolMusica(): { pool: string[]; tipo: 'zen' | 'viral-estilo' } {
+  const usarViral = crypto.randomInt(0, 100) < PROBABILIDADE_ESTILO_VIRAL * 100;
+  if (usarViral) {
+    return { pool: POOL_MUSICAS_ESTILO_VIRAL, tipo: 'viral-estilo' };
+  }
+  return { pool: POOL_MUSICAS_ZEN, tipo: 'zen' };
+}
+
+function escolherIndice(pool: string[], signo: string, data: string): number {
+  const bytes = crypto.randomBytes(4);
+  let hash = bytes.readUInt32BE(0);
+  const mistura = data + signo + Date.now();
   for (let i = 0; i < mistura.length; i++) {
     hash = (hash * 31 + mistura.charCodeAt(i)) >>> 0;
   }
-  return hash % POOL_MUSICAS_AMBIENTE.length;
+  return hash % pool.length;
 }
 
-/**
- * Descarrega uma faixa diferente para cada vídeo/signo.
- * Nota: músicas virais do TikTok são protegidas por copyright e não têm API
- * pública para uso automático em vídeos publicados via Buffer.
- */
 export async function prepararMusicaParaVideo(signo: string, data: string): Promise<string> {
   if (!fs.existsSync('./public')) {
     fs.mkdirSync('./public', { recursive: true });
   }
 
-  const indice = escolherIndiceMusica(signo, data);
+  const { pool, tipo } = escolherPoolMusica();
+  const indice = escolherIndice(pool, signo, data);
   const nomeFicheiro = 'musica-' + signo + '.mp3';
   const destino = caminhoPublico(nomeFicheiro);
   const urls = [
-    POOL_MUSICAS_AMBIENTE[indice],
-    POOL_MUSICAS_AMBIENTE[(indice + 3) % POOL_MUSICAS_AMBIENTE.length],
-    POOL_MUSICAS_AMBIENTE[(indice + 7) % POOL_MUSICAS_AMBIENTE.length],
+    pool[indice],
+    pool[(indice + 2) % pool.length],
+    pool[(indice + 5) % pool.length],
   ];
 
-  console.log('🎵 Música aleatória [' + (indice + 1) + '/16] para ' + signo);
+  const etiqueta =
+    tipo === 'zen'
+      ? 'zen [' + (indice + 1) + '/' + POOL_MUSICAS_ZEN.length + ']'
+      : 'estilo viral royalty-free [' + (indice + 1) + '/' + POOL_MUSICAS_ESTILO_VIRAL.length + ']';
+
+  console.log('🎵 Música ' + etiqueta + ' para ' + signo);
 
   for (const url of urls) {
     try {
