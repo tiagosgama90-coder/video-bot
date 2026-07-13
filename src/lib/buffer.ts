@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import axios from 'axios';
 import { getStorage } from 'firebase-admin/storage';
 
@@ -135,6 +136,21 @@ export async function resolverCanaisPublicacao(): Promise<BufferChannel[]> {
   return selecionados;
 }
 
+function montarUrlFirebaseDownload(bucketName: string, destino: string, token: string): string {
+  return (
+    'https://firebasestorage.googleapis.com/v0/b/' +
+    bucketName +
+    '/o/' +
+    encodeURIComponent(destino) +
+    '?alt=media&token=' +
+    token
+  );
+}
+
+/**
+ * Envia vídeo para Firebase Storage com token de download.
+ * Funciona sem makePublic nem IAM signBlob — compatível com GitHub Actions.
+ */
 export async function uploadVideoPublico(
   caminhoLocal: string,
   signo: string,
@@ -145,34 +161,36 @@ export async function uploadVideoPublico(
     throw new Error('FIREBASE_STORAGE_BUCKET não definido no .env');
   }
 
-  const bucket = getStorage().bucket(bucketName);
   const destino = 'videos/' + data + '/' + signo + '-diario.mp4';
-  const ficheiro = bucket.file(destino);
+  const downloadToken = crypto.randomUUID();
 
   console.log('☁️ A enviar vídeo para Firebase Storage: ' + destino);
 
+  const bucket = getStorage().bucket(bucketName);
+
   await bucket.upload(caminhoLocal, {
     destination: destino,
-    metadata: { contentType: 'video/mp4', cacheControl: 'public, max-age=31536000' },
+    metadata: {
+      contentType: 'video/mp4',
+      cacheControl: 'public, max-age=31536000',
+      metadata: {
+        firebaseStorageDownloadTokens: downloadToken,
+      },
+    },
   });
 
+  const urlDownload = montarUrlFirebaseDownload(bucketName, destino, downloadToken);
+  console.log('✅ URL Firebase para Buffer: ' + urlDownload.slice(0, 80) + '...');
+
   try {
-    await ficheiro.makePublic();
-    const urlPublica = 'https://storage.googleapis.com/' + bucket.name + '/' + destino;
-    console.log('✅ Vídeo público (storage.googleapis.com)');
-    return urlPublica;
-  } catch (erroMakePublic) {
-    console.log('⚠️ makePublic falhou — a usar URL assinada (30 dias) para o Buffer.');
-    console.log(String(erroMakePublic));
-
-    const [urlAssinada] = await ficheiro.getSignedUrl({
-      action: 'read',
-      expires: Date.now() + 30 * 24 * 60 * 60 * 1000,
-    });
-
-    console.log('✅ URL assinada gerada para o Buffer.');
-    return urlAssinada;
+    const resposta = await axios.head(urlDownload, { timeout: 30_000 });
+    console.log('✅ URL verificada (HTTP ' + resposta.status + ')');
+  } catch (erroVerificacao) {
+    console.log('⚠️ Verificação HEAD falhou (Buffer pode ainda conseguir aceder):');
+    console.log(String(erroVerificacao));
   }
+
+  return urlDownload;
 }
 
 export async function publicarVideoNoCanal(
@@ -199,7 +217,11 @@ export async function publicarVideoNoCanal(
     throw new Error('Buffer: ' + resultado.message);
   }
 
-  return resultado?.post?.id ?? 'ok';
+  if (!resultado?.post?.id) {
+    throw new Error('Buffer: resposta inesperada — ' + JSON.stringify(payload.data));
+  }
+
+  return resultado.post.id;
 }
 
 export async function publicarEmTodosOsCanais(
@@ -221,8 +243,6 @@ export async function publicarEmTodosOsCanais(
 
   const legenda = obterLegenda();
   const videoUrl = await uploadVideoPublico(caminhoVideo, signo, data);
-
-  console.log('📤 Vídeo público: ' + videoUrl);
 
   for (const canal of canais) {
     console.log('📱 A publicar em ' + canal.service + ' (' + canal.name + ')...');
