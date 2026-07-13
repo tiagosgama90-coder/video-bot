@@ -6,6 +6,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion';
+import { EfeitosUniverso } from './components/EfeitosUniverso';
 import { MarcaSidusAstro } from './components/OverlaysSidus';
 import type { HoroscopoProps } from './types/horoscopo';
 
@@ -39,6 +40,8 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
       </AbsoluteFill>
+
+      <EfeitosUniverso />
 
       <AbsoluteFill
         style={{
