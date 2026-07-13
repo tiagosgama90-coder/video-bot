@@ -9,6 +9,7 @@ out
 output/
 public/narracao.mp3
 public/fundo-ia.jpg
+public/fundo-*.jpg
 public/props-temporarias.json
 public/musica-*.mp3
 firebase-admin.json

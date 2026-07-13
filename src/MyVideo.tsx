@@ -6,6 +6,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion';
+import { MarcaSidusAstro } from './components/OverlaysSidus';
 import type { HoroscopoProps, TipoMusica } from './types/horoscopo';
 
 export type { HoroscopoProps, TipoMusica } from './types/horoscopo';
@@ -47,7 +48,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
 
       <AbsoluteFill
         style={{
-          padding: '80px 50px',
+          padding: '90px 44px 200px',
           justifyContent: 'space-between',
           alignItems: 'center',
         }}
@@ -62,7 +63,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
         <div
           style={{
             color: '#f3cc63',
-            fontSize: 85,
+            fontSize: 80,
             fontWeight: 900,
             letterSpacing: 2,
             textShadow: '0 0 25px rgba(243,204,99,0.5)',
@@ -76,18 +77,22 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
             backgroundColor: 'rgba(255, 255, 255, 0.07)',
             backdropFilter: 'blur(15px)',
             borderRadius: 30,
-            padding: '45px 35px',
+            padding: '38px 30px',
             color: '#ffffff',
-            fontSize: 34,
-            lineHeight: 1.6,
+            fontSize: 28,
+            lineHeight: 1.45,
             textAlign: 'center',
             border: '1px solid rgba(255, 255, 255, 0.15)',
             boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+            maxHeight: 520,
+            overflow: 'hidden',
           }}
         >
           &quot;{previsao}&quot;
         </div>
       </AbsoluteFill>
+
+      <MarcaSidusAstro />
 
       <Audio src={staticFile('narracao.mp3')} volume={1.0} />
       <Audio src={MUSICAS_FUNDO[tipoMusica]} volume={0.12} loop />

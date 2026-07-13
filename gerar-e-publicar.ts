@@ -4,12 +4,16 @@ import { execSync } from 'child_process';
 import axios from 'axios';
 import dotenv from 'dotenv';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
-import {
-  montarLegendaBuffer,
-  publicarEmTodosOsCanais,
-} from './src/lib/buffer';
+import { publicarEmTodosOsCanais } from './src/lib/buffer';
 import { obterTextoHoroscopo } from './src/lib/horoscopo';
+import { escolherFechoNarracao, gerarLegenda } from './src/lib/legenda';
 import { garantirMusicasAmbiente } from './src/lib/musicas';
+import {
+  escolherSignosDoDia,
+  NOMES_SIGNOS,
+  obterDataLisboa,
+  type SignoZodiaco,
+} from './src/lib/signos';
 import { gerarNarracaoPtPt } from './src/lib/voz';
 import type { TipoMusica } from './src/types/horoscopo';
 
@@ -17,45 +21,21 @@ dotenv.config();
 
 const serviceAccount = require('./firebase-admin.json');
 
-const SIGNOS_ZODIACO = [
-  'carneiro',
-  'touro',
-  'gemeos',
-  'caranguejo',
-  'leao',
-  'virgem',
-  'balanca',
-  'escorpiao',
-  'sagitario',
-  'capricornio',
-  'aquario',
-  'peixes',
-] as const;
-
-const NOMES_SIGNOS: Record<(typeof SIGNOS_ZODIACO)[number], string> = {
-  carneiro: 'Carneiro',
-  touro: 'Touro',
-  gemeos: 'Gémeos',
-  caranguejo: 'Caranguejo',
-  leao: 'Leão',
-  virgem: 'Virgem',
-  balanca: 'Balança',
-  escorpiao: 'Escorpião',
-  sagitario: 'Sagitário',
-  capricornio: 'Capricórnio',
-  aquario: 'Aquário',
-  peixes: 'Peixes',
-};
-
 const TIPOS_MUSICA: TipoMusica[] = ['zen', 'celta', 'meditacao'];
 
 const TEMAS_MISTICOS = [
-  'mystical cantic wizard room with candles and crystal ball',
-  'fortune teller crystal ball tarot cards esoteric neon',
-  'ancient astrology wheel zodiac gold purple mystical',
-  'cosmic nebula galaxy esoteric symbols meditation zen',
-  'wizard spell books glowing potions alchemy dark room',
-  'mystic seer reading stars celestial map candles',
+  'zen meditation room zodiac wheel astrology symbols candles purple gold',
+  'mystical wizard fortune teller crystal ball tarot esoteric dark',
+  'ancient astrology chart horoscope symbols celestial map stars',
+  'cosmic nebula galaxy zodiac constellations meditation zen atmosphere',
+  'vidente tarot cards oracle mystical smoke candles astrology',
+  'magician alchemist spell books glowing potions zodiac symbols',
+  'temple of stars esoteric astrology wheel zen peaceful night',
+  'mystic seer reading horoscope chart crystal ball candles',
+  'astrology observatory zodiac gold symbols cosmic energy zen',
+  'fortune teller neon mystical tarot astrology purple ambiance',
+  'wizard tower star map horoscope symbols meditation zen fantasy',
+  'esoteric sanctuary zodiac mandala candles astrology spiritual',
 ];
 
 const IMAGEM_FALLBACK_WIKI =
@@ -81,25 +61,8 @@ function garantirPasta(pasta: string): void {
   }
 }
 
-function escolherSignosAleatoriosDoDia(): (typeof SIGNOS_ZODIACO)[number][] {
-  const pool = [...SIGNOS_ZODIACO];
-  const quantidade = Math.random() < 0.5 ? 2 : 3;
-  const escolhidos: (typeof SIGNOS_ZODIACO)[number][] = [];
-
-  for (let i = 0; i < quantidade; i++) {
-    const indice = Math.floor(Math.random() * pool.length);
-    escolhidos.push(pool.splice(indice, 1)[0]);
-  }
-
-  return escolhidos;
-}
-
 function escolherTipoMusica(): TipoMusica {
   return TIPOS_MUSICA[Math.floor(Math.random() * TIPOS_MUSICA.length)];
-}
-
-function obterDataHoje(): string {
-  return new Date().toISOString().split('T')[0];
 }
 
 function montarUrlPollinations(tema: string, seed: number): string {
@@ -120,16 +83,25 @@ async function descarregarFicheiro(url: string, destino: string): Promise<void> 
   fs.writeFileSync(destino, Buffer.from(resposta.data));
 }
 
-async function obterImagemFundo(tema: string, seed: number): Promise<string> {
-  const imagemLocal = './public/fundo-ia.jpg';
+async function obterImagemFundo(signo: SignoZodiaco, data: string): Promise<string> {
+  const indiceTema = Math.floor(Math.random() * TEMAS_MISTICOS.length);
+  const tema = TEMAS_MISTICOS[indiceTema];
+  const seed =
+    Math.floor(Math.random() * 999_999) +
+    data.split('-').join('').charCodeAt(0) +
+    signo.charCodeAt(0);
+
+  const nomeFicheiro = 'fundo-' + signo + '.jpg';
+  const imagemLocal = './public/' + nomeFicheiro;
   const urlPollinations = montarUrlPollinations(tema, seed);
 
-  console.log('🎨 URL Pollinations: ' + urlPollinations);
+  console.log('🎨 Tema IA [' + signo + ']: ' + tema);
+  console.log('🎨 URL: ' + urlPollinations);
 
   try {
     await descarregarFicheiro(urlPollinations, imagemLocal);
-    console.log('✅ Imagem IA guardada localmente.');
-    return 'fundo-ia.jpg';
+    console.log('✅ Imagem única guardada: ' + nomeFicheiro);
+    return nomeFicheiro;
   } catch (erroPoll) {
     console.log('⚠️ Pollinations indisponível. A tentar Wikipedia...');
     console.log(String(erroPoll));
@@ -137,7 +109,7 @@ async function obterImagemFundo(tema: string, seed: number): Promise<string> {
 
   try {
     await descarregarFicheiro(IMAGEM_FALLBACK_WIKI, imagemLocal);
-    return 'fundo-ia.jpg';
+    return nomeFicheiro;
   } catch {
     return IMAGEM_FALLBACK_WIKI;
   }
@@ -155,20 +127,24 @@ function renderizarVideo(signo: string): void {
   console.log('✨ Vídeo concluído: ' + outputPath);
 }
 
-async function processarSigno(signo: (typeof SIGNOS_ZODIACO)[number], data: string): Promise<void> {
+async function processarSigno(signo: SignoZodiaco, data: string): Promise<void> {
   console.log('\n══════════════════════════════════════');
   console.log('🔮 A processar signo: ' + NOMES_SIGNOS[signo]);
   console.log('══════════════════════════════════════\n');
 
   const previsao = await obterTextoHoroscopo(signo, data);
-  console.log('📝 Previsão: "' + previsao + '"');
+  console.log('📝 Previsão: "' + previsao.slice(0, 120) + '..."');
 
-  const tema = TEMAS_MISTICOS[Math.floor(Math.random() * TEMAS_MISTICOS.length)];
-  const seed = Math.floor(Math.random() * 100_000);
-  const imagemFundoUrl = await obterImagemFundo(tema, seed);
+  const imagemFundoUrl = await obterImagemFundo(signo, data);
   const tipoMusica = escolherTipoMusica();
 
-  await gerarNarracaoPtPt(previsao, './public/narracao.mp3');
+  const fechoNarracao = escolherFechoNarracao();
+  const textoNarracao = previsao + fechoNarracao;
+  console.log('🎙️ Fecho narração:' + fechoNarracao);
+  await gerarNarracaoPtPt(textoNarracao, './public/narracao.mp3');
+
+  const legenda = gerarLegenda(signo);
+  console.log('📋 Legenda:\n' + legenda);
 
   const props: PropsVideo = {
     signo: NOMES_SIGNOS[signo],
@@ -183,9 +159,7 @@ async function processarSigno(signo: (typeof SIGNOS_ZODIACO)[number], data: stri
   try {
     renderizarVideo(signo);
     const caminhoOutput = path.resolve('./output/' + signo + '-diario.mp4');
-    await publicarEmTodosOsCanais(signo, caminhoOutput, data, (s) =>
-      montarLegendaBuffer(s, NOMES_SIGNOS),
-    );
+    await publicarEmTodosOsCanais(signo, caminhoOutput, data, () => legenda);
   } finally {
     if (fs.existsSync(caminhoProps)) {
       fs.unlinkSync(caminhoProps);
@@ -194,20 +168,21 @@ async function processarSigno(signo: (typeof SIGNOS_ZODIACO)[number], data: stri
 }
 
 async function executarRoboSidusAstro(): Promise<void> {
+  const data = obterDataLisboa();
   console.log('🌌 SidusAstro Video Bot — automação diária iniciada');
-  console.log('📅 Data: ' + obterDataHoje());
+  console.log('📅 Data (Lisboa): ' + data);
 
   garantirPasta('./public');
   garantirPasta('./output');
   await garantirMusicasAmbiente();
 
-  const signosDoDia = escolherSignosAleatoriosDoDia();
+  const signosDoDia = escolherSignosDoDia(data);
   console.log(
-    '🎲 Signos escolhidos hoje (' + signosDoDia.length + '): ' +
+    '🎲 Signos do dia (' +
+      signosDoDia.length +
+      '): ' +
       signosDoDia.map((s) => NOMES_SIGNOS[s]).join(', '),
   );
-
-  const data = obterDataHoje();
 
   for (const signo of signosDoDia) {
     await processarSigno(signo, data);

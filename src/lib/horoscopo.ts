@@ -1,20 +1,5 @@
 import { getFirestore } from 'firebase-admin/firestore';
-
-/** Chaves internas do bot → nomes exatos no Firestore siteDaily.horoscopes.pt */
-export const CHAVES_FIRESTORE_PT: Record<string, string> = {
-  carneiro: 'Carneiro',
-  touro: 'Touro',
-  gemeos: 'Gêmeos',
-  caranguejo: 'Câncer',
-  leao: 'Leão',
-  virgem: 'Virgem',
-  balanca: 'Libra',
-  escorpiao: 'Escorpião',
-  sagitario: 'Sagitário',
-  capricornio: 'Capricórnio',
-  aquario: 'Aquário',
-  peixes: 'Peixes',
-};
+import { CHAVES_FIRESTORE_PT } from './signos';
 
 interface DadosSiteDaily {
   horoscopes?: {
@@ -27,18 +12,40 @@ interface DadosSiteDaily {
   };
 }
 
+function normalizar(texto: string): string {
+  return texto
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
 function extrairTextoSigno(dados: DadosSiteDaily | undefined, signo: string): string | undefined {
   const chavePt = CHAVES_FIRESTORE_PT[signo] ?? signo;
-  return (
-    dados?.horoscopes?.pt?.[chavePt] ??
-    dados?.pack?.horoscopes?.pt?.[signo] ??
-    dados?.pack?.horoscopes?.pt?.[chavePt]
-  );
+  const mapaPt = dados?.horoscopes?.pt ?? dados?.pack?.horoscopes?.pt;
+
+  if (!mapaPt) {
+    return undefined;
+  }
+
+  if (mapaPt[chavePt]) {
+    return mapaPt[chavePt];
+  }
+
+  const alvo = normalizar(chavePt);
+  for (const [chave, valor] of Object.entries(mapaPt)) {
+    if (normalizar(chave) === alvo) {
+      return valor;
+    }
+  }
+
+  return undefined;
 }
 
 function obterDatasFallback(dataInicial: string, dias: number): string[] {
   const datas: string[] = [];
-  const base = new Date(dataInicial + 'T12:00:00Z');
+  const [ano, mes, dia] = dataInicial.split('-').map(Number);
+  const base = new Date(Date.UTC(ano, mes - 1, dia, 12, 0, 0));
 
   for (let i = 0; i < dias; i++) {
     const d = new Date(base);
@@ -50,7 +57,7 @@ function obterDatasFallback(dataInicial: string, dias: number): string[] {
 }
 
 export async function obterTextoHoroscopo(signo: string, data: string): Promise<string> {
-  const fallback = 'Os astros guiam o seu caminho hoje no SidusAstro.';
+  const fallback = 'Os astros guiam o teu caminho hoje no SidusAstro.';
   const chavePt = CHAVES_FIRESTORE_PT[signo] ?? signo;
 
   try {
@@ -60,6 +67,7 @@ export async function obterTextoHoroscopo(signo: string, data: string): Promise<
       const snapshot = await db.collection('siteDaily').doc(dataTentativa).get();
 
       if (!snapshot.exists) {
+        console.log('⚠️ siteDaily/' + dataTentativa + ' não encontrado.');
         continue;
       }
 
@@ -68,8 +76,10 @@ export async function obterTextoHoroscopo(signo: string, data: string): Promise<
       if (texto) {
         if (dataTentativa !== data) {
           console.log(
-            'ℹ️ A usar horóscopo de ' + dataTentativa + ' (ainda sem siteDaily/' + data + ').',
+            'ℹ️ Horóscopo de ' + dataTentativa + ' (siteDaily/' + data + ' indisponível).',
           );
+        } else {
+          console.log('✅ Horóscopo lido de siteDaily/' + data + ' [' + chavePt + ']');
         }
         return texto;
       }

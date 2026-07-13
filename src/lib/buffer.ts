@@ -189,7 +189,7 @@ export async function publicarEmTodosOsCanais(
   signo: string,
   caminhoVideo: string,
   data: string,
-  montarLegenda: (signoChave: string) => string,
+  obterLegenda: () => string,
 ): Promise<void> {
   if (!process.env.BUFFER_ACCESS_TOKEN) {
     console.log('⚠️ BUFFER_ACCESS_TOKEN em falta. Publicação ignorada.');
@@ -197,7 +197,7 @@ export async function publicarEmTodosOsCanais(
   }
 
   const canais = await resolverCanaisPublicacao();
-  const legenda = montarLegenda(signo);
+  const legenda = obterLegenda();
   const videoUrl = await uploadVideoPublico(caminhoVideo, signo, data);
 
   console.log('📤 Vídeo público: ' + videoUrl);
@@ -207,19 +207,6 @@ export async function publicarEmTodosOsCanais(
     const postId = await publicarVideoNoCanal(canal.id, legenda, videoUrl);
     console.log('✅ Enfileirado no Buffer [' + canal.service + '] Post ID: ' + postId);
   }
-}
-
-export function montarLegendaBuffer(
-  signo: string,
-  nomesSignos: Record<string, string>,
-): string {
-  const nomeSigno = nomesSignos[signo] ?? signo;
-  return (
-    'Previsão astrológica diária para o signo de ' +
-    nomeSigno +
-    '! ✨ 🔗 Visite o nosso site para ver o seu mapa completo: sidusastro.com ' +
-    '#astrologia #horoscopo #sidusastro #signos #mapaastral #meditacao #zen'
-  );
 }
 
 export async function imprimirCanaisBuffer(): Promise<void> {
