@@ -7,15 +7,9 @@ import {
   useVideoConfig,
 } from 'remotion';
 import { MarcaSidusAstro } from './components/OverlaysSidus';
-import type { HoroscopoProps, TipoMusica } from './types/horoscopo';
+import type { HoroscopoProps } from './types/horoscopo';
 
-export type { HoroscopoProps, TipoMusica } from './types/horoscopo';
-
-const MUSICAS_FUNDO: Record<TipoMusica, string> = {
-  zen: staticFile('musica-zen.mp3'),
-  celta: staticFile('musica-celta.mp3'),
-  meditacao: staticFile('musica-meditacao.mp3'),
-};
+export type { HoroscopoProps } from './types/horoscopo';
 
 function resolverSrcImagem(url: string): string {
   if (url.startsWith('http://') || url.startsWith('https://')) {
@@ -31,7 +25,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   signo,
   previsao,
   imagemFundoUrl,
-  tipoMusica,
+  musicaFundoArquivo,
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -95,7 +89,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
       <MarcaSidusAstro />
 
       <Audio src={staticFile('narracao.mp3')} volume={1.0} />
-      <Audio src={MUSICAS_FUNDO[tipoMusica]} volume={0.12} loop />
+      <Audio src={staticFile(musicaFundoArquivo)} volume={0.12} loop />
     </AbsoluteFill>
   );
 };

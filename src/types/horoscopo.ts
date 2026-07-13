@@ -1,8 +1,7 @@
-export type TipoMusica = 'zen' | 'celta' | 'meditacao';
-
 export interface HoroscopoProps {
   signo: string;
   previsao: string;
   imagemFundoUrl: string;
-  tipoMusica: TipoMusica;
+  /** Nome do ficheiro em public/ — ex.: musica-peixes.mp3 */
+  musicaFundoArquivo: string;
 }

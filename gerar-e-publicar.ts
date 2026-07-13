@@ -7,7 +7,7 @@ import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { publicarEmTodosOsCanais } from './src/lib/buffer';
 import { obterTextoHoroscopo } from './src/lib/horoscopo';
 import { escolherFechoNarracao, gerarLegenda } from './src/lib/legenda';
-import { garantirMusicasAmbiente } from './src/lib/musicas';
+import { prepararMusicaParaVideo } from './src/lib/musicas';
 import {
   escolherSignosDoDia,
   NOMES_SIGNOS,
@@ -15,13 +15,9 @@ import {
   type SignoZodiaco,
 } from './src/lib/signos';
 import { gerarNarracaoPtPt } from './src/lib/voz';
-import type { TipoMusica } from './src/types/horoscopo';
-
 dotenv.config();
 
 const serviceAccount = require('./firebase-admin.json');
-
-const TIPOS_MUSICA: TipoMusica[] = ['zen', 'celta', 'meditacao'];
 
 const TEMAS_MISTICOS = [
   'zen meditation room zodiac wheel astrology symbols candles purple gold',
@@ -52,17 +48,13 @@ interface PropsVideo {
   signo: string;
   previsao: string;
   imagemFundoUrl: string;
-  tipoMusica: TipoMusica;
+  musicaFundoArquivo: string;
 }
 
 function garantirPasta(pasta: string): void {
   if (!fs.existsSync(pasta)) {
     fs.mkdirSync(pasta, { recursive: true });
   }
-}
-
-function escolherTipoMusica(): TipoMusica {
-  return TIPOS_MUSICA[Math.floor(Math.random() * TIPOS_MUSICA.length)];
 }
 
 function montarUrlPollinations(tema: string, seed: number): string {
@@ -136,7 +128,7 @@ async function processarSigno(signo: SignoZodiaco, data: string): Promise<void> 
   console.log('📝 Previsão: "' + previsao.slice(0, 120) + '..."');
 
   const imagemFundoUrl = await obterImagemFundo(signo, data);
-  const tipoMusica = escolherTipoMusica();
+  const musicaFundoArquivo = await prepararMusicaParaVideo(signo, data);
 
   const fechoNarracao = escolherFechoNarracao();
   const textoNarracao = previsao + fechoNarracao;
@@ -150,7 +142,7 @@ async function processarSigno(signo: SignoZodiaco, data: string): Promise<void> 
     signo: NOMES_SIGNOS[signo],
     previsao,
     imagemFundoUrl,
-    tipoMusica,
+    musicaFundoArquivo,
   };
 
   const caminhoProps = './public/props-temporarias.json';
@@ -174,8 +166,6 @@ async function executarRoboSidusAstro(): Promise<void> {
 
   garantirPasta('./public');
   garantirPasta('./output');
-  await garantirMusicasAmbiente();
-
   const signosDoDia = escolherSignosDoDia(data);
   console.log(
     '🎲 Signos do dia (' +

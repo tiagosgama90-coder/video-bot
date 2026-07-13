@@ -6,7 +6,7 @@ const defaultProps: HoroscopoProps = {
   previsao: 'Os astros estão a alinhar-se a seu favor hoje no SidusAstro.',
   imagemFundoUrl:
     'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/NGC_604.jpg/1080px-NGC_604.jpg',
-  tipoMusica: 'zen',
+  musicaFundoArquivo: 'musica-peixes.mp3',
 };
 
 export const RemotionRoot: React.FC = () => {

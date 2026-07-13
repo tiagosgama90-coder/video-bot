@@ -1,35 +1,16 @@
+/* eslint-disable @remotion/deterministic-randomness -- usado apenas no script Node, não no render Remotion */
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import axios from 'axios';
-import type { TipoMusica } from '../types/horoscopo';
 
-const TIPOS_MUSICA: TipoMusica[] = ['zen', 'celta', 'meditacao'];
+/** Faixas royalty-free (SoundHelix) — uma escolhida aleatoriamente por vídeo */
+const POOL_MUSICAS_AMBIENTE: string[] = Array.from({ length: 16 }, (_, i) => {
+  return 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-' + (i + 1) + '.mp3';
+});
 
-/** Frequências suaves para gerar ambiente offline via FFmpeg (Hz) */
-const FREQUENCIAS_AMBIENTE: Record<TipoMusica, number> = {
-  zen: 174,
-  celta: 396,
-  meditacao: 528,
-};
-
-const URLS_MUSICA: Record<TipoMusica, string[]> = {
-  zen: [
-    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
-    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-  ],
-  celta: [
-    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-  ],
-  meditacao: [
-    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3',
-    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3',
-  ],
-};
-
-function caminhoMusica(tipo: TipoMusica): string {
-  return path.resolve('./public/musica-' + tipo + '.mp3');
+function caminhoPublico(nomeFicheiro: string): string {
+  return path.resolve('./public/' + nomeFicheiro);
 }
 
 async function descarregarMusica(url: string, destino: string): Promise<void> {
@@ -50,72 +31,68 @@ async function descarregarMusica(url: string, destino: string): Promise<void> {
   fs.writeFileSync(destino, Buffer.from(resposta.data));
 }
 
-function gerarMusicaOffline(destino: string, tipo: TipoMusica): void {
-  const freq = FREQUENCIAS_AMBIENTE[tipo];
+function gerarMusicaOffline(destino: string, indice: number): void {
+  const frequencias = [174, 285, 396, 417, 432, 528, 639, 741];
+  const freq = frequencias[indice % frequencias.length];
   const destinoWin = destino.replace(/\//g, path.sep);
 
-  try {
-    execSync(
-      'ffmpeg -y -f lavfi -i "sine=frequency=' +
-        freq +
-        ':duration=45" -af "volume=0.06,afade=t=in:st=0:d=2,afade=t=out:st=43:d=2" -ar 44100 -ac 1 -b:a 96k "' +
-        destinoWin +
-        '"',
-      { stdio: 'ignore' },
-    );
-    console.log('✅ Música ' + tipo + ' gerada offline com FFmpeg.');
-    return;
-  } catch {
-    console.log('⚠️ FFmpeg indisponível para ' + tipo + '. A usar cópia de fallback.');
-  }
-
-  const fallback = caminhoMusica('zen');
-  if (fs.existsSync(fallback) && fallback !== destino) {
-    fs.copyFileSync(fallback, destino);
-    return;
-  }
-
-  throw new Error('Não foi possível criar musica-' + tipo + '.mp3');
+  execSync(
+    'ffmpeg -y -f lavfi -i "sine=frequency=' +
+      freq +
+      ':duration=45" -af "volume=0.06,afade=t=in:st=0:d=2,afade=t=out:st=43:d=2" -ar 44100 -ac 1 -b:a 96k "' +
+      destinoWin +
+      '"',
+    { stdio: 'ignore' },
+  );
 }
 
-async function garantirMusicaTipo(tipo: TipoMusica): Promise<void> {
-  const destino = caminhoMusica(tipo);
-  if (fs.existsSync(destino) && fs.statSync(destino).size > 10_000) {
-    return;
+function escolherIndiceMusica(signo: string, data: string): number {
+  const mistura = data + '-' + signo + '-' + Date.now() + '-' + Math.random();
+  let hash = 0;
+  for (let i = 0; i < mistura.length; i++) {
+    hash = (hash * 31 + mistura.charCodeAt(i)) >>> 0;
   }
-
-  for (const url of URLS_MUSICA[tipo]) {
-    try {
-      console.log('🎵 A descarregar música ' + tipo + '...');
-      await descarregarMusica(url, destino);
-      console.log('✅ Música ' + tipo + ' descarregada.');
-      return;
-    } catch (erro) {
-      console.log('⚠️ URL falhou para ' + tipo + ': ' + String(erro));
-    }
-  }
-
-  console.log('🎵 A gerar música ' + tipo + ' localmente...');
-  gerarMusicaOffline(destino, tipo);
+  return hash % POOL_MUSICAS_AMBIENTE.length;
 }
 
-export async function garantirMusicasAmbiente(): Promise<void> {
+/**
+ * Descarrega uma faixa diferente para cada vídeo/signo.
+ * Nota: músicas virais do TikTok são protegidas por copyright e não têm API
+ * pública para uso automático em vídeos publicados via Buffer.
+ */
+export async function prepararMusicaParaVideo(signo: string, data: string): Promise<string> {
   if (!fs.existsSync('./public')) {
     fs.mkdirSync('./public', { recursive: true });
   }
 
-  for (const tipo of TIPOS_MUSICA) {
-    await garantirMusicaTipo(tipo);
-  }
+  const indice = escolherIndiceMusica(signo, data);
+  const nomeFicheiro = 'musica-' + signo + '.mp3';
+  const destino = caminhoPublico(nomeFicheiro);
+  const urls = [
+    POOL_MUSICAS_AMBIENTE[indice],
+    POOL_MUSICAS_AMBIENTE[(indice + 3) % POOL_MUSICAS_AMBIENTE.length],
+    POOL_MUSICAS_AMBIENTE[(indice + 7) % POOL_MUSICAS_AMBIENTE.length],
+  ];
 
-  for (const tipo of TIPOS_MUSICA) {
-    const destino = caminhoMusica(tipo);
-    if (!fs.existsSync(destino) || fs.statSync(destino).size < 1000) {
-      throw new Error('Ficheiro em falta após setup: ' + destino);
+  console.log('🎵 Música aleatória [' + (indice + 1) + '/16] para ' + signo);
+
+  for (const url of urls) {
+    try {
+      await descarregarMusica(url, destino);
+      console.log('✅ Música guardada: ' + nomeFicheiro);
+      return nomeFicheiro;
+    } catch (erro) {
+      console.log('⚠️ URL música falhou: ' + url);
+      console.log(String(erro));
     }
   }
-}
 
-export function nomeFicheiroMusica(tipo: TipoMusica): string {
-  return 'musica-' + tipo + '.mp3';
+  try {
+    console.log('🎵 A gerar música ambiente offline (FFmpeg)...');
+    gerarMusicaOffline(destino, indice);
+    return nomeFicheiro;
+  } catch (erro) {
+    console.log('⚠️ FFmpeg indisponível: ' + String(erro));
+    throw new Error('Não foi possível preparar música para ' + signo);
+  }
 }
