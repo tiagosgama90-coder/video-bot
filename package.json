@@ -41,6 +41,7 @@
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc",
     "verificar": "npx ts-node verificar-config.ts",
-    "testar-buffer": "npx ts-node testar-upload-buffer.ts"
+    "testar-buffer": "npx ts-node testar-upload-buffer.ts",
+    "setup-local": "powershell -ExecutionPolicy Bypass -File configurar-local.ps1"
   }
 }

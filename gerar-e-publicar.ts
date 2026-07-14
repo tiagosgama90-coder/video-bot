@@ -2,7 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import dotenv from 'dotenv';
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { publicarEmTodosOsCanais } from './src/lib/buffer';
 import { obterTextoHoroscopo, extrairAteSegundoPontoFinal } from './src/lib/horoscopo';
 import {
@@ -20,16 +19,10 @@ import {
   type SignoZodiaco,
 } from './src/lib/signos';
 import { gerarNarracaoPtPt } from './src/lib/voz';
+import { inicializarFirebaseSeNecessario } from './src/lib/inicializar-app';
 dotenv.config();
 
-const serviceAccount = require('./firebase-admin.json');
-
-if (getApps().length === 0) {
-  initializeApp({
-    credential: cert(serviceAccount),
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  });
-}
+inicializarFirebaseSeNecessario({ obrigatorio: true });
 
 interface PropsVideo {
   signo: string;

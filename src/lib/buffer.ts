@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import axios from 'axios';
 import { getStorage } from 'firebase-admin/storage';
+import { inicializarFirebase } from './inicializar-app';
 import { obterDueAtSlot } from './buffer-agenda';
 
 interface BufferChannel {
@@ -163,6 +164,8 @@ export async function uploadVideoPublico(
     throw new Error('FIREBASE_STORAGE_BUCKET não definido no .env');
   }
 
+  inicializarFirebase();
+
   const destino = subpasta + '/' + data + '/' + identificador + '.mp4';
   const downloadToken = crypto.randomUUID();
 
@@ -285,6 +288,11 @@ export async function publicarEmTodosOsCanais(
 ): Promise<void> {
   if (!process.env.BUFFER_ACCESS_TOKEN) {
     console.log('⚠️ BUFFER_ACCESS_TOKEN em falta. Publicação ignorada.');
+    return;
+  }
+
+  if (process.env.SKIP_PUBLICAR === '1') {
+    console.log('⏭️ SKIP_PUBLICAR=1 — vídeo gerado localmente, sem enviar ao Buffer.');
     return;
   }
 
