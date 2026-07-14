@@ -4,7 +4,7 @@ import { execSync } from 'child_process';
 import dotenv from 'dotenv';
 import { publicarEmTodosOsCanais } from './src/lib/buffer';
 import { obterTextoHoroscopo, extrairAteSegundoPontoFinal } from './src/lib/horoscopo';
-import { gerarLegendas } from './src/lib/legenda';
+import { escolherFechoNarracao, gerarLegendas } from './src/lib/legenda';
 import { obterImagemFundo } from './src/lib/imagem-fundo';
 import { calcularDuracaoFrames } from './src/lib/duracao-video';
 import { prepararMusicaParaVideo } from './src/lib/musicas';
@@ -83,8 +83,11 @@ async function processarSigno(
   const imagemFundoUrl = await obterImagemFundo(signo, data);
   const musicaFundoArquivo = await prepararMusicaParaVideo(signo, data);
 
-  console.log('🎙️ Narração (só 2 frases): "' + previsaoVideo + '"');
-  await gerarNarracaoPtPt(previsaoVideo, './public/narracao.mp3', 'aleatoria');
+  const fechoNarracao = escolherFechoNarracao();
+  const fechoEcra = fechoNarracao.replace(/^\.\s+/, '');
+  const textoNarracao = previsaoVideo + fechoNarracao;
+  console.log('🎙️ Narração: "' + previsaoVideo + '"' + fechoNarracao);
+  await gerarNarracaoPtPt(textoNarracao, './public/narracao.mp3', 'aleatoria');
 
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3');
 
@@ -95,7 +98,7 @@ async function processarSigno(
   const props: PropsVideo = {
     signo: NOMES_SIGNOS[signo],
     previsao: previsaoVideo,
-    fechoTexto: '',
+    fechoTexto: fechoEcra,
     imagemFundoUrl,
     musicaFundoArquivo,
     duracaoFrames,
