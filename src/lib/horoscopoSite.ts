@@ -251,7 +251,14 @@ function gerarHoroscopoSignoTransito({
   }
 
   let texto = partes.join(' ');
-  if (apiText && apiText.length > 40 && !apiText.includes('pequenos passos')) {
+  // O site só prepend o pack IA se for texto PT-PT válido (não templates genéricos).
+  // Ignoramos o pack IA brasileiro — o horóscopo diário real são os trânsitos.
+  if (
+    apiText &&
+    apiText.length > 40 &&
+    !apiText.includes('pequenos passos') &&
+    !/\b(sua|você|voce|seu|sua)\b/i.test(apiText)
+  ) {
     texto = `${apiText} ${texto}`;
   }
   return formatarTextoHoroscopo(texto);

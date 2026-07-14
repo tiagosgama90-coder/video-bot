@@ -54,8 +54,17 @@ const PALETAS = [
   'black and celestial white',
 ];
 
-const IMAGEM_FALLBACK_WIKI =
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/NGC_604.jpg/1080px-NGC_604.jpg';
+/** JPEG mínimo 1x1 (roxo escuro) — fallback local se todas as URLs falharem */
+const JPEG_MINIMO_BASE64 =
+  '/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wAALCAABAAEBAREA/8QAJgABAAAAAAAAAAAAAAAAAAAAAxABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQAAPwCf/9k=';
+
+function urlsFallback(seed: number): string[] {
+  return [
+    'https://picsum.photos/seed/sidusastro-' + seed + '/1080/1920',
+    'https://image.pollinations.ai/prompt/dark%20purple%20cosmic%20nebula%20stars?width=1080&height=1920&nologo=true&seed=' +
+      (seed + 1),
+  ];
+}
 
 function escolher<T>(lista: T[]): T {
   return lista[crypto.randomInt(0, lista.length)];
@@ -104,9 +113,19 @@ async function descarregarFicheiro(url: string, destino: string): Promise<void> 
   const resposta = await axios.get<ArrayBuffer>(url, {
     responseType: 'arraybuffer',
     timeout: 120_000,
+    maxRedirects: 5,
     headers: { 'User-Agent': 'SidusAstro-VideoBot/1.0' },
+    validateStatus: (status) => status >= 200 && status < 300,
   });
-  fs.writeFileSync(destino, Buffer.from(resposta.data));
+  const dados = Buffer.from(resposta.data);
+  if (dados.length < 1000) {
+    throw new Error('Resposta demasiado pequena (' + dados.length + ' bytes)');
+  }
+  fs.writeFileSync(destino, dados);
+}
+
+function escreverJpegMinimo(destino: string): void {
+  fs.writeFileSync(destino, Buffer.from(JPEG_MINIMO_BASE64, 'base64'));
 }
 
 /** Imagem IA única por execução — tema, estilo, paleta e seed nunca repetidos de forma previsível */
@@ -125,19 +144,20 @@ export async function obterImagemFundo(signo: SignoZodiaco, data: string): Promi
   console.log('🎨 Prompt IA [' + signo + ']: ' + prompt.slice(0, 100) + '...');
   console.log('🎨 Seed único: ' + seed);
 
-  try {
-    await descarregarFicheiro(urlPollinations, imagemLocal);
-    console.log('✅ Imagem única guardada: ' + nomeFicheiro);
-    return nomeFicheiro;
-  } catch (erroPoll) {
-    console.log('⚠️ Pollinations indisponível. A tentar Wikipedia...');
-    console.log(String(erroPoll));
+  const fontes = [urlPollinations, ...urlsFallback(seed)];
+
+  for (const url of fontes) {
+    try {
+      await descarregarFicheiro(url, imagemLocal);
+      console.log('✅ Imagem única guardada: ' + nomeFicheiro);
+      return nomeFicheiro;
+    } catch (erro) {
+      console.log('⚠️ Fonte indisponível: ' + url.slice(0, 80) + '...');
+      console.log(String(erro));
+    }
   }
 
-  try {
-    await descarregarFicheiro(IMAGEM_FALLBACK_WIKI, imagemLocal);
-    return nomeFicheiro;
-  } catch {
-    return IMAGEM_FALLBACK_WIKI;
-  }
+  console.log('⚠️ Todas as fontes falharam — a usar JPEG local mínimo.');
+  escreverJpegMinimo(imagemLocal);
+  return nomeFicheiro;
 }

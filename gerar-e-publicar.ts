@@ -151,14 +151,19 @@ async function executarRoboSidusAstro(): Promise<void> {
       signosDoDia.map((s) => NOMES_SIGNOS[s]).join(', '),
   );
 
+  let erros = 0;
   for (const signo of signosDoDia) {
     try {
       await processarSigno(signo, data);
     } catch (erro) {
+      erros++;
       console.error('\n❌ ERRO no signo ' + NOMES_SIGNOS[signo] + ':');
       console.error(erro);
-      throw erro;
     }
+  }
+
+  if (erros > 0) {
+    throw new Error(erros + ' signo(s) falharam na geração/publicação.');
   }
 
   console.log('\n🏁 Automação concluída — vídeos publicados em Instagram + TikTok!');
