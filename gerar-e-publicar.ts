@@ -4,7 +4,7 @@ import { execSync } from 'child_process';
 import dotenv from 'dotenv';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { publicarEmTodosOsCanais } from './src/lib/buffer';
-import { obterTextoHoroscopo } from './src/lib/horoscopo';
+import { obterTextoHoroscopo, extrairAteSegundoPontoFinal } from './src/lib/horoscopo';
 import {
   escolherFechoNarracao,
   gerarLegendas,
@@ -82,7 +82,9 @@ async function processarSigno(signo: SignoZodiaco, data: string): Promise<void> 
   console.log('══════════════════════════════════════\n');
 
   const previsao = await obterTextoHoroscopo(signo, data);
-  console.log('📝 Previsão: "' + previsao.slice(0, 120) + '..."');
+  const previsaoVideo = extrairAteSegundoPontoFinal(previsao);
+  console.log('📝 Previsão completa: "' + previsao.slice(0, 120) + '..."');
+  console.log('✂️ Previsão para vídeo (até 2º ponto final): "' + previsaoVideo + '"');
 
   const imagemFundoUrl = await obterImagemFundo(signo, data);
   const musicaFundoArquivo = await prepararMusicaParaVideo(signo, data);
@@ -94,13 +96,13 @@ async function processarSigno(signo: SignoZodiaco, data: string): Promise<void> 
 
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3');
 
-  const legendas = gerarLegendas(signo, previsao);
+  const legendas = gerarLegendas(signo, previsaoVideo);
   console.log('📋 Legenda TikTok:\n' + legendas.tiktok);
   console.log('📋 Legenda Instagram:\n' + legendas.instagram);
 
   const props: PropsVideo = {
     signo: NOMES_SIGNOS[signo],
-    previsao,
+    previsao: previsaoVideo,
     fechoTexto: fechoNarracao.trim(),
     imagemFundoUrl,
     musicaFundoArquivo,

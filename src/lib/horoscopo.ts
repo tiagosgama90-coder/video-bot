@@ -38,6 +38,29 @@ function normalizar(texto: string): string {
     .trim();
 }
 
+/**
+ * Extrai o texto até ao SEGUNDO ponto final (incluindo o segundo ponto).
+ * Se não houver 2 pontos finais, retorna o texto completo.
+ * Exemplo: "Frase um. Frase dois. Frase três." → "Frase um. Frase dois."
+ */
+export function extrairAteSegundoPontoFinal(texto: string): string {
+  let count = 0;
+  let pos = -1;
+  for (let i = 0; i < texto.length; i++) {
+    if (texto[i] === '.') {
+      count++;
+      if (count === 2) {
+        pos = i + 1; // inclui o ponto
+        break;
+      }
+    }
+  }
+  if (pos === -1) {
+    return texto.trim();
+  }
+  return texto.slice(0, pos).trim();
+}
+
 function chavesParaSigno(signo: string): string[] {
   const aliases = ALIAS_CHAVES_FIRESTORE[signo];
   if (aliases && aliases.length > 0) {

@@ -221,8 +221,7 @@ export async function publicarVideoNoCanal(
     input: {
       text: legenda,
       channelId: canal.id,
-      schedulingType: 'automatic',
-      mode: 'addToQueue',
+      schedulingType: 'now',
       metadata,
       assets: [{ video: { url: videoUrl } }],
     },
