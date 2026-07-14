@@ -252,13 +252,10 @@ export function construirPartesTransito({
   return partes;
 }
 
+/** Pack IA do Firestore — igual ao que a home do site mostra (inclui texto do siteDaily) */
 export function apiTextoValidoParaHoroscopo(apiText?: string): boolean {
-  return !!(
-    apiText &&
-    apiText.length > 40 &&
-    !apiText.includes('pequenos passos') &&
-    !/\b(sua|você|voce|seu|sua)\b/i.test(apiText)
-  );
+  const t = apiText?.trim() ?? '';
+  return t.length > 20 && !t.includes('pequenos passos');
 }
 
 /** Divide texto em frases reais (ignora decimais 3.1°, 11.0) */
@@ -338,7 +335,7 @@ function gerarHoroscopoSignoTransito({
 
   let texto = partes.join(' ');
   if (apiTextoValidoParaHoroscopo(apiText)) {
-    texto = `${apiText} ${texto}`;
+    texto = `${apiText!.trim()} ${texto}`;
   }
   return formatarTextoHoroscopo(texto);
 }
@@ -367,23 +364,13 @@ export function gerarTextoHoroscopoHome(
   });
 }
 
-/** Apenas as 2 primeiras frases para vídeo/legendas/narração-base */
+/** 2 primeiras frases do texto completo (por ponto final) */
 export function gerarDuasFrasesHoroscopoHome(
   signo: SignoZodiaco,
   apiText?: string,
   date: Date = new Date(),
 ): string {
-  const signoIndex = SIGNOS_ZODIACO.indexOf(signo);
-  const signoNome = NOMES_SIGNOS[signo];
-  const ceuAgora = calcularPlanetasParaData(date);
-  const aspetos = calcularAspetos(ceuAgora);
-  const faseLua = calcularFaseLua(date);
-
-  if (!ceuAgora?.length) {
-    const frases = dividirEmFrases(apiText || '');
-    return formatarTextoHoroscopo(frases.slice(0, 2).join(' '));
-  }
-
-  const partes = construirPartesTransito({ signoIndex, signoNome, ceuAgora, aspetos, faseLua });
-  return montarDuasFrasesVideo(partes, apiText);
+  const completo = gerarTextoHoroscopoHome(signo, apiText, date);
+  const frases = dividirEmFrases(completo);
+  return formatarTextoHoroscopo(frases.slice(0, 2).join(' '));
 }
