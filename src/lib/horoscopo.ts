@@ -2,15 +2,18 @@ import { getFirestore } from 'firebase-admin/firestore';
 import {
   ALIAS_CHAVES_FIRESTORE,
   CHAVES_FIRESTORE_PT,
+  NOMES_SIGNOS,
+  type SignoZodiaco,
 } from './signos';
+import { gerarTextoHoroscopoHome } from './horoscopoSite';
 
 /**
  * O site sidusastro.com mostra o Horóscopo Diário na página /home.
- * Esse conteúdo vem do Firestore: coleção `siteDaily`, documento `YYYY-MM-DD`.
+ * O texto é gerado por trânsitos reais (horoscopoDiarioTransitos.js) +
+ * opcionalmente o pack IA do Firestore siteDaily/{date}.horoscopes.pt.
  *
- * O bot NÃO cria este documento — o teu backend/site SidusAstro gera-o
- * automaticamente quando produz as interpretações diárias (a mesma rotina que
- * alimenta a secção "Horóscopo Diário" no site). O bot apenas LÊ esse texto.
+ * Este módulo replica essa lógica para que o vídeo mostre o MESMO texto
+ * que aparece na home do site.
  */
 
 interface DadosSiteDaily {
@@ -22,12 +25,6 @@ interface DadosSiteDaily {
       pt?: Record<string, string>;
     };
   };
-}
-
-interface ResultadoHoroscopo {
-  texto: string;
-  chaveUsada: string;
-  dataUsada: string;
 }
 
 function normalizar(texto: string): string {
@@ -50,7 +47,7 @@ export function extrairAteSegundoPontoFinal(texto: string): string {
     if (texto[i] === '.') {
       count++;
       if (count === 2) {
-        pos = i + 1; // inclui o ponto
+        pos = i + 1;
         break;
       }
     }
@@ -70,7 +67,7 @@ function chavesParaSigno(signo: string): string[] {
   return principal ? [principal] : [signo];
 }
 
-function extrairTextoSigno(
+function extrairApiTextSigno(
   dados: DadosSiteDaily | undefined,
   signo: string,
 ): { texto: string; chaveUsada: string } | undefined {
@@ -96,105 +93,90 @@ function extrairTextoSigno(
   return undefined;
 }
 
-function permitirFallbackDiasAnteriores(): boolean {
-  return process.env.HOROSCOPE_ALLOW_FALLBACK === 'true';
+function dormir(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export async function obterTextoHoroscopo(signo: string, data: string): Promise<string> {
-  const fallback = 'Os astros guiam o teu caminho hoje no SidusAstro.';
+async function obterPackSiteDaily(data: string): Promise<DadosSiteDaily | undefined> {
+  const db = getFirestore();
+  const snapshot = await db.collection('siteDaily').doc(data).get();
+  return snapshot.exists ? (snapshot.data() as DadosSiteDaily) : undefined;
+}
+
+/**
+ * Espera até o siteDaily/{data} existir (horóscopo diário gerado ~07:00 Lisboa).
+ * Tenta a cada 5 minutos, máximo 6 tentativas (30 min).
+ */
+async function aguardarSiteDaily(data: string): Promise<DadosSiteDaily | undefined> {
+  const maxTentativas = 6;
+  const intervaloMs = 5 * 60 * 1000;
+
+  for (let tentativa = 1; tentativa <= maxTentativas; tentativa++) {
+    const pack = await obterPackSiteDaily(data);
+    if (pack?.horoscopes?.pt || pack?.pack?.horoscopes?.pt) {
+      if (tentativa > 1) {
+        console.log(`✅ siteDaily/${data} disponível após ${tentativa} tentativa(s).`);
+      }
+      return pack;
+    }
+
+    if (tentativa < maxTentativas) {
+      console.log(
+        `⏳ siteDaily/${data} ainda não disponível (tentativa ${tentativa}/${maxTentativas}). ` +
+          'A aguardar 5 min...',
+      );
+      await dormir(intervaloMs);
+    }
+  }
+
+  console.log(`⚠️ siteDaily/${data} não encontrado após ${maxTentativas} tentativas.`);
+  return undefined;
+}
+
+export async function obterTextoHoroscopo(signo: SignoZodiaco, data: string): Promise<string> {
+  const nomeSigno = NOMES_SIGNOS[signo];
   const chavesEsperadas = chavesParaSigno(signo).join(' / ');
 
   try {
-    const db = getFirestore();
-    const snapshot = await db.collection('siteDaily').doc(data).get();
+    const pack = await aguardarSiteDaily(data);
+    const apiResultado = pack ? extrairApiTextSigno(pack, signo) : undefined;
 
-    if (!snapshot.exists) {
-      console.log('');
-      console.log('❌ siteDaily/' + data + ' não existe no Firestore.');
-      console.log('   O site SidusAstro deve gerar este documento antes do bot correr.');
-      console.log('');
-
-      if (!permitirFallbackDiasAnteriores()) {
-        console.log('⚠️ Fallback desativado — a usar texto genérico.');
-        return fallback;
-      }
-    } else {
-      const resultado = extrairTextoSigno(snapshot.data() as DadosSiteDaily, signo);
-
-      if (resultado) {
-        console.log(
-          '✅ Horóscopo de HOJE: siteDaily/' +
-            data +
-            ' [' +
-            resultado.chaveUsada +
-            '] (chaves: ' +
-            chavesEsperadas +
-            ')',
-        );
-        console.log('📄 Texto completo: "' + resultado.texto + '"');
-        return resultado.texto;
-      }
-
+    if (apiResultado) {
       console.log(
-        '⚠️ Signo ' +
-          chavesEsperadas +
-          ' em falta em siteDaily/' +
-          data +
-          ' (chaves no doc: ' +
-          Object.keys(snapshot.data()?.horoscopes?.pt ?? {}).join(', ') +
-          ')',
+        '✅ Pack IA: siteDaily/' + data + ' [' + apiResultado.chaveUsada + '] (chaves: ' + chavesEsperadas + ')',
       );
     }
 
-    if (!permitirFallbackDiasAnteriores()) {
-      console.log('⚠️ Sem fallback — a usar texto genérico (não usa dias anteriores).');
-      return fallback;
+    const dataLisboa = new Date(data + 'T12:00:00+01:00');
+    const textoHome = gerarTextoHoroscopoHome(signo, apiResultado?.texto, dataLisboa);
+
+    if (textoHome && textoHome.length > 20) {
+      console.log('✅ Horóscopo HOME (trânsitos): ' + nomeSigno);
+      console.log('📄 Texto completo: "' + textoHome + '"');
+      return textoHome;
     }
 
-    console.log('ℹ️ HOROSCOPE_ALLOW_FALLBACK=true — a tentar dias anteriores...');
-    return obterTextoHoroscopoFallback(signo, data, fallback);
+    if (apiResultado?.texto) {
+      console.log('⚠️ Trânsitos vazios — a usar pack IA para ' + nomeSigno);
+      return apiResultado.texto;
+    }
+
+    console.log('⚠️ Sem horóscopo para ' + nomeSigno + ' — texto genérico.');
+    return `Os astros guiam o teu caminho hoje no SidusAstro, ${nomeSigno}.`;
   } catch (erro) {
-    console.log('⚠️ Erro Firestore para ' + signo + '. A usar texto genérico.');
+    console.log('⚠️ Erro ao obter horóscopo para ' + nomeSigno + '. A usar trânsitos locais.');
     console.log(String(erro));
-    return fallback;
-  }
-}
 
-async function obterTextoHoroscopoFallback(
-  signo: string,
-  data: string,
-  fallback: string,
-): Promise<string> {
-  const db = getFirestore();
-  const [ano, mes, dia] = data.split('-').map(Number);
-  const base = new Date(Date.UTC(ano, mes - 1, dia, 12, 0, 0));
-
-  for (let i = 1; i < 7; i++) {
-    const d = new Date(base);
-    d.setUTCDate(d.getUTCDate() - i);
-    const dataTentativa = d.toISOString().split('T')[0];
-    const snapshot = await db.collection('siteDaily').doc(dataTentativa).get();
-
-    if (!snapshot.exists) {
-      continue;
+    try {
+      const dataLisboa = new Date(data + 'T12:00:00+01:00');
+      const textoHome = gerarTextoHoroscopoHome(signo, undefined, dataLisboa);
+      if (textoHome && textoHome.length > 20) {
+        return textoHome;
+      }
+    } catch {
+      // ignora
     }
 
-    const resultado = extrairTextoSigno(snapshot.data() as DadosSiteDaily, signo);
-    if (resultado) {
-      console.log('');
-      console.log(
-        '⚠️ ATENÇÃO: a usar horóscopo de ' +
-          dataTentativa +
-          ' (siteDaily/' +
-          data +
-          ' indisponível ou signo em falta).',
-      );
-      console.log('');
-      return resultado.texto;
-    }
+    return `Os astros guiam o teu caminho hoje no SidusAstro, ${nomeSigno}.`;
   }
-
-  return fallback;
 }
-
-export type { ResultadoHoroscopo };

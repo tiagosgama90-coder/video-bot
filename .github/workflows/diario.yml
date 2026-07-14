@@ -2,7 +2,7 @@ name: Horóscopo Diário SidusAstro
 
 on:
   schedule:
-    - cron: '00 8 * * *' # 08:00 UTC = 09:00 PT (verão). Site atualiza ~07:00 PT, margem de segurança
+    - cron: '30 6 * * *' # 06:30 UTC = 07:30 Lisboa (verão). Site atualiza ~07:00, bot dispara 30 min depois
   workflow_dispatch:
 
 jobs:

@@ -222,7 +222,7 @@ export async function publicarVideoNoCanal(
       text: legenda,
       channelId: canal.id,
       schedulingType: 'automatic',
-      mode: 'addToQueue',
+      mode: 'shareNow',
       metadata,
       assets: [{ video: { url: videoUrl } }],
     },
@@ -266,7 +266,7 @@ export async function publicarEmTodosOsCanais(
     console.log('📱 A publicar em ' + canal.service + ' (' + canal.name + ')...');
     console.log('📋 Legenda [' + canal.service + ']:\n' + legenda);
     const postId = await publicarVideoNoCanal(canal, legenda, videoUrl);
-    console.log('✅ Enfileirado no Buffer [' + canal.service + '] Post ID: ' + postId);
+    console.log('✅ Publicado no Buffer [' + canal.service + '] Post ID: ' + postId);
   }
 }
 

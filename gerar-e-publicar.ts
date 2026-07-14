@@ -90,9 +90,8 @@ async function processarSigno(signo: SignoZodiaco, data: string): Promise<void> 
   const musicaFundoArquivo = await prepararMusicaParaVideo(signo, data);
 
   const fechoNarracao = escolherFechoNarracao();
-  const textoNarracao = previsaoVideo + fechoNarracao;
-  console.log('🎙️ Fecho narração:' + fechoNarracao);
-  await gerarNarracaoPtPt(textoNarracao, './public/narracao.mp3');
+  console.log('🎙️ Narração (só até 2º ponto): "' + previsaoVideo + '"');
+  await gerarNarracaoPtPt(previsaoVideo, './public/narracao.mp3');
 
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3');
 
