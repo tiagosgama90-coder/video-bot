@@ -6,7 +6,7 @@ import {
   NOMES_SIGNOS,
   type SignoZodiaco,
 } from './signos';
-import { gerarTextoHoroscopoHome, gerarDuasFrasesHoroscopoHome } from './horoscopoSite';
+import { gerarTextoHoroscopoHome } from './horoscopoSite';
 
 /**
  * O site sidusastro.com mostra o Horóscopo Diário na página /home.
@@ -214,31 +214,8 @@ export async function obterTextoHoroscopo(signo: SignoZodiaco, data: string): Pr
   }
 }
 
-/** Apenas as 2 PRIMEIRAS frases — nunca a 3.ª (Saturno, regente, fecho, etc.) */
+/** Apenas as 2 primeiras frases do texto (por ponto final, ignora decimais 3.1°) */
 export async function obterDuasFrasesHoroscopo(signo: SignoZodiaco, data: string): Promise<string> {
-  const nomeSigno = NOMES_SIGNOS[signo];
-
-  try {
-    const { apiTexto, dataLisboa } = await resolverHoroscopoSigno(signo, data);
-    const duasFrases = gerarDuasFrasesHoroscopoHome(signo, apiTexto, dataLisboa);
-
-    if (duasFrases && duasFrases.length > 10) {
-      console.log('✂️ 2 frases para vídeo (' + nomeSigno + '): "' + duasFrases + '"');
-      return duasFrases;
-    }
-
-    if (apiTexto) {
-      return extrairAteSegundoPontoFinal(apiTexto);
-    }
-
-    return `Os astros guiam o teu caminho hoje no SidusAstro, ${nomeSigno}.`;
-  } catch (erro) {
-    console.log('⚠️ Erro nas 2 frases para ' + nomeSigno + ': ' + String(erro));
-    const dataLisboa = new Date(data + 'T12:00:00+01:00');
-    const duasFrases = gerarDuasFrasesHoroscopoHome(signo, undefined, dataLisboa);
-    if (duasFrases.length > 10) {
-      return duasFrases;
-    }
-    return `Os astros guiam o teu caminho hoje no SidusAstro, ${nomeSigno}.`;
-  }
+  const completo = await obterTextoHoroscopo(signo, data);
+  return extrairAteSegundoPontoFinal(completo);
 }

@@ -3,11 +3,8 @@ import path from 'path';
 import { execSync } from 'child_process';
 import dotenv from 'dotenv';
 import { publicarEmTodosOsCanais } from './src/lib/buffer';
-import { obterTextoHoroscopo, obterDuasFrasesHoroscopo } from './src/lib/horoscopo';
-import {
-  escolherFechoNarracao,
-  gerarLegendas,
-} from './src/lib/legenda';
+import { obterTextoHoroscopo, extrairAteSegundoPontoFinal } from './src/lib/horoscopo';
+import { gerarLegendas } from './src/lib/legenda';
 import { obterImagemFundo } from './src/lib/imagem-fundo';
 import { calcularDuracaoFrames } from './src/lib/duracao-video';
 import { prepararMusicaParaVideo } from './src/lib/musicas';
@@ -79,16 +76,15 @@ async function processarSigno(
   console.log('══════════════════════════════════════\n');
 
   const previsao = await obterTextoHoroscopo(signo, data);
-  const previsaoVideo = await obterDuasFrasesHoroscopo(signo, data);
-  console.log('📝 Previsão completa: "' + previsao.slice(0, 120) + '..."');
+  const previsaoVideo = extrairAteSegundoPontoFinal(previsao);
+  console.log('📝 Texto completo: "' + previsao.slice(0, 150) + '..."');
+  console.log('✂️ Vídeo (1.ª + 2.ª frase por ponto final): "' + previsaoVideo + '"');
 
   const imagemFundoUrl = await obterImagemFundo(signo, data);
   const musicaFundoArquivo = await prepararMusicaParaVideo(signo, data);
 
-  const fechoNarracao = escolherFechoNarracao();
-  const textoNarracao = previsaoVideo + fechoNarracao;
-  console.log('🎙️ Narração: "' + previsaoVideo + '"' + fechoNarracao);
-  await gerarNarracaoPtPt(textoNarracao, './public/narracao.mp3', 'aleatoria');
+  console.log('🎙️ Narração (só 2 frases): "' + previsaoVideo + '"');
+  await gerarNarracaoPtPt(previsaoVideo, './public/narracao.mp3', 'aleatoria');
 
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3');
 
