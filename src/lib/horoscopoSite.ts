@@ -195,23 +195,22 @@ function fraseCeuCalmo(signoNome: string): string {
   return `Céu sem aspectos exactos ao grau de ${signoNome} - dia estável para consolidar rotinas e honrar o teu ritmo natural.`;
 }
 
-function gerarHoroscopoSignoTransito({
+/** Cada elemento = 1 frase do horóscopo (Lua, planeta no signo, aspecto, regente...) */
+export function construirPartesTransito({
   signoIndex,
   signoNome,
   ceuAgora,
   aspetos,
   faseLua,
-  apiText,
 }: {
   signoIndex: number;
   signoNome: string;
   ceuAgora: PlanetaCeu[];
   aspetos: Aspeto[];
   faseLua: { nome: string };
-  apiText?: string;
-}): string {
+}): string[] {
   if (!ceuAgora?.length) {
-    return formatarTextoHoroscopo(apiText || '');
+    return [];
   }
 
   const partes: string[] = [];
@@ -250,15 +249,95 @@ function gerarHoroscopoSignoTransito({
     partes.push(fraseRegente(aspReg, regente, signoNome));
   }
 
-  let texto = partes.join(' ');
-  // O site só prepend o pack IA se for texto PT-PT válido (não templates genéricos).
-  // Ignoramos o pack IA brasileiro — o horóscopo diário real são os trânsitos.
-  if (
+  return partes;
+}
+
+export function apiTextoValidoParaHoroscopo(apiText?: string): boolean {
+  return !!(
     apiText &&
     apiText.length > 40 &&
     !apiText.includes('pequenos passos') &&
     !/\b(sua|você|voce|seu|sua)\b/i.test(apiText)
-  ) {
+  );
+}
+
+/** Divide texto em frases reais (ignora decimais 3.1°, 11.0) */
+export function dividirEmFrases(texto: string): string[] {
+  const limpo = formatarTextoHoroscopo(texto);
+  if (!limpo) {
+    return [];
+  }
+
+  const frases: string[] = [];
+  let inicio = 0;
+  const regex = /(?<![0-9])\.(?![0-9])/g;
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(limpo)) !== null) {
+    const fim = match.index + 1;
+    const frase = limpo.slice(inicio, fim).trim();
+    if (frase.length > 0) {
+      frases.push(frase);
+    }
+    inicio = fim;
+    while (inicio < limpo.length && /\s/.test(limpo[inicio])) {
+      inicio++;
+    }
+  }
+
+  if (inicio < limpo.length) {
+    const resto = limpo.slice(inicio).trim();
+    if (resto.length > 0) {
+      frases.push(resto);
+    }
+  }
+
+  return frases;
+}
+
+/**
+ * Exactamente as 2 PRIMEIRAS frases do horóscopo (1.ª Lua, 2.ª planeta/aspecto).
+ * Nunca inclui a 3.ª (Saturno, regente, etc.).
+ */
+export function montarDuasFrasesVideo(partesTransito: string[], apiText?: string): string {
+  const frases: string[] = [];
+
+  if (apiTextoValidoParaHoroscopo(apiText)) {
+    frases.push(...dividirEmFrases(apiText!));
+  }
+
+  frases.push(...partesTransito.map((p) => formatarTextoHoroscopo(p)));
+
+  if (frases.length === 0) {
+    return '';
+  }
+
+  return formatarTextoHoroscopo(frases.slice(0, 2).join(' '));
+}
+
+function gerarHoroscopoSignoTransito({
+  signoIndex,
+  signoNome,
+  ceuAgora,
+  aspetos,
+  faseLua,
+  apiText,
+}: {
+  signoIndex: number;
+  signoNome: string;
+  ceuAgora: PlanetaCeu[];
+  aspetos: Aspeto[];
+  faseLua: { nome: string };
+  apiText?: string;
+}): string {
+  if (!ceuAgora?.length) {
+    return formatarTextoHoroscopo(apiText || '');
+  }
+
+  const partes = construirPartesTransito({ signoIndex, signoNome, ceuAgora, aspetos, faseLua });
+
+  let texto = partes.join(' ');
+  if (apiTextoValidoParaHoroscopo(apiText)) {
     texto = `${apiText} ${texto}`;
   }
   return formatarTextoHoroscopo(texto);
@@ -286,4 +365,25 @@ export function gerarTextoHoroscopoHome(
     faseLua,
     apiText,
   });
+}
+
+/** Apenas as 2 primeiras frases para vídeo/legendas/narração-base */
+export function gerarDuasFrasesHoroscopoHome(
+  signo: SignoZodiaco,
+  apiText?: string,
+  date: Date = new Date(),
+): string {
+  const signoIndex = SIGNOS_ZODIACO.indexOf(signo);
+  const signoNome = NOMES_SIGNOS[signo];
+  const ceuAgora = calcularPlanetasParaData(date);
+  const aspetos = calcularAspetos(ceuAgora);
+  const faseLua = calcularFaseLua(date);
+
+  if (!ceuAgora?.length) {
+    const frases = dividirEmFrases(apiText || '');
+    return formatarTextoHoroscopo(frases.slice(0, 2).join(' '));
+  }
+
+  const partes = construirPartesTransito({ signoIndex, signoNome, ceuAgora, aspetos, faseLua });
+  return montarDuasFrasesVideo(partes, apiText);
 }

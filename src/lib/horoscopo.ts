@@ -6,7 +6,7 @@ import {
   NOMES_SIGNOS,
   type SignoZodiaco,
 } from './signos';
-import { gerarTextoHoroscopoHome } from './horoscopoSite';
+import { gerarTextoHoroscopoHome, gerarDuasFrasesHoroscopoHome } from './horoscopoSite';
 
 /**
  * O site sidusastro.com mostra o Horóscopo Diário na página /home.
@@ -150,27 +150,38 @@ async function aguardarSiteDaily(data: string): Promise<DadosSiteDaily | undefin
   return undefined;
 }
 
+async function resolverHoroscopoSigno(
+  signo: SignoZodiaco,
+  data: string,
+): Promise<{ apiTexto?: string; dataLisboa: Date }> {
+  const chavesEsperadas = chavesParaSigno(signo).join(' / ');
+  let apiTexto: string | undefined;
+
+  let pack: DadosSiteDaily | undefined;
+  if (getApps().length > 0) {
+    pack = await aguardarSiteDaily(data);
+  } else {
+    console.log('ℹ️ Firebase não inicializado — horóscopo só por trânsitos (teste local).');
+  }
+
+  const apiResultado = pack ? extrairApiTextSigno(pack, signo) : undefined;
+  if (apiResultado) {
+    console.log(
+      '✅ Pack IA: siteDaily/' + data + ' [' + apiResultado.chaveUsada + '] (chaves: ' + chavesEsperadas + ')',
+    );
+    apiTexto = apiResultado.texto;
+  }
+
+  return { apiTexto, dataLisboa: new Date(data + 'T12:00:00+01:00') };
+}
+
+/** Texto completo do horóscopo (como na home do site) */
 export async function obterTextoHoroscopo(signo: SignoZodiaco, data: string): Promise<string> {
   const nomeSigno = NOMES_SIGNOS[signo];
-  const chavesEsperadas = chavesParaSigno(signo).join(' / ');
 
   try {
-    let pack: DadosSiteDaily | undefined;
-    if (getApps().length > 0) {
-      pack = await aguardarSiteDaily(data);
-    } else {
-      console.log('ℹ️ Firebase não inicializado — horóscopo só por trânsitos (teste local).');
-    }
-    const apiResultado = pack ? extrairApiTextSigno(pack, signo) : undefined;
-
-    if (apiResultado) {
-      console.log(
-        '✅ Pack IA: siteDaily/' + data + ' [' + apiResultado.chaveUsada + '] (chaves: ' + chavesEsperadas + ')',
-      );
-    }
-
-    const dataLisboa = new Date(data + 'T12:00:00+01:00');
-    const textoHome = gerarTextoHoroscopoHome(signo, apiResultado?.texto, dataLisboa);
+    const { apiTexto, dataLisboa } = await resolverHoroscopoSigno(signo, data);
+    const textoHome = gerarTextoHoroscopoHome(signo, apiTexto, dataLisboa);
 
     if (textoHome && textoHome.length > 20) {
       console.log('✅ Horóscopo HOME (trânsitos): ' + nomeSigno);
@@ -178,9 +189,9 @@ export async function obterTextoHoroscopo(signo: SignoZodiaco, data: string): Pr
       return textoHome;
     }
 
-    if (apiResultado?.texto) {
+    if (apiTexto) {
       console.log('⚠️ Trânsitos vazios — a usar pack IA para ' + nomeSigno);
-      return apiResultado.texto;
+      return apiTexto;
     }
 
     console.log('⚠️ Sem horóscopo para ' + nomeSigno + ' — texto genérico.');
@@ -199,6 +210,35 @@ export async function obterTextoHoroscopo(signo: SignoZodiaco, data: string): Pr
       // ignora
     }
 
+    return `Os astros guiam o teu caminho hoje no SidusAstro, ${nomeSigno}.`;
+  }
+}
+
+/** Apenas as 2 PRIMEIRAS frases — nunca a 3.ª (Saturno, regente, fecho, etc.) */
+export async function obterDuasFrasesHoroscopo(signo: SignoZodiaco, data: string): Promise<string> {
+  const nomeSigno = NOMES_SIGNOS[signo];
+
+  try {
+    const { apiTexto, dataLisboa } = await resolverHoroscopoSigno(signo, data);
+    const duasFrases = gerarDuasFrasesHoroscopoHome(signo, apiTexto, dataLisboa);
+
+    if (duasFrases && duasFrases.length > 10) {
+      console.log('✂️ 2 frases para vídeo (' + nomeSigno + '): "' + duasFrases + '"');
+      return duasFrases;
+    }
+
+    if (apiTexto) {
+      return extrairAteSegundoPontoFinal(apiTexto);
+    }
+
+    return `Os astros guiam o teu caminho hoje no SidusAstro, ${nomeSigno}.`;
+  } catch (erro) {
+    console.log('⚠️ Erro nas 2 frases para ' + nomeSigno + ': ' + String(erro));
+    const dataLisboa = new Date(data + 'T12:00:00+01:00');
+    const duasFrases = gerarDuasFrasesHoroscopoHome(signo, undefined, dataLisboa);
+    if (duasFrases.length > 10) {
+      return duasFrases;
+    }
     return `Os astros guiam o teu caminho hoje no SidusAstro, ${nomeSigno}.`;
   }
 }

@@ -3,7 +3,7 @@ import path from 'path';
 import { execSync } from 'child_process';
 import dotenv from 'dotenv';
 import { publicarEmTodosOsCanais } from './src/lib/buffer';
-import { obterTextoHoroscopo, extrairAteSegundoPontoFinal } from './src/lib/horoscopo';
+import { obterTextoHoroscopo, obterDuasFrasesHoroscopo } from './src/lib/horoscopo';
 import {
   escolherFechoNarracao,
   gerarLegendas,
@@ -79,9 +79,8 @@ async function processarSigno(
   console.log('══════════════════════════════════════\n');
 
   const previsao = await obterTextoHoroscopo(signo, data);
-  const previsaoVideo = extrairAteSegundoPontoFinal(previsao);
+  const previsaoVideo = await obterDuasFrasesHoroscopo(signo, data);
   console.log('📝 Previsão completa: "' + previsao.slice(0, 120) + '..."');
-  console.log('✂️ Previsão para vídeo (até 2º ponto final): "' + previsaoVideo + '"');
 
   const imagemFundoUrl = await obterImagemFundo(signo, data);
   const musicaFundoArquivo = await prepararMusicaParaVideo(signo, data);
@@ -100,7 +99,7 @@ async function processarSigno(
   const props: PropsVideo = {
     signo: NOMES_SIGNOS[signo],
     previsao: previsaoVideo,
-    fechoTexto: fechoNarracao.trim(),
+    fechoTexto: '',
     imagemFundoUrl,
     musicaFundoArquivo,
     duracaoFrames,
