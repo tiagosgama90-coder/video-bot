@@ -5,32 +5,62 @@ import axios from 'axios';
 import type { SignoZodiaco } from './signos';
 import { NOMES_SIGNOS } from './signos';
 
+const TEMAS_ZEN_ASTROLOGIA = [
+  'peaceful zen meditation space zodiac wheel astrology chart soft golden candlelight',
+  'calm night sky zodiac constellations horoscope map stars serene atmosphere',
+  'minimalist astrology horoscope chart moon phases zen garden peaceful',
+  'soft purple cosmic nebula zodiac symbols meditation calm spiritual',
+  'zen japanese garden stone lantern zodiac wheel moon astrology tranquil',
+  'astrology birth chart celestial map soft glow peaceful zen aesthetic',
+  'horoscope wheel golden symbols starry sky calm meditation temple',
+  'gentle aurora borealis zodiac constellation peaceful night zen mood',
+  'crystal healing altar zodiac glyphs soft light astrology spiritual calm',
+  'moon phases astrology chart candles zen sanctuary peaceful purple gold',
+  'stargazing terrace zodiac map telescope calm night peaceful atmosphere',
+  'mandala zodiac wheel soft bokeh stars meditation zen horoscope art',
+];
+
+const MODIFICADORES_ZEN = [
+  'soft cinematic lighting peaceful composition',
+  'minimalist zen aesthetic clean calm golden hour',
+  'ethereal soft glow dreamy peaceful atmosphere',
+  'watercolor soft pastel calm spiritual mood',
+  'wide angle serene stars soft bokeh depth',
+];
+
 const TEMAS_MISTICOS = [
   'zen meditation room zodiac wheel astrology symbols candles purple gold',
-  'mystical wizard fortune teller crystal ball tarot esoteric dark',
   'ancient astrology chart horoscope symbols celestial map stars',
   'cosmic nebula galaxy zodiac constellations meditation zen atmosphere',
-  'vidente tarot cards oracle mystical smoke candles astrology',
-  'magician alchemist spell books glowing potions zodiac symbols',
   'temple of stars esoteric astrology wheel zen peaceful night',
-  'mystic seer reading horoscope chart crystal ball candles',
   'astrology observatory zodiac gold symbols cosmic energy zen',
-  'fortune teller neon mystical tarot astrology purple ambiance',
-  'wizard tower star map horoscope symbols meditation zen fantasy',
   'esoteric sanctuary zodiac mandala candles astrology spiritual',
-  'shaman stargazing ritual zodiac fire smoke night sky',
-  'enchanted library astrology scrolls quill moonlight mystical',
   'crystal cave zodiac glyphs glowing amethyst zen meditation',
-  'oracle priestess moon phase chart tarot spread candles',
-  'astrology clock tower midnight stars zodiac bronze gears',
-  'desert mystic oasis palm stars zodiac sand meditation',
-  'underwater zen temple zodiac bioluminescent jellyfish calm',
+  'moon phases astrology chart candles zen sanctuary peaceful',
   'northern lights aurora zodiac constellation snow peaceful',
   'japanese zen garden zodiac stone lantern moon astrology',
-  'gothic cathedral stained glass zodiac planets mystical light',
-  'sage burning ritual zodiac circle chalk stars incense',
   'celestial goddess zodiac belt stars flowing robes cosmic',
 ];
+
+function montarPromptZenAstrologia(): string {
+  const tema = escolher(TEMAS_ZEN_ASTROLOGIA);
+  const modificador = escolher(MODIFICADORES_ZEN);
+  const paleta = escolher([
+    'deep indigo and gold',
+    'lavender and rose gold',
+    'midnight blue and silver',
+    'soft purple and celestial white',
+  ]);
+
+  return (
+    tema +
+    ', ' +
+    modificador +
+    ', color palette ' +
+    paleta +
+    ', astrology horoscope theme, vertical portrait 9:16, no text, no watermark, calm masterpiece'
+  );
+}
 
 const MODIFICADORES_VISUAIS = [
   'cinematic lighting volumetric fog unique composition',
@@ -57,6 +87,24 @@ const PALETAS = [
 /** JPEG mínimo 1x1 (roxo escuro) — fallback local se todas as URLs falharem */
 const JPEG_MINIMO_BASE64 =
   '/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wAALCAABAAEBAREA/8QAJgABAAAAAAAAAAAAAAAAAAAAAxABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQAAPwCf/9k=';
+
+function urlsFallbackZen(seed: number): string[] {
+  const prompt =
+    'peaceful zen astrology zodiac horoscope night sky stars calm purple gold meditation';
+  return [
+    'https://image.pollinations.ai/prompt/' +
+      encodeURIComponent(prompt) +
+      '?width=1080&height=1920&nologo=true&seed=' +
+      (seed + 2) +
+      '&model=flux',
+    'https://image.pollinations.ai/prompt/' +
+      encodeURIComponent('zen horoscope wheel moon phases calm spiritual') +
+      '?width=1080&height=1920&nologo=true&seed=' +
+      (seed + 3) +
+      '&model=flux',
+    'https://picsum.photos/seed/sidus-zen-' + seed + '/1080/1920',
+  ];
+}
 
 function urlsFallback(seed: number): string[] {
   return [
@@ -150,6 +198,40 @@ export async function obterImagemFundo(signo: SignoZodiaco, data: string): Promi
     try {
       await descarregarFicheiro(url, imagemLocal);
       console.log('✅ Imagem única guardada: ' + nomeFicheiro);
+      return nomeFicheiro;
+    } catch (erro) {
+      console.log('⚠️ Fonte indisponível: ' + url.slice(0, 80) + '...');
+      console.log(String(erro));
+    }
+  }
+
+  console.log('⚠️ Todas as fontes falharam — a usar JPEG local mínimo.');
+  escreverJpegMinimo(imagemLocal);
+  return nomeFicheiro;
+}
+
+/** Fundo zen + astrologia + horóscopo — para vídeos especiais (afiliados, motivacional) */
+export async function obterImagemFundoZenAstrologia(id: string, data: string): Promise<string> {
+  if (!fs.existsSync('./public')) {
+    fs.mkdirSync('./public', { recursive: true });
+  }
+
+  const prompt = montarPromptZenAstrologia();
+  const seed = gerarSeedUnico(id, data);
+  const sufixo = crypto.randomBytes(4).toString('hex');
+  const nomeFicheiro = 'fundo-zen-' + id + '-' + sufixo + '.jpg';
+  const imagemLocal = './public/' + nomeFicheiro;
+  const urlPollinations = montarUrlPollinations(prompt, seed);
+
+  console.log('🎨 Prompt zen/astrologia [' + id + ']: ' + prompt.slice(0, 100) + '...');
+  console.log('🎨 Seed único: ' + seed);
+
+  const fontes = [urlPollinations, ...urlsFallbackZen(seed)];
+
+  for (const url of fontes) {
+    try {
+      await descarregarFicheiro(url, imagemLocal);
+      console.log('✅ Imagem zen guardada: ' + nomeFicheiro);
       return nomeFicheiro;
     } catch (erro) {
       console.log('⚠️ Fonte indisponível: ' + url.slice(0, 80) + '...');

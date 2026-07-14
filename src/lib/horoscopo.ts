@@ -1,4 +1,5 @@
 import { getFirestore } from 'firebase-admin/firestore';
+import { getApps } from 'firebase-admin/app';
 import {
   ALIAS_CHAVES_FIRESTORE,
   CHAVES_FIRESTORE_PT,
@@ -138,7 +139,12 @@ export async function obterTextoHoroscopo(signo: SignoZodiaco, data: string): Pr
   const chavesEsperadas = chavesParaSigno(signo).join(' / ');
 
   try {
-    const pack = await aguardarSiteDaily(data);
+    let pack: DadosSiteDaily | undefined;
+    if (getApps().length > 0) {
+      pack = await aguardarSiteDaily(data);
+    } else {
+      console.log('ℹ️ Firebase não inicializado — horóscopo só por trânsitos (teste local).');
+    }
     const apiResultado = pack ? extrairApiTextSigno(pack, signo) : undefined;
 
     if (apiResultado) {

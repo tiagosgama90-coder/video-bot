@@ -18,6 +18,8 @@ async function executar(): Promise<void> {
   console.log('✨ SidusAstro — Vídeo Motivacional (Segunda-feira)');
   console.log('📅 Data (Lisboa): ' + data);
   console.log('💬 Frase: "' + frase + '"');
+  console.log('\n📋 Legenda TikTok:\n' + LEGENDA_MOTIVACIONAL_TIKTOK);
+  console.log('\n📋 Legenda Instagram:\n' + LEGENDA_MOTIVACIONAL_INSTAGRAM);
 
   await gerarVideoEspecial({
     id: 'motivacao-segunda',
@@ -34,7 +36,11 @@ async function executar(): Promise<void> {
     slotHorario: SLOT_ESPECIAL_LISBOA,
   });
 
-  console.log('\n🏁 Vídeo motivacional concluído e enfileirado no Buffer!');
+  console.log(
+    process.env.SKIP_PUBLICAR === '1'
+      ? '\n🏁 Vídeo motivacional concluído em output/motivacao-segunda.mp4 (sem publicar no Buffer).'
+      : '\n🏁 Vídeo motivacional concluído e enfileirado no Buffer!',
+  );
 }
 
 executar().catch((erro) => {

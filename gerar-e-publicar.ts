@@ -22,7 +22,7 @@ import { gerarNarracaoPtPt } from './src/lib/voz';
 import { inicializarFirebaseSeNecessario } from './src/lib/inicializar-app';
 dotenv.config();
 
-inicializarFirebaseSeNecessario({ obrigatorio: true });
+inicializarFirebaseSeNecessario({ obrigatorio: process.env.SKIP_PUBLICAR !== '1' });
 
 interface PropsVideo {
   signo: string;
@@ -165,7 +165,11 @@ async function executarRoboSidusAstro(): Promise<void> {
     throw new Error(erros + ' signo(s) falharam na geração/publicação.');
   }
 
-  console.log('\n🏁 Automação concluída — vídeos publicados em Instagram + TikTok!');
+  console.log(
+    process.env.SKIP_PUBLICAR === '1'
+      ? '\n🏁 Automação concluída — vídeos em output/ (sem publicar no Buffer).'
+      : '\n🏁 Automação concluída — vídeos publicados em Instagram + TikTok!',
+  );
 }
 
 executarRoboSidusAstro().catch((erro) => {

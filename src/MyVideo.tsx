@@ -29,6 +29,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   fechoTexto,
   imagemFundoUrl,
   musicaFundoArquivo,
+  segmentosEcra,
 }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
@@ -36,6 +37,14 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   const inicioFecho = fechoTexto
     ? durationInFrames - Math.round(fps * 4.8)
     : durationInFrames + 1;
+
+  const modoProgressivo = segmentosEcra && segmentosEcra.length > 0;
+  const segmentosVisiveis = modoProgressivo
+    ? segmentosEcra.filter((s) => frame >= s.frameInicio)
+    : [];
+
+  const ecraLink =
+    !modoProgressivo && /^[a-z0-9][-a-z0-9.]*\.[a-z]{2,}$/i.test(previsao.trim());
 
   const opacidadePrevisao = interpolate(frame, [inicioFecho - 10, inicioFecho + 10], [1, 0], {
     extrapolateLeft: 'clamp',
@@ -96,30 +105,80 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
           {signo.toUpperCase()}
         </div>
 
-        {/* 3. TEXTO (previsão → some → aparece fecho na mesma posição) */}
+        {/* 3. TEXTO — progressivo (afiliados) ou bloco único (horóscopo) */}
         <div style={{ width: '100%', maxWidth: 980 }}>
+          {modoProgressivo ? (
+            <div
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.07)',
+                backdropFilter: 'blur(15px)',
+                borderRadius: 30,
+                padding: '34px 30px',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                minHeight: 280,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 18,
+              }}
+            >
+              {segmentosVisiveis.map((seg, i) => {
+                const activo = i === segmentosVisiveis.length - 1;
+                const temLink = seg.texto.includes('sidusastro.com');
+                return (
+                  <div
+                    key={seg.frameInicio}
+                    style={{
+                      color: '#ffffff',
+                      fontSize: activo ? 26 : 22,
+                      fontWeight: activo ? 600 : 400,
+                      lineHeight: 1.45,
+                      textAlign: 'center',
+                      opacity: activo ? 1 : 0.72,
+                      transform: `translateY(${activo ? 0 : 2}px)`,
+                    }}
+                  >
+                    {temLink ? (
+                      <>
+                        {seg.texto.split('sidusastro.com')[0]}
+                        <span style={{ color: '#f3cc63', fontWeight: 800 }}>sidusastro.com</span>
+                        {seg.texto.split('sidusastro.com')[1] ?? ''}
+                      </>
+                    ) : (
+                      seg.texto
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
           <div
             style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.07)',
+              backgroundColor: ecraLink ? 'rgba(20, 12, 40, 0.75)' : 'rgba(255, 255, 255, 0.07)',
               backdropFilter: 'blur(15px)',
               borderRadius: 30,
-              padding: '34px 30px',
-              color: '#ffffff',
-              fontSize: previsao.length > 120 ? 22 : 28,
+              padding: ecraLink ? '40px 36px' : '34px 30px',
+              color: ecraLink ? '#f3cc63' : '#ffffff',
+              fontSize: ecraLink ? 52 : previsao.length > 120 ? 22 : 28,
+              fontWeight: ecraLink ? 800 : 400,
               lineHeight: 1.45,
               textAlign: 'center',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
+              border: ecraLink
+                ? '2px solid rgba(243, 204, 99, 0.65)'
+                : '1px solid rgba(255, 255, 255, 0.15)',
               boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
               maxHeight: 520,
               overflow: 'hidden',
               opacity: opacidadePrevisao,
               transform: `translateY(${(1 - opacidadePrevisao) * 10}px)`,
+              letterSpacing: ecraLink ? 1.5 : 0,
             }}
           >
-            &quot;{previsao}&quot;
+            {ecraLink ? previsao : <>&quot;{previsao}&quot;</>}
           </div>
+          )}
 
-          {fechoTexto ? (
+          {!modoProgressivo && fechoTexto ? (
           <div
             style={{
               position: 'absolute',

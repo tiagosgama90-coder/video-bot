@@ -4,8 +4,9 @@ import { execSync } from 'child_process';
 import { publicarEmTodosOsCanais } from './buffer';
 import { horaLisboaParaISO, resolverDueAtFuturo } from './buffer-agenda';
 import { calcularDuracaoFrames } from './duracao-video';
-import { obterImagemFundo } from './imagem-fundo';
+import { obterImagemFundo, obterImagemFundoZenAstrologia } from './imagem-fundo';
 import { prepararMusicaEspecial } from './musicas';
+import { calcularSegmentosProgressivos } from './texto-progressivo';
 import { gerarNarracaoPtPt } from './voz';
 import type { SignoZodiaco } from './signos';
 
@@ -16,6 +17,7 @@ interface PropsVideoEspecial {
   imagemFundoUrl: string;
   musicaFundoArquivo: string;
   duracaoFrames: number;
+  segmentosEcra?: Array<{ texto: string; frameInicio: number }>;
 }
 
 export interface OpcoesVideoEspecial {
@@ -28,6 +30,10 @@ export interface OpcoesVideoEspecial {
   generoVoz: 'feminina' | 'masculina' | 'aleatoria';
   tipoMusica?: 'zen' | 'mistico' | 'viral';
   slotHorario?: string;
+  /** Segmentos de texto no ecrã — sincronizados com a narração */
+  segmentosEcra?: string[];
+  /** Fundo zen/astrologia/horóscopo (vídeos especiais) */
+  fundoZenAstrologia?: boolean;
 }
 
 function garantirPasta(pasta: string): void {
@@ -53,7 +59,9 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
 
   const signoChave = 'caranguejo' as SignoZodiaco;
 
-  const imagemFundoUrl = await obterImagemFundo(signoChave, opcoes.data);
+  const imagemFundoUrl = opcoes.fundoZenAstrologia
+    ? await obterImagemFundoZenAstrologia(opcoes.id, opcoes.data)
+    : await obterImagemFundo(signoChave, opcoes.data);
   const musicaFundoArquivo = await prepararMusicaEspecial(
     opcoes.id,
     opcoes.data,
@@ -65,18 +73,31 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
 
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3', 90);
 
-  const textoEcra =
-    opcoes.textoEcra.length > 280
+  const segmentosProgressivos = opcoes.segmentosEcra?.length
+    ? calcularSegmentosProgressivos(opcoes.segmentosEcra, duracaoFrames)
+    : undefined;
+
+  if (segmentosProgressivos) {
+    console.log('📝 Texto progressivo no ecrã (' + segmentosProgressivos.length + ' segmentos):');
+    segmentosProgressivos.forEach((s, i) => {
+      console.log('   ' + (i + 1) + '. frame ' + s.frameInicio + ' → "' + s.texto.slice(0, 50) + '..."');
+    });
+  }
+
+  const textoEcra = opcoes.textoEcra.includes('.')
+    ? opcoes.textoEcra.length > 280
       ? opcoes.textoEcra.slice(0, 277).trim() + '...'
-      : opcoes.textoEcra;
+      : opcoes.textoEcra
+    : opcoes.textoEcra;
 
   const props: PropsVideoEspecial = {
     signo: opcoes.titulo,
-    previsao: textoEcra,
+    previsao: segmentosProgressivos ? '' : textoEcra,
     fechoTexto: '',
     imagemFundoUrl,
     musicaFundoArquivo,
     duracaoFrames,
+    segmentosEcra: segmentosProgressivos,
   };
 
   const caminhoProps = './public/props-temporarias.json';
