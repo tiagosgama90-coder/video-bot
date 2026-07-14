@@ -25,30 +25,77 @@ function normalizarHashtag(texto: string): string {
     .replace(/\s+/g, '');
 }
 
+function hashtagSigno(signo: SignoZodiaco): string {
+  return '#' + normalizarHashtag(NOMES_SIGNOS[signo]);
+}
+
+function gerarCorpoLegenda(signo: SignoZodiaco, previsao: string): string {
+  const nomeSigno = NOMES_SIGNOS[signo];
+  const indiceHook = crypto.randomInt(0, HOOKS_LEGENDA.length);
+  const hook = HOOKS_LEGENDA[indiceHook](nomeSigno);
+  const resumo =
+    previsao.length > 140 ? previsao.slice(0, 137).trim() + '...' : previsao;
+
+  return hook + '\n\n' + resumo;
+}
+
+function sufixoTikTok(signo: SignoZodiaco): string {
+  const tagSigno = hashtagSigno(signo);
+  return (
+    '👉 Mapa astral GRÁTIS (Sol, Lua e Ascendente)\n' +
+    '🔗 sidusastro.com/login\n\n' +
+    '#astrologia #horoscopo #sidusastro #mapastral #ascendente ' +
+    tagSigno
+  );
+}
+
+function sufixoInstagram(signo: SignoZodiaco): string {
+  const tagSigno = hashtagSigno(signo);
+  return (
+    '✨ Mapa astral GRÁTIS\n' +
+    '☀️ Sol · 🌙 Lua · ⬆️ Ascendente\n' +
+    '👆 Link na bio\n\n' +
+    '#astrologia #horoscopo #sidusastro #mapastral #reels #astrologiapt ' +
+    tagSigno
+  );
+}
+
 /** Sempre uma das 3 frases de fecho definidas */
 export function escolherFechoNarracao(): string {
   const indice = crypto.randomInt(0, FINAL_CLOSINGS.length);
   return ' ' + FINAL_CLOSINGS[indice];
 }
 
-/** Legenda fiel ao signo do vídeo — hook + resumo + link + hashtags */
-export function gerarLegenda(signo: SignoZodiaco, previsao: string): string {
-  const nomeSigno = NOMES_SIGNOS[signo];
-  const indiceHook = crypto.randomInt(0, HOOKS_LEGENDA.length);
-  const hook = HOOKS_LEGENDA[indiceHook](nomeSigno);
-  const tagSigno = '#' + normalizarHashtag(nomeSigno);
-  const tagPrevisoes = '#previsoes' + normalizarHashtag(nomeSigno);
-  const resumo =
-    previsao.length > 140 ? previsao.slice(0, 137).trim() + '...' : previsao;
+/** Legenda TikTok — hook + resumo + CTA + hashtags */
+export function gerarLegendaTikTok(signo: SignoZodiaco, previsao: string): string {
+  return gerarCorpoLegenda(signo, previsao) + '\n\n' + sufixoTikTok(signo);
+}
 
-  return (
-    hook +
-    '\n\n' +
-    resumo +
-    '\n\n🔗 sidusastro.com\n\n' +
-    '#astrologia #sidusastro #horoscopo #tarot ' +
-    tagSigno +
-    ' ' +
-    tagPrevisoes
-  );
+/** Legenda Instagram — hook + resumo + CTA + hashtags */
+export function gerarLegendaInstagram(signo: SignoZodiaco, previsao: string): string {
+  return gerarCorpoLegenda(signo, previsao) + '\n\n' + sufixoInstagram(signo);
+}
+
+/** Gera ambas as legendas com o mesmo hook e resumo */
+export function gerarLegendas(
+  signo: SignoZodiaco,
+  previsao: string,
+): { tiktok: string; instagram: string } {
+  const corpo = gerarCorpoLegenda(signo, previsao);
+  return {
+    tiktok: corpo + '\n\n' + sufixoTikTok(signo),
+    instagram: corpo + '\n\n' + sufixoInstagram(signo),
+  };
+}
+
+/** Escolhe legenda conforme a plataforma Buffer */
+export function gerarLegendaParaCanal(
+  service: string,
+  signo: SignoZodiaco,
+  previsao: string,
+): string {
+  if (service.toLowerCase() === 'instagram') {
+    return gerarLegendaInstagram(signo, previsao);
+  }
+  return gerarLegendaTikTok(signo, previsao);
 }

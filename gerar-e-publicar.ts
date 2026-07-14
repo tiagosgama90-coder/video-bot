@@ -5,7 +5,10 @@ import dotenv from 'dotenv';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { publicarEmTodosOsCanais } from './src/lib/buffer';
 import { obterTextoHoroscopo } from './src/lib/horoscopo';
-import { escolherFechoNarracao, gerarLegenda } from './src/lib/legenda';
+import {
+  escolherFechoNarracao,
+  gerarLegendas,
+} from './src/lib/legenda';
 import { obterImagemFundo } from './src/lib/imagem-fundo';
 import { calcularDuracaoFrames } from './src/lib/duracao-video';
 import { prepararMusicaParaVideo } from './src/lib/musicas';
@@ -91,8 +94,9 @@ async function processarSigno(signo: SignoZodiaco, data: string): Promise<void> 
 
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3');
 
-  const legenda = gerarLegenda(signo, previsao);
-  console.log('📋 Legenda:\n' + legenda);
+  const legendas = gerarLegendas(signo, previsao);
+  console.log('📋 Legenda TikTok:\n' + legendas.tiktok);
+  console.log('📋 Legenda Instagram:\n' + legendas.instagram);
 
   const props: PropsVideo = {
     signo: NOMES_SIGNOS[signo],
@@ -109,7 +113,9 @@ async function processarSigno(signo: SignoZodiaco, data: string): Promise<void> 
   try {
     renderizarVideo(signo);
     const caminhoOutput = path.resolve('./output/' + signo + '-diario.mp4');
-    await publicarEmTodosOsCanais(signo, caminhoOutput, data, () => legenda);
+    await publicarEmTodosOsCanais(signo, caminhoOutput, data, (service) =>
+      service.toLowerCase() === 'instagram' ? legendas.instagram : legendas.tiktok,
+    );
   } finally {
     if (fs.existsSync(caminhoProps)) {
       fs.unlinkSync(caminhoProps);

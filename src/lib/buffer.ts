@@ -209,7 +209,7 @@ export async function publicarVideoNoCanal(
 
   if (canal.service.toLowerCase() === 'tiktok') {
     metadata.tiktok = {
-      isAiGenerated: true,
+      isAiGenerated: false,
     };
   }
 
@@ -246,7 +246,7 @@ export async function publicarEmTodosOsCanais(
   signo: string,
   caminhoVideo: string,
   data: string,
-  obterLegenda: () => string,
+  obterLegenda: (service: string) => string,
 ): Promise<void> {
   if (!process.env.BUFFER_ACCESS_TOKEN) {
     console.log('⚠️ BUFFER_ACCESS_TOKEN em falta. Publicação ignorada.');
@@ -259,11 +259,12 @@ export async function publicarEmTodosOsCanais(
       canais.map((c) => c.service + '=' + c.name + ' (ID:' + c.id + ')').join(' | '),
   );
 
-  const legenda = obterLegenda();
   const videoUrl = await uploadVideoPublico(caminhoVideo, signo, data);
 
   for (const canal of canais) {
+    const legenda = obterLegenda(canal.service);
     console.log('📱 A publicar em ' + canal.service + ' (' + canal.name + ')...');
+    console.log('📋 Legenda [' + canal.service + ']:\n' + legenda);
     const postId = await publicarVideoNoCanal(canal, legenda, videoUrl);
     console.log('✅ Enfileirado no Buffer [' + canal.service + '] Post ID: ' + postId);
   }
