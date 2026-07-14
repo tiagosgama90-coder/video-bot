@@ -37,26 +37,42 @@ function normalizar(texto: string): string {
 }
 
 /**
- * Extrai o texto até ao SEGUNDO ponto final (incluindo o segundo ponto).
- * Se não houver 2 pontos finais, retorna o texto completo.
+ * Extrai as 2 primeiras frases (até ao 2.º ponto final real).
+ * Ignora pontos em decimais (ex: 3.1°, 11.0°) para não cortar a meio.
  * Exemplo: "Frase um. Frase dois. Frase três." → "Frase um. Frase dois."
  */
 export function extrairAteSegundoPontoFinal(texto: string): string {
-  let count = 0;
-  let pos = -1;
-  for (let i = 0; i < texto.length; i++) {
-    if (texto[i] === '.') {
-      count++;
-      if (count === 2) {
-        pos = i + 1;
-        break;
+  const limpo = texto.trim();
+  if (!limpo) {
+    return limpo;
+  }
+
+  const frases: string[] = [];
+  let inicio = 0;
+  // Ponto final de frase: não precedido nem seguido por dígito (evita 3.1°, 11.0)
+  const regex = /(?<![0-9])\.(?![0-9])/g;
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(limpo)) !== null) {
+    const fim = match.index + 1;
+    const frase = limpo.slice(inicio, fim).trim();
+    if (frase.length > 0) {
+      frases.push(frase);
+      if (frases.length === 2) {
+        return frases.join(' ');
       }
     }
+    inicio = fim;
+    while (inicio < limpo.length && /\s/.test(limpo[inicio])) {
+      inicio++;
+    }
   }
-  if (pos === -1) {
-    return texto.trim();
+
+  if (frases.length > 0) {
+    return frases.join(' ');
   }
-  return texto.slice(0, pos).trim();
+
+  return limpo;
 }
 
 function chavesParaSigno(signo: string): string[] {
