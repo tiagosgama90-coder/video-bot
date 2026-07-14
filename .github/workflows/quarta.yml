@@ -2,7 +2,7 @@ name: Vídeo Quarta-feira (Afiliados)
 
 on:
   schedule:
-    - cron: '30 6 * * 3' # Quarta 07:30 Lisboa (verão)
+    - cron: '30 6 * * 3' # Quarta 07:30 Lisboa (verão) — slot Buffer 14:00
   workflow_dispatch:
 
 jobs:
@@ -11,9 +11,11 @@ jobs:
     timeout-minutes: 45
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout do código
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Configurar Node.js 24
+        uses: actions/setup-node@v4
         with:
           node-version: '24'
           cache: npm
@@ -26,13 +28,48 @@ jobs:
             libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 \
             libxfixes3 libxrandr2 libgbm1 libasound2t64 libpango-1.0-0 libcairo2
 
-      - run: npm ci
-      - run: npx remotion browser ensure
+      - name: Instalar dependências
+        run: npm ci
 
-      - name: Configurar credenciais Firebase
-        run: printf '%s' "$FIREBASE_ADMIN_JSON" > firebase-admin.json
+      - name: Instalar Chrome para Remotion
+        run: npx remotion browser ensure
+
+      - name: Validar secrets obrigatórios
+        run: |
+          faltam=""
+          for nome in FIREBASE_ADMIN_JSON BUFFER_ACCESS_TOKEN BUFFER_INSTAGRAM_CHANNEL_ID BUFFER_TIKTOK_CHANNEL_ID FIREBASE_STORAGE_BUCKET AZURE_SPEECH_KEY; do
+            eval "valor=\$$nome"
+            if [ -z "$valor" ]; then faltam="$faltam $nome"; fi
+          done
+          if [ -n "$faltam" ]; then
+            echo "Secrets em falta:$faltam"
+            exit 1
+          fi
+          echo "Todos os secrets obrigatorios presentes."
         env:
           FIREBASE_ADMIN_JSON: ${{ secrets.FIREBASE_ADMIN_JSON }}
+          BUFFER_ACCESS_TOKEN: ${{ secrets.BUFFER_ACCESS_TOKEN }}
+          BUFFER_INSTAGRAM_CHANNEL_ID: ${{ secrets.BUFFER_INSTAGRAM_CHANNEL_ID }}
+          BUFFER_TIKTOK_CHANNEL_ID: ${{ secrets.BUFFER_TIKTOK_CHANNEL_ID }}
+          FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+
+      - name: Configurar credenciais Firebase
+        run: |
+          printf '%s' "$FIREBASE_ADMIN_JSON" > firebase-admin.json
+          node -e "const j=JSON.parse(require('fs').readFileSync('firebase-admin.json','utf8')); if(!j.project_id||!j.private_key) throw new Error('JSON invalido'); console.log('firebase-admin.json OK — project:', j.project_id)"
+        env:
+          FIREBASE_ADMIN_JSON: ${{ secrets.FIREBASE_ADMIN_JSON }}
+
+      - name: Validar IDs Buffer (Instagram + TikTok)
+        run: npm run verificar
+        env:
+          BUFFER_ACCESS_TOKEN: ${{ secrets.BUFFER_ACCESS_TOKEN }}
+          BUFFER_INSTAGRAM_CHANNEL_ID: ${{ secrets.BUFFER_INSTAGRAM_CHANNEL_ID }}
+          BUFFER_TIKTOK_CHANNEL_ID: ${{ secrets.BUFFER_TIKTOK_CHANNEL_ID }}
+          FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+          AZURE_SPEECH_REGION: northeurope
 
       - name: Gerar vídeo afiliados
         run: npx ts-node gerar-video-quarta.ts
@@ -46,7 +83,8 @@ jobs:
           AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
           AZURE_SPEECH_REGION: northeurope
 
-      - uses: actions/upload-artifact@v4
+      - name: Guardar vídeo como artefacto
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: video-afiliados
