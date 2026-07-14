@@ -76,7 +76,11 @@ function obterSignosJaGerados(): SignoZodiaco[] {
   return gerados;
 }
 
-async function processarSigno(signo: SignoZodiaco, data: string): Promise<void> {
+async function processarSigno(
+  signo: SignoZodiaco,
+  data: string,
+  indiceSlot: number,
+): Promise<void> {
   console.log('\n══════════════════════════════════════');
   console.log('🔮 A processar signo: ' + NOMES_SIGNOS[signo]);
   console.log('══════════════════════════════════════\n');
@@ -90,8 +94,9 @@ async function processarSigno(signo: SignoZodiaco, data: string): Promise<void> 
   const musicaFundoArquivo = await prepararMusicaParaVideo(signo, data);
 
   const fechoNarracao = escolherFechoNarracao();
-  console.log('🎙️ Narração (só até 2º ponto): "' + previsaoVideo + '"');
-  await gerarNarracaoPtPt(previsaoVideo, './public/narracao.mp3');
+  const textoNarracao = previsaoVideo + fechoNarracao;
+  console.log('🎙️ Narração: "' + previsaoVideo + '"' + fechoNarracao);
+  await gerarNarracaoPtPt(textoNarracao, './public/narracao.mp3', 'aleatoria');
 
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3');
 
@@ -114,8 +119,9 @@ async function processarSigno(signo: SignoZodiaco, data: string): Promise<void> 
   try {
     renderizarVideo(signo);
     const caminhoOutput = path.resolve('./output/' + signo + '-diario.mp4');
-    await publicarEmTodosOsCanais(signo, caminhoOutput, data, (service) =>
+    await publicarEmTodosOsCanais(signo + '-diario', caminhoOutput, data, (service) =>
       service.toLowerCase() === 'instagram' ? legendas.instagram : legendas.tiktok,
+    { indiceSlot },
     );
   } finally {
     if (fs.existsSync(caminhoProps)) {
@@ -152,12 +158,12 @@ async function executarRoboSidusAstro(): Promise<void> {
   );
 
   let erros = 0;
-  for (const signo of signosDoDia) {
+  for (let i = 0; i < signosDoDia.length; i++) {
     try {
-      await processarSigno(signo, data);
+      await processarSigno(signosDoDia[i], data, i);
     } catch (erro) {
       erros++;
-      console.error('\n❌ ERRO no signo ' + NOMES_SIGNOS[signo] + ':');
+      console.error('\n❌ ERRO no signo ' + NOMES_SIGNOS[signosDoDia[i]] + ':');
       console.error(erro);
     }
   }

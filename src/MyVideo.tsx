@@ -33,7 +33,9 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
   const scale = 1 + (frame / fps) * 0.015;
-  const inicioFecho = durationInFrames - Math.round(fps * 4.8);
+  const inicioFecho = fechoTexto
+    ? durationInFrames - Math.round(fps * 4.8)
+    : durationInFrames + 1;
 
   const opacidadePrevisao = interpolate(frame, [inicioFecho - 10, inicioFecho + 10], [1, 0], {
     extrapolateLeft: 'clamp',
@@ -103,7 +105,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
               borderRadius: 30,
               padding: '34px 30px',
               color: '#ffffff',
-              fontSize: 28,
+              fontSize: previsao.length > 120 ? 22 : 28,
               lineHeight: 1.45,
               textAlign: 'center',
               border: '1px solid rgba(255, 255, 255, 0.15)',
@@ -117,6 +119,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
             &quot;{previsao}&quot;
           </div>
 
+          {fechoTexto ? (
           <div
             style={{
               position: 'absolute',
@@ -149,6 +152,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
               {fechoTexto}
             </div>
           </div>
+          ) : null}
         </div>
       </AbsoluteFill>
 

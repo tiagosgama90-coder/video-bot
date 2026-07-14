@@ -3,8 +3,9 @@ import path from 'path';
 
 export const FPS_VIDEO = 30;
 export const DURACAO_MINIMA_SEG = 15;
+export const DURACAO_MAXIMA_SEG = 25;
 /** Margem após a narração terminar — garante que a frase final não é cortada */
-export const MARGEM_FINAL_SEG = 3;
+export const MARGEM_FINAL_SEG = 2;
 
 export function obterDuracaoAudioSegundos(caminhoMp3: string): number {
   const caminho = path.resolve(caminhoMp3).replace(/\//g, path.sep);
@@ -27,15 +28,23 @@ export function obterDuracaoAudioSegundos(caminhoMp3: string): number {
   return DURACAO_MINIMA_SEG;
 }
 
-export function calcularDuracaoFrames(caminhoNarracao: string): number {
+export function calcularDuracaoFrames(
+  caminhoNarracao: string,
+  maxSegundos = DURACAO_MAXIMA_SEG,
+): number {
   const audioSeg = obterDuracaoAudioSegundos(caminhoNarracao);
-  const totalSeg = Math.max(DURACAO_MINIMA_SEG, Math.ceil(audioSeg + MARGEM_FINAL_SEG));
+  const totalSeg = Math.min(
+    maxSegundos,
+    Math.max(DURACAO_MINIMA_SEG, Math.ceil(audioSeg + MARGEM_FINAL_SEG)),
+  );
   const frames = totalSeg * FPS_VIDEO;
 
   console.log(
     '🎬 Duração vídeo: ' +
       totalSeg +
-      's (' +
+      's (máx ' +
+      maxSegundos +
+      's, ' +
       frames +
       ' frames) — áudio ' +
       audioSeg.toFixed(1) +

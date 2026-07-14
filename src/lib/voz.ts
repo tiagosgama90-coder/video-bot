@@ -33,8 +33,16 @@ function escapeXml(texto: string): string {
     .replace(/'/g, '&apos;');
 }
 
-/** Escolhe aleatoriamente voz feminina ou masculina (Azure) */
-export function escolherVozAleatoria(): VozPtPt {
+/** Escolhe voz feminina, masculina ou aleatória */
+export function escolherVozAleatoria(
+  preferencia: 'feminina' | 'masculina' | 'aleatoria' = 'aleatoria',
+): VozPtPt {
+  if (preferencia === 'feminina') {
+    return VOZES_AZURE.find((v) => v.genero === 'feminina') ?? VOZES_AZURE[0];
+  }
+  if (preferencia === 'masculina') {
+    return VOZES_AZURE.find((v) => v.genero === 'masculina') ?? VOZES_AZURE[1];
+  }
   return VOZES_AZURE[crypto.randomInt(0, VOZES_AZURE.length)];
 }
 
@@ -94,9 +102,10 @@ function gerarNarracaoHelia(texto: string, destino: string): Promise<void> {
 export async function gerarNarracaoPtPt(
   texto: string,
   destinoRelativo = './public/narracao.mp3',
+  preferenciaVoz: 'feminina' | 'masculina' | 'aleatoria' = 'aleatoria',
 ): Promise<void> {
   const destino = path.resolve(destinoRelativo);
-  const vozEscolhida = escolherVozAleatoria();
+  const vozEscolhida = escolherVozAleatoria(preferenciaVoz);
 
   console.log(
     '🗣️ Voz aleatória: ' +

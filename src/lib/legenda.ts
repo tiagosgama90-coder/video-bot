@@ -60,10 +60,10 @@ function sufixoInstagram(signo: SignoZodiaco): string {
   );
 }
 
-/** Sempre uma das 3 frases de fecho definidas */
+/** Sempre uma das 3 frases de fecho definidas (com pausa antes) */
 export function escolherFechoNarracao(): string {
   const indice = crypto.randomInt(0, FINAL_CLOSINGS.length);
-  return ' ' + FINAL_CLOSINGS[indice];
+  return '. ' + FINAL_CLOSINGS[indice];
 }
 
 /** Legenda TikTok — hook + resumo + CTA + hashtags */

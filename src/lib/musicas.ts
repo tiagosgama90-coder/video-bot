@@ -96,13 +96,38 @@ function escolherIndice(pool: string[], signo: string, data: string): number {
 }
 
 export async function prepararMusicaParaVideo(signo: string, data: string): Promise<string> {
+  return prepararMusicaEspecial(signo, data, 'aleatoria');
+}
+
+export async function prepararMusicaEspecial(
+  id: string,
+  data: string,
+  tipo: 'zen' | 'mistico' | 'viral' | 'aleatoria' = 'aleatoria',
+): Promise<string> {
   if (!fs.existsSync('./public')) {
     fs.mkdirSync('./public', { recursive: true });
   }
 
-  const { pool, tipo } = escolherPoolMusica();
-  const indice = escolherIndice(pool, signo, data);
-  const nomeFicheiro = 'musica-' + signo + '.mp3';
+  let pool: string[];
+  let etiqueta: string;
+
+  if (tipo === 'zen') {
+    pool = POOL_MUSICAS_ZEN;
+    etiqueta = 'zen';
+  } else if (tipo === 'viral') {
+    pool = POOL_MUSICAS_ESTILO_VIRAL;
+    etiqueta = 'viral';
+  } else if (tipo === 'mistico') {
+    pool = [...POOL_MUSICAS_ZEN, ...POOL_MUSICAS_ESTILO_VIRAL];
+    etiqueta = 'místico';
+  } else {
+    const escolha = escolherPoolMusica();
+    pool = escolha.pool;
+    etiqueta = escolha.tipo;
+  }
+
+  const indice = escolherIndice(pool, id, data);
+  const nomeFicheiro = 'musica-' + id + '.mp3';
   const destino = caminhoPublico(nomeFicheiro);
   const urls = [
     pool[indice],
@@ -110,12 +135,12 @@ export async function prepararMusicaParaVideo(signo: string, data: string): Prom
     pool[(indice + 5) % pool.length],
   ];
 
-  const etiqueta =
-    tipo === 'zen'
-      ? 'zen [' + (indice + 1) + '/' + POOL_MUSICAS_ZEN.length + ']'
-      : 'estilo viral royalty-free [' + (indice + 1) + '/' + POOL_MUSICAS_ESTILO_VIRAL.length + ']';
+  const etiquetaFinal =
+    tipo === 'aleatoria'
+      ? etiqueta + ' [' + (indice + 1) + '/' + pool.length + ']'
+      : etiqueta + ' [' + (indice + 1) + '/' + pool.length + ']';
 
-  console.log('🎵 Música ' + etiqueta + ' para ' + signo);
+  console.log('🎵 Música ' + etiquetaFinal + ' para ' + id);
 
   for (const url of urls) {
     try {
@@ -134,6 +159,6 @@ export async function prepararMusicaParaVideo(signo: string, data: string): Prom
     return nomeFicheiro;
   } catch (erro) {
     console.log('⚠️ FFmpeg indisponível: ' + String(erro));
-    throw new Error('Não foi possível preparar música para ' + signo);
+    throw new Error('Não foi possível preparar música para ' + id);
   }
 }

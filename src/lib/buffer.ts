@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import axios from 'axios';
 import { getStorage } from 'firebase-admin/storage';
+import { obterDueAtSlot } from './buffer-agenda';
 
 interface BufferChannel {
   id: string;
@@ -153,15 +154,16 @@ function montarUrlFirebaseDownload(bucketName: string, destino: string, token: s
  */
 export async function uploadVideoPublico(
   caminhoLocal: string,
-  signo: string,
+  identificador: string,
   data: string,
+  subpasta = 'videos',
 ): Promise<string> {
   const bucketName = process.env.FIREBASE_STORAGE_BUCKET;
   if (!bucketName) {
     throw new Error('FIREBASE_STORAGE_BUCKET não definido no .env');
   }
 
-  const destino = 'videos/' + data + '/' + signo + '-diario.mp4';
+  const destino = subpasta + '/' + data + '/' + identificador + '.mp4';
   const downloadToken = crypto.randomUUID();
 
   console.log('☁️ A enviar vídeo para Firebase Storage: ' + destino);
@@ -197,6 +199,7 @@ export async function publicarVideoNoCanal(
   canal: BufferChannel,
   legenda: string,
   videoUrl: string,
+  opcoes?: { data?: string; indiceSlot?: number; dueAtCustom?: string },
 ): Promise<string> {
   const metadata: Record<string, unknown> = {};
 
@@ -213,20 +216,51 @@ export async function publicarVideoNoCanal(
     };
   }
 
+  const data = opcoes?.data;
+  const indiceSlot = opcoes?.indiceSlot;
+  const dueAtCustom = opcoes?.dueAtCustom;
+
+  let mode: 'addToQueue' | 'customScheduled' = 'addToQueue';
+  let dueAt: string | undefined;
+
+  if (dueAtCustom) {
+    dueAt = dueAtCustom;
+    mode = 'customScheduled';
+    console.log(
+      '📅 Agendamento Buffer [' + canal.service + '] → ' + dueAt + ' (horário Lisboa)',
+    );
+  } else if (data !== undefined && indiceSlot !== undefined && indiceSlot >= 0) {
+    dueAt = obterDueAtSlot(data, indiceSlot);
+    mode = 'customScheduled';
+    console.log(
+      '📅 Agendamento Buffer [' +
+        canal.service +
+        '] slot ' +
+        indiceSlot +
+        ' → ' +
+        dueAt +
+        ' (horário Lisboa)',
+    );
+  }
+
+  const input: Record<string, unknown> = {
+    text: legenda,
+    channelId: canal.id,
+    schedulingType: 'automatic',
+    mode,
+    metadata,
+    assets: [{ video: { url: videoUrl } }],
+  };
+
+  if (dueAt) {
+    input.dueAt = dueAt;
+  }
+
   const payload = await chamarBuffer<{
     data?: {
       createPost?: { post?: { id?: string }; message?: string };
     };
-  }>(CREATE_POST_MUTATION, {
-    input: {
-      text: legenda,
-      channelId: canal.id,
-      schedulingType: 'automatic',
-      mode: 'shareNow',
-      metadata,
-      assets: [{ video: { url: videoUrl } }],
-    },
-  });
+  }>(CREATE_POST_MUTATION, { input });
 
   const resultado = payload.data?.createPost;
   if (resultado?.message) {
@@ -243,10 +277,11 @@ export async function publicarVideoNoCanal(
 }
 
 export async function publicarEmTodosOsCanais(
-  signo: string,
+  identificador: string,
   caminhoVideo: string,
   data: string,
   obterLegenda: (service: string) => string,
+  opcoes?: { indiceSlot?: number; subpasta?: string; dueAtCustom?: string },
 ): Promise<void> {
   if (!process.env.BUFFER_ACCESS_TOKEN) {
     console.log('⚠️ BUFFER_ACCESS_TOKEN em falta. Publicação ignorada.');
@@ -259,14 +294,23 @@ export async function publicarEmTodosOsCanais(
       canais.map((c) => c.service + '=' + c.name + ' (ID:' + c.id + ')').join(' | '),
   );
 
-  const videoUrl = await uploadVideoPublico(caminhoVideo, signo, data);
+  const videoUrl = await uploadVideoPublico(
+    caminhoVideo,
+    identificador,
+    data,
+    opcoes?.subpasta ?? 'videos',
+  );
 
   for (const canal of canais) {
     const legenda = obterLegenda(canal.service);
-    console.log('📱 A publicar em ' + canal.service + ' (' + canal.name + ')...');
+    console.log('📱 A enfileirar em ' + canal.service + ' (' + canal.name + ')...');
     console.log('📋 Legenda [' + canal.service + ']:\n' + legenda);
-    const postId = await publicarVideoNoCanal(canal, legenda, videoUrl);
-    console.log('✅ Publicado no Buffer [' + canal.service + '] Post ID: ' + postId);
+    const postId = await publicarVideoNoCanal(canal, legenda, videoUrl, {
+      data,
+      indiceSlot: opcoes?.indiceSlot,
+      dueAtCustom: opcoes?.dueAtCustom,
+    });
+    console.log('✅ Enfileirado no Buffer [' + canal.service + '] Post ID: ' + postId);
   }
 }
 
