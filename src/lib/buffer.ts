@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import axios from 'axios';
 import { getStorage } from 'firebase-admin/storage';
 import { inicializarFirebase } from './inicializar-app';
-import { obterDueAtSlot } from './buffer-agenda';
+import { obterDueAtSlot, resolverDueAtFuturo } from './buffer-agenda';
 
 interface BufferChannel {
   id: string;
@@ -227,22 +227,21 @@ export async function publicarVideoNoCanal(
   let dueAt: string | undefined;
 
   if (dueAtCustom) {
-    dueAt = dueAtCustom;
+    dueAt = resolverDueAtFuturo(dueAtCustom);
+  } else if (data !== undefined && indiceSlot !== undefined && indiceSlot >= 0) {
+    dueAt = obterDueAtSlot(data, indiceSlot);
+  }
+
+  if (dueAt) {
     mode = 'customScheduled';
     console.log(
       '📅 Agendamento Buffer [' + canal.service + '] → ' + dueAt + ' (horário Lisboa)',
     );
-  } else if (data !== undefined && indiceSlot !== undefined && indiceSlot >= 0) {
-    dueAt = obterDueAtSlot(data, indiceSlot);
-    mode = 'customScheduled';
+  } else if (dueAtCustom || (indiceSlot !== undefined && indiceSlot >= 0)) {
     console.log(
-      '📅 Agendamento Buffer [' +
+      '⚠️ Horário Buffer já passou hoje [' +
         canal.service +
-        '] slot ' +
-        indiceSlot +
-        ' → ' +
-        dueAt +
-        ' (horário Lisboa)',
+        '] — a enfileirar na próxima vaga disponível (addToQueue).',
     );
   }
 

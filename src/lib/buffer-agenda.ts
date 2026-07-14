@@ -1,6 +1,12 @@
 /** Horários Buffer configurados em Lisboa (sidusastro TikTok/Instagram) */
 export const SLOTS_PUBLICACAO_LISBOA = ['09:00', '10:30', '12:00'] as const;
 
+const MARGEM_FUTURO_MS = 2 * 60 * 1000;
+
+function dueAtAindaNoFuturo(iso: string): boolean {
+  return new Date(iso).getTime() > Date.now() + MARGEM_FUTURO_MS;
+}
+
 /**
  * Converte hora em Lisboa para ISO UTC (dueAt Buffer).
  * data: YYYY-MM-DD, horaMin: "09:00"
@@ -52,7 +58,17 @@ export function horaLisboaParaISO(data: string, horaMin: string): string {
   return new Date(Date.UTC(ano, mes, dia, utcH, minuto, 0)).toISOString();
 }
 
-export function obterDueAtSlot(data: string, indiceSlot: number): string {
-  const slot = SLOTS_PUBLICACAO_LISBOA[indiceSlot] ?? SLOTS_PUBLICACAO_LISBOA[0];
-  return horaLisboaParaISO(data, slot);
+export function obterDueAtSlot(data: string, indiceSlot: number): string | undefined {
+  for (let i = indiceSlot; i < SLOTS_PUBLICACAO_LISBOA.length; i++) {
+    const dueAt = horaLisboaParaISO(data, SLOTS_PUBLICACAO_LISBOA[i]);
+    if (dueAtAindaNoFuturo(dueAt)) {
+      return dueAt;
+    }
+  }
+  return undefined;
+}
+
+/** Devolve dueAt só se ainda estiver no futuro; senão undefined → addToQueue */
+export function resolverDueAtFuturo(iso: string): string | undefined {
+  return dueAtAindaNoFuturo(iso) ? iso : undefined;
 }

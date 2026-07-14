@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import { publicarEmTodosOsCanais } from './buffer';
-import { horaLisboaParaISO } from './buffer-agenda';
+import { horaLisboaParaISO, resolverDueAtFuturo } from './buffer-agenda';
 import { calcularDuracaoFrames } from './duracao-video';
 import { obterImagemFundo } from './imagem-fundo';
 import { prepararMusicaEspecial } from './musicas';
@@ -87,7 +87,7 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
     const caminhoOutput = path.resolve('./output/' + opcoes.id + '.mp4');
 
     const dueAtCustom = opcoes.slotHorario
-      ? horaLisboaParaISO(opcoes.data, opcoes.slotHorario)
+      ? resolverDueAtFuturo(horaLisboaParaISO(opcoes.data, opcoes.slotHorario))
       : undefined;
 
     await publicarEmTodosOsCanais(
