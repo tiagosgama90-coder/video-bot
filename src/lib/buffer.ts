@@ -2,7 +2,8 @@ import crypto from 'crypto';
 import axios from 'axios';
 import { getStorage } from 'firebase-admin/storage';
 import { inicializarFirebase } from './inicializar-app';
-import { obterDueAtSlot, resolverDueAtFuturo } from './buffer-agenda';
+import { obterDueAtSlot, resolverDueAtFuturo, rotuloHorarioAgenda } from './buffer-agenda';
+import { isLocaleUS, subpastaVideosFirebase } from './locale';
 
 interface BufferChannel {
   id: string;
@@ -101,6 +102,26 @@ export async function resolverCanaisPublicacao(): Promise<BufferChannel[]> {
   const canais = await listarCanaisBuffer();
   if (canais.length === 0) {
     throw new Error('Nenhum canal encontrado na conta Buffer.');
+  }
+
+  if (isLocaleUS()) {
+    const tiktokUser = normalizar(process.env.BUFFER_TIKTOK_US_USERNAME ?? 'sidusastro_en');
+    const tiktok =
+      canais.find((c) => c.id === process.env.BUFFER_TIKTOK_US_CHANNEL_ID) ??
+      canais.find(
+        (c) =>
+          c.service.toLowerCase() === 'tiktok' &&
+          (normalizar(c.name).includes(tiktokUser) || normalizar(c.name).includes('sidusastro_en')),
+      ) ??
+      canais.find((c) => c.service.toLowerCase() === 'tiktok' && normalizar(c.name).includes('en'));
+
+    if (!tiktok) {
+      throw new Error(
+        'Canal TikTok US não encontrado. Define BUFFER_TIKTOK_US_CHANNEL_ID (sidusastro_en).',
+      );
+    }
+
+    return [tiktok];
   }
 
   const instagramId = process.env.BUFFER_INSTAGRAM_CHANNEL_ID ?? '14967289874';
@@ -235,7 +256,7 @@ export async function publicarVideoNoCanal(
   if (dueAt) {
     mode = 'customScheduled';
     console.log(
-      '📅 Agendamento Buffer [' + canal.service + '] → ' + dueAt + ' (horário Lisboa)',
+      '📅 Agendamento Buffer [' + canal.service + '] → ' + dueAt + ' (horário ' + rotuloHorarioAgenda() + ')',
     );
   } else if (dueAtCustom || (indiceSlot !== undefined && indiceSlot >= 0)) {
     console.log(
@@ -305,7 +326,7 @@ export async function publicarEmTodosOsCanais(
     caminhoVideo,
     identificador,
     data,
-    opcoes?.subpasta ?? 'videos',
+    opcoes?.subpasta ?? subpastaVideosFirebase(),
   );
 
   for (const canal of canais) {

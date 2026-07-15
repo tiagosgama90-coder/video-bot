@@ -3,26 +3,37 @@ import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
 import say from 'say';
+import { isLocaleUS } from './locale';
 
-interface VozPtPt {
+interface VozNeural {
   id: string;
   genero: 'feminina' | 'masculina';
   origem: 'azure' | 'helia';
+  lang: string;
 }
 
-/** Vozes neurais Azure pt-PT — feminina e masculina */
-const VOZES_AZURE: VozPtPt[] = [
-  { id: 'pt-PT-RaquelNeural', genero: 'feminina', origem: 'azure' },
-  { id: 'pt-PT-DuarteNeural', genero: 'masculina', origem: 'azure' },
+const VOZES_AZURE_PT: VozNeural[] = [
+  { id: 'pt-PT-RaquelNeural', genero: 'feminina', origem: 'azure', lang: 'pt-PT' },
+  { id: 'pt-PT-DuarteNeural', genero: 'masculina', origem: 'azure', lang: 'pt-PT' },
 ];
 
-const VOZ_HELIA: VozPtPt = {
+const VOZES_AZURE_EN: VozNeural[] = [
+  { id: 'en-US-JennyNeural', genero: 'feminina', origem: 'azure', lang: 'en-US' },
+  { id: 'en-US-GuyNeural', genero: 'masculina', origem: 'azure', lang: 'en-US' },
+];
+
+const VOZ_HELIA: VozNeural = {
   id: 'Microsoft Helia',
   genero: 'feminina',
   origem: 'helia',
+  lang: 'pt-PT',
 };
 
 const VELOCIDADE_HELIA = 0.85;
+
+function obterVozesAzure(): VozNeural[] {
+  return isLocaleUS() ? VOZES_AZURE_EN : VOZES_AZURE_PT;
+}
 
 function escapeXml(texto: string): string {
   return texto
@@ -33,23 +44,23 @@ function escapeXml(texto: string): string {
     .replace(/'/g, '&apos;');
 }
 
-/** Escolhe voz feminina, masculina ou aleatória */
 export function escolherVozAleatoria(
   preferencia: 'feminina' | 'masculina' | 'aleatoria' = 'aleatoria',
-): VozPtPt {
+): VozNeural {
+  const vozes = obterVozesAzure();
   if (preferencia === 'feminina') {
-    return VOZES_AZURE.find((v) => v.genero === 'feminina') ?? VOZES_AZURE[0];
+    return vozes.find((v) => v.genero === 'feminina') ?? vozes[0];
   }
   if (preferencia === 'masculina') {
-    return VOZES_AZURE.find((v) => v.genero === 'masculina') ?? VOZES_AZURE[1];
+    return vozes.find((v) => v.genero === 'masculina') ?? vozes[1];
   }
-  return VOZES_AZURE[crypto.randomInt(0, VOZES_AZURE.length)];
+  return vozes[crypto.randomInt(0, vozes.length)];
 }
 
 async function gerarNarracaoAzure(
   texto: string,
   destino: string,
-  voz: VozPtPt,
+  voz: VozNeural,
 ): Promise<void> {
   const speechKey = process.env.AZURE_SPEECH_KEY;
   const speechRegion = process.env.AZURE_SPEECH_REGION;
@@ -59,13 +70,18 @@ async function gerarNarracaoAzure(
   }
 
   const pitch = voz.genero === 'masculina' ? '-4%' : '-2%';
+  const rate = isLocaleUS() ? '-8%' : '-12%';
 
   const ssml =
-    "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='pt-PT'>" +
+    "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='" +
+    voz.lang +
+    "'>" +
     "<voice name='" +
     voz.id +
     "'>" +
-    "<prosody rate='-12%' pitch='" +
+    "<prosody rate='" +
+    rate +
+    "' pitch='" +
     pitch +
     "'>" +
     escapeXml(texto) +
@@ -99,7 +115,7 @@ function gerarNarracaoHelia(texto: string, destino: string): Promise<void> {
   });
 }
 
-export async function gerarNarracaoPtPt(
+export async function gerarNarracao(
   texto: string,
   destinoRelativo = './public/narracao.mp3',
   preferenciaVoz: 'feminina' | 'masculina' | 'aleatoria' = 'aleatoria',
@@ -108,7 +124,7 @@ export async function gerarNarracaoPtPt(
   const vozEscolhida = escolherVozAleatoria(preferenciaVoz);
 
   console.log(
-    '🗣️ Voz aleatória: ' +
+    '🗣️ Voz: ' +
       vozEscolhida.id +
       ' (' +
       vozEscolhida.genero +
@@ -120,6 +136,9 @@ export async function gerarNarracaoPtPt(
     console.log('✅ Narração neural Azure gravada.');
     return;
   } catch (erroAzure) {
+    if (isLocaleUS()) {
+      throw new Error('Azure Speech obrigatório para narração en-US: ' + String(erroAzure));
+    }
     console.log('⚠️ Azure Speech indisponível. A usar fallback Microsoft Helia...');
     console.log(String(erroAzure));
   }
@@ -133,4 +152,13 @@ export async function gerarNarracaoPtPt(
   console.log('🗣️ A gerar voz local ' + VOZ_HELIA.id + '...');
   await gerarNarracaoHelia(texto, destino);
   console.log('✅ Narração Helia gravada.');
+}
+
+/** @deprecated usar gerarNarracao */
+export async function gerarNarracaoPtPt(
+  texto: string,
+  destinoRelativo = './public/narracao.mp3',
+  preferenciaVoz: 'feminina' | 'masculina' | 'aleatoria' = 'aleatoria',
+): Promise<void> {
+  return gerarNarracao(texto, destinoRelativo, preferenciaVoz);
 }

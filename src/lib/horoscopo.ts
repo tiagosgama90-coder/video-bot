@@ -1,12 +1,12 @@
 import { getFirestore } from 'firebase-admin/firestore';
 import { getApps } from 'firebase-admin/app';
 import {
-  ALIAS_CHAVES_FIRESTORE,
-  CHAVES_FIRESTORE_PT,
-  NOMES_SIGNOS,
+  obterChavesFirestore,
+  obterNomeSigno,
   type SignoZodiaco,
 } from './signos';
 import { gerarTextoHoroscopoHome } from './horoscopoSite';
+import { chaveHoroscopoFirestore, isLocaleUS } from './locale';
 
 /**
  * O site sidusastro.com mostra o Horóscopo Diário na página /home.
@@ -20,10 +20,12 @@ import { gerarTextoHoroscopoHome } from './horoscopoSite';
 interface DadosSiteDaily {
   horoscopes?: {
     pt?: Record<string, string>;
+    en?: Record<string, string>;
   };
   pack?: {
     horoscopes?: {
       pt?: Record<string, string>;
+      en?: Record<string, string>;
     };
   };
 }
@@ -76,32 +78,29 @@ export function extrairAteSegundoPontoFinal(texto: string): string {
 }
 
 function chavesParaSigno(signo: string): string[] {
-  const aliases = ALIAS_CHAVES_FIRESTORE[signo];
-  if (aliases && aliases.length > 0) {
-    return aliases;
-  }
-  const principal = CHAVES_FIRESTORE_PT[signo];
-  return principal ? [principal] : [signo];
+  return obterChavesFirestore(signo);
 }
 
 function extrairApiTextSigno(
   dados: DadosSiteDaily | undefined,
   signo: string,
 ): { texto: string; chaveUsada: string } | undefined {
-  const mapaPt = dados?.horoscopes?.pt ?? dados?.pack?.horoscopes?.pt;
+  const idioma = chaveHoroscopoFirestore();
+  const mapa =
+    dados?.horoscopes?.[idioma] ?? dados?.pack?.horoscopes?.[idioma];
 
-  if (!mapaPt) {
+  if (!mapa) {
     return undefined;
   }
 
   for (const chave of chavesParaSigno(signo)) {
-    if (mapaPt[chave]) {
-      return { texto: mapaPt[chave], chaveUsada: chave };
+    if (mapa[chave]) {
+      return { texto: mapa[chave], chaveUsada: chave };
     }
   }
 
   const chavesAlvo = chavesParaSigno(signo).map(normalizar);
-  for (const [chave, valor] of Object.entries(mapaPt)) {
+  for (const [chave, valor] of Object.entries(mapa)) {
     if (chavesAlvo.includes(normalizar(chave))) {
       return { texto: valor, chaveUsada: chave };
     }
@@ -127,10 +126,11 @@ async function obterPackSiteDaily(data: string): Promise<DadosSiteDaily | undefi
 async function aguardarSiteDaily(data: string): Promise<DadosSiteDaily | undefined> {
   const maxTentativas = 6;
   const intervaloMs = 5 * 60 * 1000;
+  const idioma = chaveHoroscopoFirestore();
 
   for (let tentativa = 1; tentativa <= maxTentativas; tentativa++) {
     const pack = await obterPackSiteDaily(data);
-    if (pack?.horoscopes?.pt || pack?.pack?.horoscopes?.pt) {
+    if (pack?.horoscopes?.[idioma] || pack?.pack?.horoscopes?.[idioma]) {
       if (tentativa > 1) {
         console.log(`✅ siteDaily/${data} disponível após ${tentativa} tentativa(s).`);
       }
@@ -177,10 +177,22 @@ async function resolverHoroscopoSigno(
 
 /** Texto completo do horóscopo (como na home do site) */
 export async function obterTextoHoroscopo(signo: SignoZodiaco, data: string): Promise<string> {
-  const nomeSigno = NOMES_SIGNOS[signo];
+  const nomeSigno = obterNomeSigno(signo);
 
   try {
     const { apiTexto, dataLisboa } = await resolverHoroscopoSigno(signo, data);
+
+    if (isLocaleUS()) {
+      if (apiTexto && apiTexto.trim().length > 20) {
+        console.log('✅ Horóscopo EN (pack IA): ' + nomeSigno);
+        console.log('📄 Texto completo: "' + apiTexto + '"');
+        return apiTexto.trim();
+      }
+
+      console.log('⚠️ Sem horóscopo EN no Firestore para ' + nomeSigno + ' — texto genérico.');
+      return `The stars are guiding your path today, ${nomeSigno}. Check your full reading at sidusastro.com/en`;
+    }
+
     const textoHome = gerarTextoHoroscopoHome(signo, apiTexto, dataLisboa);
 
     if (textoHome && textoHome.length > 20) {
@@ -195,22 +207,28 @@ export async function obterTextoHoroscopo(signo: SignoZodiaco, data: string): Pr
     }
 
     console.log('⚠️ Sem horóscopo para ' + nomeSigno + ' — texto genérico.');
-    return `Os astros guiam o teu caminho hoje no SidusAstro, ${nomeSigno}.`;
+    return isLocaleUS()
+      ? `The stars are guiding your path today, ${nomeSigno}. Check your full reading at sidusastro.com/en`
+      : `Os astros guiam o teu caminho hoje no SidusAstro, ${nomeSigno}.`;
   } catch (erro) {
-    console.log('⚠️ Erro ao obter horóscopo para ' + nomeSigno + '. A usar trânsitos locais.');
+    console.log('⚠️ Erro ao obter horóscopo para ' + nomeSigno + '. A usar fallback.');
     console.log(String(erro));
 
-    try {
-      const dataLisboa = new Date(data + 'T12:00:00+01:00');
-      const textoHome = gerarTextoHoroscopoHome(signo, undefined, dataLisboa);
-      if (textoHome && textoHome.length > 20) {
-        return textoHome;
+    if (!isLocaleUS()) {
+      try {
+        const dataLisboa = new Date(data + 'T12:00:00+01:00');
+        const textoHome = gerarTextoHoroscopoHome(signo, undefined, dataLisboa);
+        if (textoHome && textoHome.length > 20) {
+          return textoHome;
+        }
+      } catch {
+        // ignora
       }
-    } catch {
-      // ignora
     }
 
-    return `Os astros guiam o teu caminho hoje no SidusAstro, ${nomeSigno}.`;
+    return isLocaleUS()
+      ? `The stars are guiding your path today, ${nomeSigno}. Check your full reading at sidusastro.com/en`
+      : `Os astros guiam o teu caminho hoje no SidusAstro, ${nomeSigno}.`;
   }
 }
 

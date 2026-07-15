@@ -1,6 +1,6 @@
 import { interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
 
-export function MarcaSidusAstro(): React.ReactElement {
+export function MarcaSidusAstro({ siteMarca = 'sidusastro.com' }: { siteMarca?: string }): React.ReactElement {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   const opacidadeFinal = interpolate(frame, [durationInFrames - 150, durationInFrames - 120], [0.55, 0.95], {
@@ -25,7 +25,7 @@ export function MarcaSidusAstro(): React.ReactElement {
           fontFamily: 'system-ui, sans-serif',
         }}
       >
-        sidusastro.com
+        {siteMarca}
       </div>
     </>
   );

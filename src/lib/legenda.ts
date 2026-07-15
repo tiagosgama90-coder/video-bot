@@ -1,11 +1,18 @@
 /* eslint-disable @remotion/deterministic-randomness -- usado apenas no script Node, não no render Remotion */
 import crypto from 'crypto';
-import { NOMES_SIGNOS, type SignoZodiaco } from './signos';
+import { isLocaleUS } from './locale';
+import { obterNomeSigno, type SignoZodiaco } from './signos';
 
 export const FINAL_CLOSINGS = [
   'Aprofunda esta análise no sidusastro.com',
   'Vê o teu mapa completo em sidusastro.com',
   'Mais detalhes sobre o teu dia em sidusastro.com',
+] as const;
+
+export const FINAL_CLOSINGS_EN = [
+  'Get your full reading at sidusastro.com/en',
+  'See your complete birth chart at sidusastro.com/en',
+  'More details about your day at sidusastro.com/en',
 ] as const;
 
 const HOOKS_LEGENDA: Array<(nomeSigno: string) => string> = [
@@ -17,6 +24,15 @@ const HOOKS_LEGENDA: Array<(nomeSigno: string) => string> = [
   (nome) => 'Horóscopo de hoje para ' + nome,
 ];
 
+const HOOKS_LEGENDA_EN: Array<(nomeSigno: string) => string> = [
+  (nome) => 'What does today hold for ' + nome + '?',
+  (nome) => 'Today\'s cosmic energy for ' + nome + ' ✨',
+  (nome) => 'If you\'re a ' + nome + ', stop scrolling — this is for you',
+  (nome) => 'Daily horoscope for ' + nome,
+  (nome) => nome + ': what the stars have in store today',
+  (nome) => 'Your sign today: ' + nome,
+];
+
 function normalizarHashtag(texto: string): string {
   return texto
     .normalize('NFD')
@@ -26,13 +42,19 @@ function normalizarHashtag(texto: string): string {
 }
 
 function hashtagSigno(signo: SignoZodiaco): string {
-  return '#' + normalizarHashtag(NOMES_SIGNOS[signo]);
+  const nome = obterNomeSigno(signo);
+  return '#' + normalizarHashtag(nome);
+}
+
+function obterHooks(): Array<(nomeSigno: string) => string> {
+  return isLocaleUS() ? HOOKS_LEGENDA_EN : HOOKS_LEGENDA;
 }
 
 function gerarCorpoLegenda(signo: SignoZodiaco, previsao: string): string {
-  const nomeSigno = NOMES_SIGNOS[signo];
-  const indiceHook = crypto.randomInt(0, HOOKS_LEGENDA.length);
-  const hook = HOOKS_LEGENDA[indiceHook](nomeSigno);
+  const nomeSigno = obterNomeSigno(signo);
+  const hooks = obterHooks();
+  const indiceHook = crypto.randomInt(0, hooks.length);
+  const hook = hooks[indiceHook](nomeSigno);
   const resumo =
     previsao.length > 140 ? previsao.slice(0, 137).trim() + '...' : previsao;
 
@@ -41,6 +63,15 @@ function gerarCorpoLegenda(signo: SignoZodiaco, previsao: string): string {
 
 function sufixoTikTok(signo: SignoZodiaco): string {
   const tagSigno = hashtagSigno(signo);
+  if (isLocaleUS()) {
+    return (
+      '👉 FREE birth chart (Sun, Moon & Rising)\n' +
+      '🔗 sidusastro.com/en/login\n\n' +
+      '#horoscope #zodiac #astrology #sidusastro #birthchart #zodiacsigns ' +
+      tagSigno
+    );
+  }
+
   return (
     '👉 Mapa astral GRÁTIS (Sol, Lua e Ascendente)\n' +
     '🔗 sidusastro.com/login\n\n' +
@@ -62,8 +93,9 @@ function sufixoInstagram(signo: SignoZodiaco): string {
 
 /** Sempre uma das 3 frases de fecho definidas (com pausa antes) */
 export function escolherFechoNarracao(): string {
-  const indice = crypto.randomInt(0, FINAL_CLOSINGS.length);
-  return '. ' + FINAL_CLOSINGS[indice];
+  const fechos = isLocaleUS() ? FINAL_CLOSINGS_EN : FINAL_CLOSINGS;
+  const indice = crypto.randomInt(0, fechos.length);
+  return '. ' + fechos[indice];
 }
 
 /** Legenda TikTok — hook + resumo + CTA + hashtags */
@@ -97,5 +129,10 @@ export function gerarLegendaParaCanal(
   if (service.toLowerCase() === 'instagram') {
     return gerarLegendaInstagram(signo, previsao);
   }
+  return gerarLegendaTikTok(signo, previsao);
+}
+
+/** @deprecated usar gerarLegendaTikTok */
+export function gerarLegenda(signo: SignoZodiaco, previsao: string): string {
   return gerarLegendaTikTok(signo, previsao);
 }

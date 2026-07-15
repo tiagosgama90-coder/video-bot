@@ -35,6 +35,7 @@
     "dev": "remotion studio",
     "build": "remotion bundle",
     "gerar": "npx ts-node gerar-e-publicar.ts",
+    "gerar-us": "LOCALE=en-US npx ts-node gerar-e-publicar.ts",
     "gerar-segunda": "npx ts-node gerar-video-segunda.ts",
     "gerar-quarta": "npx ts-node gerar-video-quarta.ts",
     "canais": "npx ts-node listar-canais-buffer.ts",

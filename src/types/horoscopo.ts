@@ -8,6 +8,8 @@ export interface HoroscopoProps {
   musicaFundoArquivo: string;
   /** Duração calculada a partir do áudio — evita cortar a narração */
   duracaoFrames: number;
+  /** URL curta no canto do vídeo — ex. sidusastro.com/en */
+  siteMarca?: string;
   /** Texto que vai aparecendo em sincronia com a voz (vídeo afiliados) */
   segmentosEcra?: Array<{ texto: string; frameInicio: number }>;
 }

@@ -30,6 +30,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   imagemFundoUrl,
   musicaFundoArquivo,
   segmentosEcra,
+  siteMarca,
 }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
@@ -215,7 +216,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
         </div>
       </AbsoluteFill>
 
-      <MarcaSidusAstro />
+      <MarcaSidusAstro siteMarca={siteMarca} />
 
       <Audio src={staticFile('narracao.mp3')} volume={1.0} />
       <Audio src={staticFile(musicaFundoArquivo)} volume={0.12} loop />

@@ -1,5 +1,10 @@
-/** Horários Buffer configurados em Lisboa (sidusastro TikTok/Instagram) */
+import { isLocaleUS, obterFusoPublicacao, rotuloFusoPublicacao } from './locale';
+
+/** Horários Buffer PT — Lisboa (sidusastro TikTok/Instagram) */
 export const SLOTS_PUBLICACAO_LISBOA = ['09:00', '10:30', '12:00'] as const;
+
+/** Horários Buffer US — EST (sidusastro_en TikTok) */
+export const SLOTS_PUBLICACAO_EST = ['07:00', '12:00', '19:00'] as const;
 
 const MARGEM_FUTURO_MS = 2 * 60 * 1000;
 
@@ -7,22 +12,26 @@ function dueAtAindaNoFuturo(iso: string): boolean {
   return new Date(iso).getTime() > Date.now() + MARGEM_FUTURO_MS;
 }
 
+export function obterSlotsPublicacao(): readonly string[] {
+  return isLocaleUS() ? SLOTS_PUBLICACAO_EST : SLOTS_PUBLICACAO_LISBOA;
+}
+
 /**
- * Converte hora em Lisboa para ISO UTC (dueAt Buffer).
+ * Converte hora num fuso para ISO UTC (dueAt Buffer).
  * data: YYYY-MM-DD, horaMin: "09:00"
  */
-export function horaLisboaParaISO(data: string, horaMin: string): string {
+export function horaFusoParaISO(data: string, horaMin: string, timeZone: string): string {
   const [hora, minuto] = horaMin.split(':').map(Number);
   const ref = new Date(`${data}T12:00:00.000Z`);
-  const horaLisboaRef = parseInt(
+  const horaLocalRef = parseInt(
     ref.toLocaleString('en-GB', {
-      timeZone: 'Europe/Lisbon',
+      timeZone,
       hour: '2-digit',
       hour12: false,
     }),
     10,
   );
-  const offsetHoras = horaLisboaRef - 12;
+  const offsetHoras = horaLocalRef - 12;
 
   let utcH = hora - offsetHoras;
   let dia = parseInt(data.slice(8, 10), 10);
@@ -58,14 +67,26 @@ export function horaLisboaParaISO(data: string, horaMin: string): string {
   return new Date(Date.UTC(ano, mes, dia, utcH, minuto, 0)).toISOString();
 }
 
+/** @deprecated usar horaFusoParaISO */
+export function horaLisboaParaISO(data: string, horaMin: string): string {
+  return horaFusoParaISO(data, horaMin, 'Europe/Lisbon');
+}
+
 export function obterDueAtSlot(data: string, indiceSlot: number): string | undefined {
-  for (let i = indiceSlot; i < SLOTS_PUBLICACAO_LISBOA.length; i++) {
-    const dueAt = horaLisboaParaISO(data, SLOTS_PUBLICACAO_LISBOA[i]);
+  const slots = obterSlotsPublicacao();
+  const fuso = obterFusoPublicacao();
+
+  for (let i = indiceSlot; i < slots.length; i++) {
+    const dueAt = horaFusoParaISO(data, slots[i], fuso);
     if (dueAtAindaNoFuturo(dueAt)) {
       return dueAt;
     }
   }
   return undefined;
+}
+
+export function rotuloHorarioAgenda(): string {
+  return rotuloFusoPublicacao();
 }
 
 /** Devolve dueAt só se ainda estiver no futuro; senão undefined → addToQueue */
