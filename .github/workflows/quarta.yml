@@ -1,8 +1,7 @@
 name: Vídeo Quarta-feira (Afiliados)
 
+# Disparo via cron-job.org às 07:15 Lisboa às quartas (scripts/configurar-cron-externo.sh).
 on:
-  schedule:
-    - cron: '30 6 * * 3' # Quarta 07:30 Lisboa (verão) — slot Buffer 14:00
   workflow_dispatch:
 
 jobs:
