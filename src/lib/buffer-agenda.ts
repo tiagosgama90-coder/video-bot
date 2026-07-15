@@ -3,8 +3,8 @@ import { isLocaleUS, obterFusoPublicacao, rotuloFusoPublicacao } from './locale'
 /** Horários Buffer PT — Lisboa (sidusastro TikTok/Instagram) */
 export const SLOTS_PUBLICACAO_LISBOA = ['09:00', '10:30', '12:00'] as const;
 
-/** Horários Buffer US — EST (sidusastro_en TikTok) */
-export const SLOTS_PUBLICACAO_EST = ['07:00', '12:00', '19:00'] as const;
+/** Horários Buffer US — New York (sidusastro_en) — mesma lógica que PT: 09:00 / 10:30 / 12:00 */
+export const SLOTS_PUBLICACAO_EST = ['09:00', '10:30', '12:00'] as const;
 
 const MARGEM_FUTURO_MS = 2 * 60 * 1000;
 
