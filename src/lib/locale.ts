@@ -32,6 +32,14 @@ export function subpastaVideosFirebase(): string {
   return isLocaleUS() ? 'videos-us' : 'videos';
 }
 
+export function subpastaVideosEspeciaisFirebase(): string {
+  return isLocaleUS() ? 'videos-especiais-us' : 'videos-especiais';
+}
+
+export function sufixoIdVideoEspecial(idBase: string): string {
+  return isLocaleUS() ? idBase + '-us' : idBase;
+}
+
 export function urlSiteMarca(): string {
   return isLocaleUS() ? 'sidusastro.com/en' : 'sidusastro.com';
 }
