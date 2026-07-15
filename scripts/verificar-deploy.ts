@@ -46,6 +46,17 @@ if (/^\s*schedule:\s*$/m.test(diarioWorkflow) || diarioWorkflow.includes("cron: 
   throw new Error('diario.yml: remover cron GitHub — usar cron-job.org (scripts/configurar-cron-externo.sh)');
 }
 exigirFicheiro('./.github/workflows/segunda.yml');
+exigirTexto('./.github/workflows/segunda.yml', 'workflow_dispatch', 'Segunda: disparo externo');
+const segundaWorkflow = fs.readFileSync('./.github/workflows/segunda.yml', 'utf8');
+if (/^\s*schedule:\s*$/m.test(segundaWorkflow) || segundaWorkflow.includes("cron: '")) {
+  throw new Error('segunda.yml: remover cron GitHub — usar cron-job.org');
+}
+
 exigirFicheiro('./.github/workflows/quarta.yml');
+exigirTexto('./.github/workflows/quarta.yml', 'workflow_dispatch', 'Quarta: disparo externo');
+const quartaWorkflow = fs.readFileSync('./.github/workflows/quarta.yml', 'utf8');
+if (/^\s*schedule:\s*$/m.test(quartaWorkflow) || quartaWorkflow.includes("cron: '")) {
+  throw new Error('quarta.yml: remover cron GitHub — usar cron-job.org');
+}
 
 console.log('✅ Todos os scripts e workflows estão actualizados para produção.');

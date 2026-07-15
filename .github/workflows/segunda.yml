@@ -1,8 +1,7 @@
 name: Vídeo Segunda-feira (Motivacional)
 
+# Disparo via cron-job.org às 07:15 Lisboa às segundas (scripts/configurar-cron-externo.sh).
 on:
-  schedule:
-    - cron: '30 6 * * 1' # Segunda 07:30 Lisboa (verão) — slot Buffer 14:00
   workflow_dispatch:
 
 jobs:
