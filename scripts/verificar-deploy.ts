@@ -40,6 +40,11 @@ exigirTexto('./gerar-video-quarta.ts', 'fundoZenAstrologia: true', 'Quarta: fund
 exigirTexto('./src/lib/conteudo-especial.ts', "export const TITULO_AFILIADOS = 'SIDUSASTRO'", 'Afiliados: SIDUSASTRO');
 
 exigirFicheiro('./.github/workflows/diario.yml');
+exigirTexto('./.github/workflows/diario.yml', 'workflow_dispatch', 'Diário: disparo externo');
+const diarioWorkflow = fs.readFileSync('./.github/workflows/diario.yml', 'utf8');
+if (/^\s*schedule:\s*$/m.test(diarioWorkflow) || diarioWorkflow.includes("cron: '")) {
+  throw new Error('diario.yml: remover cron GitHub — usar cron-job.org (scripts/configurar-cron-externo.sh)');
+}
 exigirFicheiro('./.github/workflows/segunda.yml');
 exigirFicheiro('./.github/workflows/quarta.yml');
 

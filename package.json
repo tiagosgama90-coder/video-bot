@@ -42,6 +42,8 @@
     "lint": "eslint src && tsc",
     "verificar": "npx ts-node verificar-config.ts",
     "verificar-deploy": "npx ts-node scripts/verificar-deploy.ts",
+    "disparar-diario": "bash scripts/disparar-diario.sh",
+    "configurar-cron": "bash scripts/configurar-cron-externo.sh",
     "testar-buffer": "npx ts-node testar-upload-buffer.ts",
     "setup-local": "powershell -ExecutionPolicy Bypass -File configurar-local.ps1"
   }
