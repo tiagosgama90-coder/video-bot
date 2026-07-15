@@ -25,4 +25,11 @@ jobs:
       - name: Listar canais Buffer (copia o ID do sidusastro_en)
         env:
           BUFFER_ACCESS_TOKEN: ${{ secrets.BUFFER_ACCESS_TOKEN }}
-        run: npm run canais
+        run: |
+          npm run canais 2>&1 | tee canais-log.txt
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Canais Buffer — copia o ID do sidusastro_en" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          cat canais-log.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
