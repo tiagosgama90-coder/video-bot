@@ -1,4 +1,35 @@
 import crypto from 'crypto';
+import { isLocaleUS, type AppLocale } from './locale';
+
+export const CHAVES_FIRESTORE_EN: Record<string, string> = {
+  carneiro: 'Aries',
+  touro: 'Taurus',
+  gemeos: 'Gemini',
+  caranguejo: 'Cancer',
+  leao: 'Leo',
+  virgem: 'Virgo',
+  balanca: 'Libra',
+  escorpiao: 'Scorpio',
+  sagitario: 'Sagittarius',
+  capricornio: 'Capricorn',
+  aquario: 'Aquarius',
+  peixes: 'Pisces',
+};
+
+export const ALIAS_CHAVES_FIRESTORE_EN: Record<string, string[]> = {
+  carneiro: ['Aries'],
+  touro: ['Taurus'],
+  gemeos: ['Gemini', 'Gemeos'],
+  caranguejo: ['Cancer'],
+  leao: ['Leo'],
+  virgem: ['Virgo'],
+  balanca: ['Libra'],
+  escorpiao: ['Scorpio', 'Scorpius'],
+  sagitario: ['Sagittarius'],
+  capricornio: ['Capricorn'],
+  aquario: ['Aquarius'],
+  peixes: ['Pisces'],
+};
 
 /** Chaves internas do bot → nomes exatos no Firestore siteDaily.horoscopes.pt */
 export const CHAVES_FIRESTORE_PT: Record<string, string> = {
@@ -63,6 +94,49 @@ export const NOMES_SIGNOS: Record<SignoZodiaco, string> = {
   aquario: 'Aquário',
   peixes: 'Peixes',
 };
+
+export const NOMES_SIGNOS_EN: Record<SignoZodiaco, string> = {
+  carneiro: 'Aries',
+  touro: 'Taurus',
+  gemeos: 'Gemini',
+  caranguejo: 'Cancer',
+  leao: 'Leo',
+  virgem: 'Virgo',
+  balanca: 'Libra',
+  escorpiao: 'Scorpio',
+  sagitario: 'Sagittarius',
+  capricornio: 'Capricorn',
+  aquario: 'Aquarius',
+  peixes: 'Pisces',
+};
+
+export function obterNomeSigno(signo: SignoZodiaco, locale?: AppLocale): string {
+  const us = locale ? locale === 'en-US' : isLocaleUS();
+  return us ? NOMES_SIGNOS_EN[signo] : NOMES_SIGNOS[signo];
+}
+
+export function obterChavesFirestore(signo: string): string[] {
+  if (isLocaleUS()) {
+    const aliases = ALIAS_CHAVES_FIRESTORE_EN[signo];
+    if (aliases && aliases.length > 0) {
+      return aliases;
+    }
+    const principal = CHAVES_FIRESTORE_EN[signo];
+    return principal ? [principal] : [signo];
+  }
+
+  const aliases = ALIAS_CHAVES_FIRESTORE[signo];
+  if (aliases && aliases.length > 0) {
+    return aliases;
+  }
+  const principal = CHAVES_FIRESTORE_PT[signo];
+  return principal ? [principal] : [signo];
+}
+
+export function obterDataPublicacao(): string {
+  const fuso = isLocaleUS() ? 'America/New_York' : 'Europe/Lisbon';
+  return new Date().toLocaleDateString('sv-SE', { timeZone: fuso });
+}
 
 export function obterDataLisboa(): string {
   return new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Lisbon' });
@@ -133,6 +207,12 @@ export function escolherSignosParaExecucao(
 export function signoChaveFromNome(nome: string): SignoZodiaco | undefined {
   const alvo = nome.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   for (const [chave, valor] of Object.entries(NOMES_SIGNOS)) {
+    const norm = valor.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    if (norm === alvo) {
+      return chave as SignoZodiaco;
+    }
+  }
+  for (const [chave, valor] of Object.entries(NOMES_SIGNOS_EN)) {
     const norm = valor.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
     if (norm === alvo) {
       return chave as SignoZodiaco;

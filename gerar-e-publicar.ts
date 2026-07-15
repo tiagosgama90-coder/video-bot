@@ -10,13 +10,14 @@ import { calcularDuracaoFrames } from './src/lib/duracao-video';
 import { prepararMusicaParaVideo } from './src/lib/musicas';
 import {
   escolherSignosParaExecucao,
-  NOMES_SIGNOS,
-  obterDataLisboa,
+  obterDataPublicacao,
+  obterNomeSigno,
   SIGNOS_ZODIACO,
   type SignoZodiaco,
 } from './src/lib/signos';
-import { gerarNarracaoPtPt } from './src/lib/voz';
+import { gerarNarracao } from './src/lib/voz';
 import { inicializarFirebaseSeNecessario } from './src/lib/inicializar-app';
+import { isLocaleUS, sufixoVideoDiario, urlSiteMarca } from './src/lib/locale';
 dotenv.config();
 
 inicializarFirebaseSeNecessario({ obrigatorio: process.env.SKIP_PUBLICAR !== '1' });
@@ -28,6 +29,7 @@ interface PropsVideo {
   imagemFundoUrl: string;
   musicaFundoArquivo: string;
   duracaoFrames: number;
+  siteMarca: string;
 }
 
 function garantirPasta(pasta: string): void {
@@ -37,7 +39,7 @@ function garantirPasta(pasta: string): void {
 }
 
 function renderizarVideo(signo: string): void {
-  const outputPath = './output/' + signo + '-diario.mp4';
+  const outputPath = './output/' + signo + sufixoVideoDiario();
   const comando =
     'npx remotion render src/index.ts HoroscopoComposition "' +
     outputPath +
@@ -53,12 +55,13 @@ function obterSignosJaGerados(): SignoZodiaco[] {
     return [];
   }
 
+  const sufixo = sufixoVideoDiario();
   const gerados: SignoZodiaco[] = [];
   for (const ficheiro of fs.readdirSync('./output')) {
-    if (!ficheiro.endsWith('-diario.mp4')) {
+    if (!ficheiro.endsWith(sufixo)) {
       continue;
     }
-    const chave = ficheiro.replace('-diario.mp4', '') as SignoZodiaco;
+    const chave = ficheiro.replace(sufixo, '') as SignoZodiaco;
     if (SIGNOS_ZODIACO.includes(chave)) {
       gerados.push(chave);
     }
@@ -72,7 +75,7 @@ async function processarSigno(
   indiceSlot: number,
 ): Promise<void> {
   console.log('\n══════════════════════════════════════');
-  console.log('🔮 A processar signo: ' + NOMES_SIGNOS[signo]);
+  console.log('🔮 A processar signo: ' + obterNomeSigno(signo));
   console.log('══════════════════════════════════════\n');
 
   const previsao = await obterTextoHoroscopo(signo, data);
@@ -87,7 +90,7 @@ async function processarSigno(
   const fechoEcra = fechoNarracao.replace(/^\.\s+/, '');
   const textoNarracao = previsaoVideo + fechoNarracao;
   console.log('🎙️ Narração: "' + previsaoVideo + '"' + fechoNarracao);
-  await gerarNarracaoPtPt(textoNarracao, './public/narracao.mp3', 'aleatoria');
+  await gerarNarracao(textoNarracao, './public/narracao.mp3', 'aleatoria');
 
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3');
 
@@ -96,12 +99,13 @@ async function processarSigno(
   console.log('📋 Legenda Instagram:\n' + legendas.instagram);
 
   const props: PropsVideo = {
-    signo: NOMES_SIGNOS[signo],
+    signo: obterNomeSigno(signo),
     previsao: previsaoVideo,
     fechoTexto: fechoEcra,
     imagemFundoUrl,
     musicaFundoArquivo,
     duracaoFrames,
+    siteMarca: urlSiteMarca(),
   };
 
   const caminhoProps = './public/props-temporarias.json';
@@ -109,8 +113,8 @@ async function processarSigno(
 
   try {
     renderizarVideo(signo);
-    const caminhoOutput = path.resolve('./output/' + signo + '-diario.mp4');
-    await publicarEmTodosOsCanais(signo + '-diario', caminhoOutput, data, (service) =>
+    const caminhoOutput = path.resolve('./output/' + signo + sufixoVideoDiario());
+    await publicarEmTodosOsCanais(signo + (isLocaleUS() ? '-diario-us' : '-diario'), caminhoOutput, data, (service) =>
       service.toLowerCase() === 'instagram' ? legendas.instagram : legendas.tiktok,
     { indiceSlot },
     );
@@ -122,9 +126,10 @@ async function processarSigno(
 }
 
 async function executarRoboSidusAstro(): Promise<void> {
-  const data = obterDataLisboa();
-  console.log('🌌 SidusAstro Video Bot — automação diária iniciada');
-  console.log('📅 Data (Lisboa): ' + data);
+  const data = obterDataPublicacao();
+  const mercado = isLocaleUS() ? 'US (@sidusastro_en)' : 'PT (Instagram + TikTok)';
+  console.log('🌌 SidusAstro Video Bot — automação diária iniciada [' + mercado + ']');
+  console.log('📅 Data: ' + data);
 
   garantirPasta('./public');
   garantirPasta('./output');
@@ -145,7 +150,7 @@ async function executarRoboSidusAstro(): Promise<void> {
     '🎲 Signos do dia (' +
       signosDoDia.length +
       '): ' +
-      signosDoDia.map((s) => NOMES_SIGNOS[s]).join(', '),
+      signosDoDia.map((s) => obterNomeSigno(s)).join(', '),
   );
 
   let erros = 0;
@@ -154,7 +159,7 @@ async function executarRoboSidusAstro(): Promise<void> {
       await processarSigno(signosDoDia[i], data, i);
     } catch (erro) {
       erros++;
-      console.error('\n❌ ERRO no signo ' + NOMES_SIGNOS[signosDoDia[i]] + ':');
+      console.error('\n❌ ERRO no signo ' + obterNomeSigno(signosDoDia[i]) + ':');
       console.error(erro);
     }
   }
@@ -166,7 +171,9 @@ async function executarRoboSidusAstro(): Promise<void> {
   console.log(
     process.env.SKIP_PUBLICAR === '1'
       ? '\n🏁 Automação concluída — vídeos em output/ (sem publicar no Buffer).'
-      : '\n🏁 Automação concluída — vídeos publicados em Instagram + TikTok!',
+      : isLocaleUS()
+        ? '\n🏁 Automação concluída — vídeos publicados em TikTok US (@sidusastro_en)!'
+        : '\n🏁 Automação concluída — vídeos publicados em Instagram + TikTok!',
   );
 }
 
