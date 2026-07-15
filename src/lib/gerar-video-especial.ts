@@ -2,12 +2,19 @@ import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import { publicarEmTodosOsCanais } from './buffer';
-import { horaLisboaParaISO, resolverDueAtFuturo } from './buffer-agenda';
+import { horaFusoParaISO, resolverDueAtFuturo } from './buffer-agenda';
 import { calcularDuracaoFrames } from './duracao-video';
 import { obterImagemFundo, obterImagemFundoZenAstrologia } from './imagem-fundo';
+import {
+  isLocaleUS,
+  obterFusoPublicacao,
+  subpastaVideosEspeciaisFirebase,
+  sufixoIdVideoEspecial,
+  urlSiteMarca,
+} from './locale';
 import { prepararMusicaEspecial } from './musicas';
 import { calcularSegmentosProgressivos } from './texto-progressivo';
-import { gerarNarracaoPtPt } from './voz';
+import { gerarNarracao } from './voz';
 import type { SignoZodiaco } from './signos';
 
 interface PropsVideoEspecial {
@@ -17,6 +24,7 @@ interface PropsVideoEspecial {
   imagemFundoUrl: string;
   musicaFundoArquivo: string;
   duracaoFrames: number;
+  siteMarca?: string;
   segmentosEcra?: Array<{ texto: string; frameInicio: number }>;
 }
 
@@ -30,9 +38,7 @@ export interface OpcoesVideoEspecial {
   generoVoz: 'feminina' | 'masculina' | 'aleatoria';
   tipoMusica?: 'zen' | 'mistico' | 'viral';
   slotHorario?: string;
-  /** Segmentos de texto no ecrã — sincronizados com a narração */
   segmentosEcra?: string[];
-  /** Fundo zen/astrologia/horóscopo (vídeos especiais) */
   fundoZenAstrologia?: boolean;
 }
 
@@ -57,19 +63,20 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
   garantirPasta('./public');
   garantirPasta('./output');
 
+  const idPublicacao = sufixoIdVideoEspecial(opcoes.id);
   const signoChave = 'caranguejo' as SignoZodiaco;
 
   const imagemFundoUrl = opcoes.fundoZenAstrologia
-    ? await obterImagemFundoZenAstrologia(opcoes.id, opcoes.data)
+    ? await obterImagemFundoZenAstrologia(idPublicacao, opcoes.data)
     : await obterImagemFundo(signoChave, opcoes.data);
   const musicaFundoArquivo = await prepararMusicaEspecial(
-    opcoes.id,
+    idPublicacao,
     opcoes.data,
     opcoes.tipoMusica ?? 'zen',
   );
 
-  console.log('🎙️ Narração especial (' + opcoes.generoVoz + ')');
-  await gerarNarracaoPtPt(opcoes.textoNarracao, './public/narracao.mp3', opcoes.generoVoz);
+  console.log('🎙️ Narração especial (' + opcoes.generoVoz + ') [' + (isLocaleUS() ? 'en-US' : 'pt-PT') + ']');
+  await gerarNarracao(opcoes.textoNarracao, './public/narracao.mp3', opcoes.generoVoz);
 
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3', 90);
 
@@ -97,6 +104,7 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
     imagemFundoUrl,
     musicaFundoArquivo,
     duracaoFrames,
+    siteMarca: urlSiteMarca(),
     segmentosEcra: segmentosProgressivos,
   };
 
@@ -104,21 +112,23 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
   fs.writeFileSync(caminhoProps, JSON.stringify(props, null, 2));
 
   try {
-    renderizarVideoEspecial(opcoes.id);
-    const caminhoOutput = path.resolve('./output/' + opcoes.id + '.mp4');
+    renderizarVideoEspecial(idPublicacao);
+    const caminhoOutput = path.resolve('./output/' + idPublicacao + '.mp4');
 
     const dueAtCustom = opcoes.slotHorario
-      ? resolverDueAtFuturo(horaLisboaParaISO(opcoes.data, opcoes.slotHorario))
+      ? resolverDueAtFuturo(
+          horaFusoParaISO(opcoes.data, opcoes.slotHorario, obterFusoPublicacao()),
+        )
       : undefined;
 
     await publicarEmTodosOsCanais(
-      opcoes.id,
+      idPublicacao,
       caminhoOutput,
       opcoes.data,
       (service) =>
         service.toLowerCase() === 'instagram' ? opcoes.legendas.instagram : opcoes.legendas.tiktok,
       {
-        subpasta: 'videos-especiais',
+        subpasta: subpastaVideosEspeciaisFirebase(),
         dueAtCustom,
       },
     );

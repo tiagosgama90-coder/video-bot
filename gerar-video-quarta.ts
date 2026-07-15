@@ -1,48 +1,45 @@
 import dotenv from 'dotenv';
 import { gerarVideoEspecial } from './src/lib/gerar-video-especial';
-import {
-  TEXTO_AFILIADOS_FALADO,
-  TEXTO_AFILIADOS_ECRA,
-  TITULO_AFILIADOS,
-  LEGENDA_AFILIADOS_TIKTOK,
-  LEGENDA_AFILIADOS_INSTAGRAM,
-  SLOT_ESPECIAL_LISBOA,
-} from './src/lib/conteudo-especial';
-import { obterDataLisboa } from './src/lib/signos';
+import { obterConteudoAfiliados, obterSlotEspecial } from './src/lib/conteudo-especial';
+import { isLocaleUS, sufixoIdVideoEspecial } from './src/lib/locale';
+import { obterDataPublicacao } from './src/lib/signos';
 import { inicializarFirebaseSeNecessario } from './src/lib/inicializar-app';
 
 dotenv.config();
 inicializarFirebaseSeNecessario();
+
 async function executar(): Promise<void> {
-  const data = obterDataLisboa();
-  console.log('💰 SidusAstro — Vídeo Afiliados (Quarta-feira)');
-  console.log('📅 Data (Lisboa): ' + data);
-  console.log('🏷️ Título no ecrã: ' + TITULO_AFILIADOS);
-  console.log('🖥️ Texto no ecrã:\n' + TEXTO_AFILIADOS_ECRA);
-  console.log('🎙️ Narração:\n' + TEXTO_AFILIADOS_FALADO);
-  console.log('\n📋 Legenda TikTok:\n' + LEGENDA_AFILIADOS_TIKTOK);
-  console.log('\n📋 Legenda Instagram:\n' + LEGENDA_AFILIADOS_INSTAGRAM);
+  const data = obterDataPublicacao();
+  const conteudo = obterConteudoAfiliados();
+  const id = sufixoIdVideoEspecial('afiliados-quarta');
+  const mercado = isLocaleUS() ? 'US (@sidusastro_en)' : 'PT';
+
+  console.log('💰 SidusAstro — Vídeo Afiliados (Quarta-feira) [' + mercado + ']');
+  console.log('📅 Data: ' + data);
+  console.log('🏷️ Título no ecrã: ' + conteudo.titulo);
+  console.log('🖥️ Texto no ecrã:\n' + conteudo.textoEcra);
+  console.log('🎙️ Narração:\n' + conteudo.textoNarracao);
+  console.log('\n📋 Legenda TikTok:\n' + conteudo.legendas.tiktok);
 
   await gerarVideoEspecial({
     id: 'afiliados-quarta',
-    titulo: TITULO_AFILIADOS,
-    textoEcra: TEXTO_AFILIADOS_ECRA,
-    textoNarracao: TEXTO_AFILIADOS_FALADO,
+    titulo: conteudo.titulo,
+    textoEcra: conteudo.textoEcra,
+    textoNarracao: conteudo.textoNarracao,
     fundoZenAstrologia: true,
-    legendas: {
-      tiktok: LEGENDA_AFILIADOS_TIKTOK,
-      instagram: LEGENDA_AFILIADOS_INSTAGRAM,
-    },
+    legendas: conteudo.legendas,
     data,
     generoVoz: 'feminina',
     tipoMusica: 'zen',
-    slotHorario: SLOT_ESPECIAL_LISBOA,
+    slotHorario: obterSlotEspecial(),
   });
 
   console.log(
     process.env.SKIP_PUBLICAR === '1'
-      ? '\n🏁 Vídeo de afiliados concluído em output/afiliados-quarta.mp4 (sem publicar no Buffer).'
-      : '\n🏁 Vídeo de afiliados concluído e enfileirado no Buffer!',
+      ? '\n🏁 Vídeo de afiliados concluído em output/' + id + '.mp4 (sem publicar no Buffer).'
+      : isLocaleUS()
+        ? '\n🏁 Vídeo de afiliados US concluído e enfileirado no TikTok @sidusastro_en!'
+        : '\n🏁 Vídeo de afiliados concluído e enfileirado no Buffer!',
   );
 }
 
