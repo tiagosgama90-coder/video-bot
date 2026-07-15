@@ -176,13 +176,16 @@ function hashTexto(seed: string): number {
   return hash;
 }
 
-/** Produção: uma frase por data (cada segunda é diferente). Local: aleatória a cada execução. */
-export function escolherFraseMotivacional(data: string): string {
+/** Produção: uma frase por data (cada segunda/quinta é diferente). Local: aleatória a cada execução. */
+export function escolherFraseMotivacional(
+  data: string,
+  variante: 'segunda' | 'quinta' = 'segunda',
+): string {
   const frases = isLocaleUS() ? FRASES_MOTIVACIONAIS_EN : FRASES_MOTIVACIONAIS;
   if (process.env.TESTE_LOCAL === '1') {
     return frases[crypto.randomInt(0, frases.length)];
   }
-  const indice = hashTexto('motiv-' + data) % frases.length;
+  const indice = hashTexto('motiv-' + variante + '-' + data) % frases.length;
   return frases[indice];
 }
 

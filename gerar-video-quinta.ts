@@ -6,30 +6,30 @@ import {
   obterSlotEspecial,
   obterTituloMotivacional,
 } from './src/lib/conteudo-especial';
+import { exigirDiaSemana } from './src/lib/dia-semana';
 import { isLocaleUS, sufixoIdVideoEspecial } from './src/lib/locale';
 import { obterDataPublicacao } from './src/lib/signos';
 import { inicializarFirebaseSeNecessario } from './src/lib/inicializar-app';
-import { exigirDiaSemana } from './src/lib/dia-semana';
 
 dotenv.config();
 inicializarFirebaseSeNecessario();
 
 async function executar(): Promise<void> {
-  exigirDiaSemana(1, 'segundas-feiras');
+  exigirDiaSemana(4, 'quintas-feiras');
 
   const data = obterDataPublicacao();
-  const frase = escolherFraseMotivacional(data, 'segunda');
+  const frase = escolherFraseMotivacional(data, 'quinta');
   const legendas = obterLegendasMotivacional();
-  const id = sufixoIdVideoEspecial('motivacao-segunda');
+  const id = sufixoIdVideoEspecial('motivacao-quinta');
   const mercado = isLocaleUS() ? 'US (@sidusastro_en)' : 'PT';
 
-  console.log('✨ SidusAstro — Vídeo Motivacional (Segunda-feira) [' + mercado + ']');
+  console.log('✨ SidusAstro — Vídeo Motivacional (Quinta-feira) [' + mercado + ']');
   console.log('📅 Data: ' + data);
   console.log('💬 Frase: "' + frase + '"');
   console.log('\n📋 Legenda TikTok:\n' + legendas.tiktok);
 
   await gerarVideoEspecial({
-    id: 'motivacao-segunda',
+    id: 'motivacao-quinta',
     titulo: obterTituloMotivacional(),
     textoEcra: frase,
     textoNarracao: frase,

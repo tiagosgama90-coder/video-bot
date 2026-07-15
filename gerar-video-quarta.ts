@@ -4,11 +4,14 @@ import { obterConteudoAfiliados, obterSlotEspecial } from './src/lib/conteudo-es
 import { isLocaleUS, sufixoIdVideoEspecial } from './src/lib/locale';
 import { obterDataPublicacao } from './src/lib/signos';
 import { inicializarFirebaseSeNecessario } from './src/lib/inicializar-app';
+import { exigirDiaSemana } from './src/lib/dia-semana';
 
 dotenv.config();
 inicializarFirebaseSeNecessario();
 
 async function executar(): Promise<void> {
+  exigirDiaSemana(3, 'quartas-feiras');
+
   const data = obterDataPublicacao();
   const conteudo = obterConteudoAfiliados();
   const id = sufixoIdVideoEspecial('afiliados-quarta');

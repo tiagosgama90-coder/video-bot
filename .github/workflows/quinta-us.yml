@@ -1,0 +1,82 @@
+name: Vídeo Quinta-feira US (Motivacional)
+
+# Disparo via cron-job.org às quintas (fuso New York).
+# Publica só no TikTok @sidusastro_en em inglês.
+on:
+  workflow_dispatch:
+
+jobs:
+  gerar-motivacional-quinta-us:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Instalar FFmpeg e dependências Remotion
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg \
+            libnss3 libdbus-1-3 libatk1.0-0 libatk-bridge2.0-0 \
+            libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 \
+            libxfixes3 libxrandr2 libgbm1 libasound2t64 libpango-1.0-0 libcairo2
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Instalar Chrome para Remotion
+        run: npx remotion browser ensure
+
+      - name: Validar secrets obrigatórios (US)
+        run: |
+          faltam=""
+          for nome in FIREBASE_ADMIN_JSON BUFFER_ACCESS_TOKEN BUFFER_TIKTOK_US_CHANNEL_ID FIREBASE_STORAGE_BUCKET AZURE_SPEECH_KEY; do
+            eval "valor=\$$nome"
+            if [ -z "$valor" ]; then faltam="$faltam $nome"; fi
+          done
+          if [ -n "$faltam" ]; then
+            echo "Secrets em falta:$faltam"
+            exit 1
+          fi
+          echo "Todos os secrets US presentes."
+        env:
+          FIREBASE_ADMIN_JSON: ${{ secrets.FIREBASE_ADMIN_JSON }}
+          BUFFER_ACCESS_TOKEN: ${{ secrets.BUFFER_ACCESS_TOKEN }}
+          BUFFER_TIKTOK_US_CHANNEL_ID: ${{ secrets.BUFFER_TIKTOK_US_CHANNEL_ID }}
+          FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+
+      - name: Configurar credenciais Firebase
+        run: |
+          printf '%s' "$FIREBASE_ADMIN_JSON" > firebase-admin.json
+          node -e "const j=JSON.parse(require('fs').readFileSync('firebase-admin.json','utf8')); if(!j.project_id||!j.private_key) throw new Error('JSON invalido'); console.log('firebase-admin.json OK — project:', j.project_id)"
+        env:
+          FIREBASE_ADMIN_JSON: ${{ secrets.FIREBASE_ADMIN_JSON }}
+
+      - name: Gerar vídeo motivacional US (quinta)
+        run: npx ts-node gerar-video-quinta.ts
+        env:
+          CI: true
+          LOCALE: en-US
+          BUFFER_ACCESS_TOKEN: ${{ secrets.BUFFER_ACCESS_TOKEN }}
+          BUFFER_TIKTOK_US_CHANNEL_ID: ${{ secrets.BUFFER_TIKTOK_US_CHANNEL_ID }}
+          BUFFER_TIKTOK_US_USERNAME: sidusastro_en
+          FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+          AZURE_SPEECH_REGION: northeurope
+
+      - name: Guardar vídeo como artefacto
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: video-motivacional-quinta-us
+          path: output/motivacao-quinta-us.mp4
+          retention-days: 7
+          if-no-files-found: ignore
