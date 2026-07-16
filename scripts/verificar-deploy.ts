@@ -32,12 +32,18 @@ if (horoscopoSite.includes('sua|você|voce|seu|sua')) {
 
 exigirFicheiro('./gerar-video-segunda.ts');
 exigirTexto('./gerar-video-segunda.ts', 'escolherFraseMotivacional', 'Segunda: frase motivacional');
-exigirTexto('./gerar-video-segunda.ts', 'SLOT_ESPECIAL_LISBOA', 'Segunda: slot 14:00');
+exigirTexto('./gerar-video-segunda.ts', 'obterSlotEspecial', 'Segunda: slot especial');
+exigirTexto('./src/lib/conteudo-especial.ts', 'SLOT_ESPECIAL_LISBOA', 'Slot especial Lisboa');
 
 exigirFicheiro('./gerar-video-quarta.ts');
-exigirTexto('./gerar-video-quarta.ts', 'TITULO_AFILIADOS', 'Quarta: título afiliados');
+exigirTexto('./gerar-video-quarta.ts', 'obterConteudoAfiliados', 'Quarta: conteúdo afiliados');
 exigirTexto('./gerar-video-quarta.ts', 'fundoZenAstrologia: true', 'Quarta: fundo zen');
 exigirTexto('./src/lib/conteudo-especial.ts', "export const TITULO_AFILIADOS = 'SIDUSASTRO'", 'Afiliados: SIDUSASTRO');
+
+exigirFicheiro('./gerar-video-quinta.ts');
+exigirTexto('./gerar-video-quinta.ts', 'escolherFraseMotivacional', 'Quinta: frase motivacional');
+exigirTexto('./gerar-video-quinta.ts', 'obterSlotEspecial', 'Quinta: slot especial');
+exigirTexto('./gerar-video-quinta.ts', "escolherFraseMotivacional(data, 'quinta')", 'Quinta: variante frase');
 
 exigirFicheiro('./.github/workflows/diario.yml');
 exigirTexto('./.github/workflows/diario.yml', 'workflow_dispatch', 'Diário: disparo externo');
@@ -58,5 +64,15 @@ const quartaWorkflow = fs.readFileSync('./.github/workflows/quarta.yml', 'utf8')
 if (/^\s*schedule:\s*$/m.test(quartaWorkflow) || quartaWorkflow.includes("cron: '")) {
   throw new Error('quarta.yml: remover cron GitHub — usar cron-job.org');
 }
+
+exigirFicheiro('./.github/workflows/quinta.yml');
+exigirTexto('./.github/workflows/quinta.yml', 'workflow_dispatch', 'Quinta: disparo externo');
+const quintaWorkflow = fs.readFileSync('./.github/workflows/quinta.yml', 'utf8');
+if (/^\s*schedule:\s*$/m.test(quintaWorkflow) || quintaWorkflow.includes("cron: '")) {
+  throw new Error('quinta.yml: remover cron GitHub — usar cron-job.org');
+}
+
+exigirFicheiro('./.github/workflows/quinta-us.yml');
+exigirTexto('./.github/workflows/quinta-us.yml', 'workflow_dispatch', 'Quinta US: disparo externo');
 
 console.log('✅ Todos os scripts e workflows estão actualizados para produção.');
