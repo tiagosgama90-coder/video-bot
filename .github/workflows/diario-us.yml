@@ -1,7 +1,7 @@
 name: Horóscopo Diário US (sidusastro_en)
 
-# Disparo manual ou via cron-job.org (horário US — ver scripts/configurar-cron-externo.sh).
-# Publica só no TikTok @sidusastro_en em inglês.
+# Disparo via cron-job.org às 07:30 America/New_York (scripts/configurar-cron-us.sh).
+# Publica só no TikTok @sidusastro_en em inglês. Slots Buffer: 09:00/10:30/12:00 NY.
 on:
   workflow_dispatch:
 
