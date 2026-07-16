@@ -5,6 +5,10 @@ name: Horóscopo Diário US (sidusastro_en)
 on:
   workflow_dispatch:
 
+concurrency:
+  group: diario-us-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   gerar-e-publicar-us:
     runs-on: ubuntu-latest

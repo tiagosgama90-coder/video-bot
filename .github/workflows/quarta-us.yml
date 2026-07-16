@@ -1,9 +1,13 @@
 name: Vídeo Quarta-feira US (Afiliados)
 
-# Disparo manual ou cron-job.org às quartas (fuso EST).
+# Disparo via cron-job.org às 07:30 America/New_York às quartas (scripts/configurar-todos-crons.sh).
 # Publica só no TikTok @sidusastro_en em inglês.
 on:
   workflow_dispatch:
+
+concurrency:
+  group: especial-us-quarta-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   gerar-afiliados-us:

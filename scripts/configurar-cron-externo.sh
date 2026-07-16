@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Configura cron-job.org para disparar o workflow diário às 07:15 Lisboa.
-# Site atualiza horóscopo ~07:00 → bot arranca 07:15 → Buffer publica 09:00/10:30/12:00.
+# Configura cron-job.org para disparar o workflow diário às 07:30 Lisboa.
+# Site atualiza horóscopo ~07:00 → bot arranca 07:30 (espera até 30 min pelo Firebase) → Buffer 09:00/10:30/12:00.
 set -euo pipefail
 
 REPO_OWNER="${GITHUB_REPO_OWNER:-tiagosgama90-coder}"
@@ -10,7 +10,7 @@ BRANCH="${GITHUB_REF_NAME:-main}"
 CRON_API="https://api.cron-job.org"
 JOB_TITLE="SidusAstro Horóscopo Diário"
 SCHEDULE_HOUR=7
-SCHEDULE_MINUTE=15
+SCHEDULE_MINUTE=30
 TIMEZONE="Europe/Lisbon"
 
 GITHUB_DISPATCH_URL="https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/workflows/${WORKFLOW_FILE}/dispatches"
@@ -165,5 +165,5 @@ echo "   Console:    https://console.cron-job.org/jobs/${JOB_ID}"
 echo "   Actions:    https://github.com/${REPO_OWNER}/${REPO_NAME}/actions"
 echo ""
 echo "   O workflow de hoje já foi disparado no teste de validação."
-echo "   Amanhã às 07:15 o cron-job.org dispara automaticamente."
+echo "   Amanhã às 07:30 o cron-job.org dispara automaticamente."
 echo "══════════════════════════════════════════════════════════"

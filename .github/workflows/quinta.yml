@@ -1,8 +1,12 @@
 name: Vídeo Quinta-feira (Motivacional)
 
-# Disparo via cron-job.org às quintas (fuso Lisboa).
+# Disparo via cron-job.org às 07:30 Lisboa às quintas (scripts/configurar-todos-crons.sh).
 on:
   workflow_dispatch:
+
+concurrency:
+  group: especial-pt-quinta-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   gerar-motivacional-quinta:
