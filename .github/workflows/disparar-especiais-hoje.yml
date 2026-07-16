@@ -1,0 +1,73 @@
+name: Disparar vídeos especiais hoje
+
+# Dispara segunda/quarta/quinta PT e US conforme o dia (fuso local).
+# Uso: push em .github/triggers/disparar-especiais-hoje ou workflow_dispatch manual.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/triggers/disparar-especiais-hoje'
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  disparar-pt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disparar especial PT (se hoje for seg/qua/qui em Lisboa)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const mapa = {
+              Monday: 'segunda.yml',
+              Wednesday: 'quarta.yml',
+              Thursday: 'quinta.yml',
+            };
+            const dia = new Date().toLocaleDateString('en-US', {
+              timeZone: 'Europe/Lisbon',
+              weekday: 'long',
+            });
+            const workflow = mapa[dia];
+            if (!workflow) {
+              core.info('Hoje em Lisboa (' + dia + ') — sem vídeo especial PT.');
+              return;
+            }
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: workflow,
+              ref: 'main',
+            });
+            core.info('Especial PT disparado: ' + workflow);
+
+  disparar-us:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disparar especial US (se hoje for seg/qua/qui em New York)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const mapa = {
+              Monday: 'segunda-us.yml',
+              Wednesday: 'quarta-us.yml',
+              Thursday: 'quinta-us.yml',
+            };
+            const dia = new Date().toLocaleDateString('en-US', {
+              timeZone: 'America/New_York',
+              weekday: 'long',
+            });
+            const workflow = mapa[dia];
+            if (!workflow) {
+              core.info('Hoje em New York (' + dia + ') — sem vídeo especial US.');
+              return;
+            }
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: workflow,
+              ref: 'main',
+            });
+            core.info('Especial US disparado: ' + workflow);
