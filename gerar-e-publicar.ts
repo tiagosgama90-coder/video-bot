@@ -154,9 +154,11 @@ async function executarRoboSidusAstro(): Promise<void> {
   );
 
   let erros = 0;
+  let sucessos = 0;
   for (let i = 0; i < signosDoDia.length; i++) {
     try {
       await processarSigno(signosDoDia[i], data, i);
+      sucessos++;
     } catch (erro) {
       erros++;
       console.error('\n❌ ERRO no signo ' + obterNomeSigno(signosDoDia[i]) + ':');
@@ -164,8 +166,18 @@ async function executarRoboSidusAstro(): Promise<void> {
     }
   }
 
+  if (sucessos === 0) {
+    throw new Error('Nenhum vídeo foi gerado/publicado — todos os signos falharam.');
+  }
+
   if (erros > 0) {
-    throw new Error(erros + ' signo(s) falharam na geração/publicação.');
+    console.log(
+      '\n⚠️ ' +
+        erros +
+        ' signo(s) falharam, mas ' +
+        sucessos +
+        ' vídeo(s) foram publicados com sucesso. O workflow continua OK.',
+    );
   }
 
   console.log(
