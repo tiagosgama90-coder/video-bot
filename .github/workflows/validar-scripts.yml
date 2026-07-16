@@ -1,0 +1,29 @@
+name: Validar scripts de produção
+
+# Impede merges que quebrem verificar-deploy (como o bug do slot especial).
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verificar-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Verificar scripts actualizados
+        run: npx ts-node scripts/verificar-deploy.ts
+        env:
+          GITHUB_SHA: ${{ github.sha }}
