@@ -37,10 +37,7 @@ jobs:
       - name: Instalar dependências
         run: npm ci
 
-      - name: Verificar scripts actualizados (horóscopo + fecho)
-        run: npx ts-node scripts/verificar-deploy.ts
-        env:
-          GITHUB_SHA: ${{ github.sha }}
+      # Validação de código: só em validar-scripts.yml (push/PR). Não bloquear produção.
 
       - name: Instalar Chrome para Remotion
         run: npx remotion browser ensure

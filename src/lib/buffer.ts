@@ -53,25 +53,53 @@ function obterAccessToken(): string {
   return token;
 }
 
-async function chamarBuffer<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
-  const resposta = await axios.post(
-    'https://api.buffer.com',
-    { query, variables },
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + obterAccessToken(),
-      },
-      timeout: 60_000,
-    },
-  );
+async function dormir(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
-  const erros = resposta.data?.errors;
-  if (erros?.length) {
-    throw new Error('Buffer GraphQL: ' + JSON.stringify(erros));
+async function chamarBuffer<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
+  const maxTentativas = 3;
+  let ultimoErro: unknown;
+
+  for (let tentativa = 1; tentativa <= maxTentativas; tentativa++) {
+    try {
+      const resposta = await axios.post(
+        'https://api.buffer.com',
+        { query, variables },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + obterAccessToken(),
+          },
+          timeout: 60_000,
+        },
+      );
+
+      const erros = resposta.data?.errors;
+      if (erros?.length) {
+        throw new Error('Buffer GraphQL: ' + JSON.stringify(erros));
+      }
+
+      return resposta.data as T;
+    } catch (erro) {
+      ultimoErro = erro;
+      if (tentativa < maxTentativas) {
+        const esperaMs = tentativa * 3000;
+        console.log(
+          '⚠️ Buffer API falhou (tentativa ' +
+            tentativa +
+            '/' +
+            maxTentativas +
+            '). A repetir em ' +
+            esperaMs / 1000 +
+            's...',
+        );
+        await dormir(esperaMs);
+      }
+    }
   }
 
-  return resposta.data as T;
+  throw ultimoErro;
 }
 
 export async function listarCanaisBuffer(): Promise<BufferChannel[]> {

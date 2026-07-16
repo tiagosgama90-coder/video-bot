@@ -25,10 +25,7 @@ exigirTexto('./gerar-e-publicar.ts', 'fechoEcra', 'Horóscopo: fecho no ecrã');
 
 exigirFicheiro('./src/lib/horoscopoSite.ts');
 exigirTexto('./src/lib/horoscopoSite.ts', 'apiTextoValidoParaHoroscopo', 'Pack IA Firestore');
-const horoscopoSite = fs.readFileSync('./src/lib/horoscopoSite.ts', 'utf8');
-if (horoscopoSite.includes('sua|você|voce|seu|sua')) {
-  throw new Error('Filtro PT-BR ainda rejeita pack IA do site');
-}
+exigirTexto('./src/lib/horoscopoSite.ts', 'pequenos passos', 'Filtro texto placeholder IA');
 
 exigirFicheiro('./gerar-video-segunda.ts');
 exigirTexto('./gerar-video-segunda.ts', 'escolherFraseMotivacional', 'Segunda: frase motivacional');
