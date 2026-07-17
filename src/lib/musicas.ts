@@ -5,20 +5,25 @@ import path from 'path';
 import { execSync } from 'child_process';
 import axios from 'axios';
 
-/** 12+ faixas zen/calmas — SoundHelix royalty-free */
+/**
+ * Faixas zen / new-age / ambient — estilo Enigma anos 90 (canto etéreo, pads lentos).
+ * Mixkit License — royalty-free.
+ */
 const POOL_MUSICAS_ZEN: string[] = [
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-14.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3',
+  'https://assets.mixkit.co/music/127/127.mp3',
+  'https://assets.mixkit.co/music/292/292.mp3',
+  'https://assets.mixkit.co/music/138/138.mp3',
+  'https://assets.mixkit.co/music/139/139.mp3',
+  'https://assets.mixkit.co/music/441/441.mp3',
+  'https://assets.mixkit.co/music/571/571.mp3',
+  'https://assets.mixkit.co/music/588/588.mp3',
+  'https://assets.mixkit.co/music/607/607.mp3',
+  'https://assets.mixkit.co/music/324/324.mp3',
+  'https://assets.mixkit.co/music/993/993.mp3',
+  'https://assets.mixkit.co/music/726/726.mp3',
+  'https://assets.mixkit.co/music/749/749.mp3',
+  'https://assets.mixkit.co/music/584/584.mp3',
+  'https://assets.mixkit.co/music/444/444.mp3',
 ];
 
 /**
@@ -37,8 +42,8 @@ const POOL_MUSICAS_ESTILO_VIRAL: string[] = [
   'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3',
 ];
 
-/** Probabilidade de escolher faixa estilo viral (royalty-free) */
-const PROBABILIDADE_ESTILO_VIRAL = 0.3;
+/** Sempre zen — sem faixas upbeat nos vídeos diários */
+const PROBABILIDADE_ESTILO_VIRAL = 0;
 
 function caminhoPublico(nomeFicheiro: string): string {
   return path.resolve('./public/' + nomeFicheiro);
@@ -65,12 +70,15 @@ async function descarregarMusica(url: string, destino: string): Promise<void> {
 function gerarMusicaOffline(destino: string, indice: number): void {
   const frequencias = [174, 285, 396, 417, 432, 528, 639, 741];
   const freq = frequencias[indice % frequencias.length];
+  const harmonia = Math.round(freq * 1.5);
   const destinoWin = destino.replace(/\//g, path.sep);
 
   execSync(
     'ffmpeg -y -f lavfi -i "sine=frequency=' +
       freq +
-      ':duration=45" -af "volume=0.06,afade=t=in:st=0:d=2,afade=t=out:st=43:d=2" -ar 44100 -ac 1 -b:a 96k "' +
+      ':duration=50" -f lavfi -i "sine=frequency=' +
+      harmonia +
+      ':duration=50" -filter_complex "[0:a][1:a]amix=inputs=2:duration=first,volume=0.04,afade=t=in:st=0:d=3,afade=t=out:st=47:d=3" -ar 44100 -ac 2 -b:a 128k "' +
       destinoWin +
       '"',
     { stdio: 'ignore' },

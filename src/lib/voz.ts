@@ -18,8 +18,8 @@ const VOZES_AZURE_PT: VozNeural[] = [
 ];
 
 const VOZES_AZURE_EN: VozNeural[] = [
-  { id: 'en-US-JennyNeural', genero: 'feminina', origem: 'azure', lang: 'en-US' },
-  { id: 'en-US-GuyNeural', genero: 'masculina', origem: 'azure', lang: 'en-US' },
+  { id: 'en-US-AriaNeural', genero: 'feminina', origem: 'azure', lang: 'en-US' },
+  { id: 'en-US-RogerNeural', genero: 'masculina', origem: 'azure', lang: 'en-US' },
 ];
 
 const VOZ_HELIA: VozNeural = {
@@ -29,7 +29,7 @@ const VOZ_HELIA: VozNeural = {
   lang: 'pt-PT',
 };
 
-const VELOCIDADE_HELIA = 0.85;
+const VELOCIDADE_HELIA = 0.78;
 
 function obterVozesAzure(): VozNeural[] {
   return isLocaleUS() ? VOZES_AZURE_EN : VOZES_AZURE_PT;
@@ -42,6 +42,14 @@ function escapeXml(texto: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;');
+}
+
+/** Pausas suaves entre frases — narração mais humana e serena */
+function prepararTextoSsml(texto: string): string {
+  const escapado = escapeXml(texto);
+  return escapado
+    .replace(/([.!?…])\s+/g, '$1<break time="450ms"/> ')
+    .replace(/([,;:])\s+/g, '$1<break time="200ms"/> ');
 }
 
 export function escolherVozAleatoria(
@@ -69,8 +77,8 @@ async function gerarNarracaoAzure(
     throw new Error('Azure Speech não configurado');
   }
 
-  const pitch = voz.genero === 'masculina' ? '-4%' : '-2%';
-  const rate = isLocaleUS() ? '-8%' : '-12%';
+  const pitch = voz.genero === 'masculina' ? '-6%' : '-3%';
+  const rate = isLocaleUS() ? '-14%' : '-18%';
 
   const ssml =
     "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='" +
@@ -83,8 +91,8 @@ async function gerarNarracaoAzure(
     rate +
     "' pitch='" +
     pitch +
-    "'>" +
-    escapeXml(texto) +
+    "' volume='soft'>" +
+    prepararTextoSsml(texto) +
     '</prosody></voice></speak>';
 
   const endpoint =
