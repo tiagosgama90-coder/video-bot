@@ -6,22 +6,29 @@ import { execSync } from 'child_process';
 import axios from 'axios';
 
 /**
- * Faixas zen / new-age / ambient — estilo Enigma anos 90 (canto etéreo, pads lentos).
- * Mixkit License — royalty-free.
+ * New age / Enigma / worldbeat — pads etéreos, ritmos tribais suaves, atmosfera zen.
+ * Mixkit License — royalty-free. Aplica-se a PT-PT e en-US (mesmo pool).
  */
 const POOL_MUSICAS_ZEN: string[] = [
-  'https://assets.mixkit.co/music/441/441.mp3',
-  'https://assets.mixkit.co/music/444/444.mp3',
+  // Worldbeat / étnico suave
+  'https://assets.mixkit.co/music/21/21.mp3',
+  'https://assets.mixkit.co/music/37/37.mp3',
+  'https://assets.mixkit.co/music/45/45.mp3',
+  'https://assets.mixkit.co/music/178/178.mp3',
+  'https://assets.mixkit.co/music/233/233.mp3',
+  'https://assets.mixkit.co/music/1084/1084.mp3',
+  // Místico / Enigma
+  'https://assets.mixkit.co/music/114/114.mp3',
   'https://assets.mixkit.co/music/138/138.mp3',
   'https://assets.mixkit.co/music/139/139.mp3',
-  'https://assets.mixkit.co/music/726/726.mp3',
-  'https://assets.mixkit.co/music/749/749.mp3',
-  'https://assets.mixkit.co/music/127/127.mp3',
-  'https://assets.mixkit.co/music/607/607.mp3',
+  'https://assets.mixkit.co/music/141/141.mp3',
+  'https://assets.mixkit.co/music/325/325.mp3',
+  'https://assets.mixkit.co/music/538/538.mp3',
+  'https://assets.mixkit.co/music/578/578.mp3',
+  // New age / ambient
   'https://assets.mixkit.co/music/324/324.mp3',
-  'https://assets.mixkit.co/music/584/584.mp3',
-  'https://assets.mixkit.co/music/588/588.mp3',
-  'https://assets.mixkit.co/music/292/292.mp3',
+  'https://assets.mixkit.co/music/441/441.mp3',
+  'https://assets.mixkit.co/music/442/442.mp3',
 ];
 
 /**
@@ -68,7 +75,7 @@ async function descarregarMusica(url: string, destino: string): Promise<void> {
 /** Remove silêncio inicial — muitas faixas ambient começam em mute */
 function prepararMusicaZen(destino: string): void {
   const destinoWin = destino.replace(/\//g, path.sep);
-  const temp = destino + '.tmp.mp3';
+  const temp = destino.replace(/\.mp3$/i, '') + '-trim.mp3';
   const tempWin = temp.replace(/\//g, path.sep);
 
   execSync(
