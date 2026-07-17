@@ -29,7 +29,7 @@ const VOZ_HELIA: VozNeural = {
   lang: 'pt-PT',
 };
 
-const VELOCIDADE_HELIA = 0.78;
+const VELOCIDADE_HELIA = 0.8;
 
 function obterVozesAzure(): VozNeural[] {
   return isLocaleUS() ? VOZES_AZURE_EN : VOZES_AZURE_PT;
@@ -44,12 +44,25 @@ function escapeXml(texto: string): string {
     .replace(/'/g, '&apos;');
 }
 
-/** Pausas suaves entre frases — narração mais humana e serena */
+/** Pausas suaves entre frases — narração zen, calma e humana */
 function prepararTextoSsml(texto: string): string {
   const escapado = escapeXml(texto);
   return escapado
-    .replace(/([.!?…])\s+/g, '$1<break time="450ms"/> ')
-    .replace(/([,;:])\s+/g, '$1<break time="200ms"/> ');
+    .replace(/([.!?…])\s+/g, '$1<break time="550ms"/> ')
+    .replace(/([,;:])\s+/g, '$1<break time="250ms"/> ');
+}
+
+/** Tom sereno: suave e relaxado — sem voz grave */
+function obterProsodiaSerena(voz: VozNeural): { rate: string; pitch: string; volume: string } {
+  if (voz.lang === 'pt-PT') {
+    return voz.genero === 'feminina'
+      ? { rate: '-15%', pitch: '+3%', volume: 'soft' }
+      : { rate: '-14%', pitch: '+1%', volume: 'soft' };
+  }
+
+  return voz.genero === 'feminina'
+    ? { rate: '-12%', pitch: '+2%', volume: 'soft' }
+    : { rate: '-11%', pitch: '0%', volume: 'soft' };
 }
 
 export function escolherVozAleatoria(
@@ -77,8 +90,7 @@ async function gerarNarracaoAzure(
     throw new Error('Azure Speech não configurado');
   }
 
-  const pitch = voz.genero === 'masculina' ? '-6%' : '-3%';
-  const rate = isLocaleUS() ? '-14%' : '-18%';
+  const prosodia = obterProsodiaSerena(voz);
 
   const ssml =
     "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='" +
@@ -88,10 +100,12 @@ async function gerarNarracaoAzure(
     voz.id +
     "'>" +
     "<prosody rate='" +
-    rate +
+    prosodia.rate +
     "' pitch='" +
-    pitch +
-    "' volume='soft'>" +
+    prosodia.pitch +
+    "' volume='" +
+    prosodia.volume +
+    "'>" +
     prepararTextoSsml(texto) +
     '</prosody></voice></speak>';
 
