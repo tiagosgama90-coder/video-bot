@@ -10,20 +10,18 @@ import axios from 'axios';
  * Mixkit License — royalty-free.
  */
 const POOL_MUSICAS_ZEN: string[] = [
-  'https://assets.mixkit.co/music/127/127.mp3',
-  'https://assets.mixkit.co/music/292/292.mp3',
+  'https://assets.mixkit.co/music/441/441.mp3',
+  'https://assets.mixkit.co/music/444/444.mp3',
   'https://assets.mixkit.co/music/138/138.mp3',
   'https://assets.mixkit.co/music/139/139.mp3',
-  'https://assets.mixkit.co/music/441/441.mp3',
-  'https://assets.mixkit.co/music/571/571.mp3',
-  'https://assets.mixkit.co/music/588/588.mp3',
-  'https://assets.mixkit.co/music/607/607.mp3',
-  'https://assets.mixkit.co/music/324/324.mp3',
-  'https://assets.mixkit.co/music/993/993.mp3',
   'https://assets.mixkit.co/music/726/726.mp3',
   'https://assets.mixkit.co/music/749/749.mp3',
+  'https://assets.mixkit.co/music/127/127.mp3',
+  'https://assets.mixkit.co/music/607/607.mp3',
+  'https://assets.mixkit.co/music/324/324.mp3',
   'https://assets.mixkit.co/music/584/584.mp3',
-  'https://assets.mixkit.co/music/444/444.mp3',
+  'https://assets.mixkit.co/music/588/588.mp3',
+  'https://assets.mixkit.co/music/292/292.mp3',
 ];
 
 /**
@@ -65,6 +63,23 @@ async function descarregarMusica(url: string, destino: string): Promise<void> {
   }
 
   fs.writeFileSync(destino, Buffer.from(resposta.data));
+}
+
+/** Remove silêncio inicial — muitas faixas ambient começam em mute */
+function prepararMusicaZen(destino: string): void {
+  const destinoWin = destino.replace(/\//g, path.sep);
+  const temp = destino + '.tmp.mp3';
+  const tempWin = temp.replace(/\//g, path.sep);
+
+  execSync(
+    'ffmpeg -y -i "' +
+      destinoWin +
+      '" -af "silenceremove=start_periods=1:start_duration=0.1:start_threshold=-40dB,afade=t=in:st=0:d=1.5" -ar 44100 -ac 2 -b:a 192k "' +
+      tempWin +
+      '"',
+    { stdio: 'ignore' },
+  );
+  fs.renameSync(temp, destino);
 }
 
 function gerarMusicaOffline(destino: string, indice: number): void {
@@ -153,6 +168,7 @@ export async function prepararMusicaEspecial(
   for (const url of urls) {
     try {
       await descarregarMusica(url, destino);
+      prepararMusicaZen(destino);
       console.log('✅ Música guardada: ' + nomeFicheiro);
       return nomeFicheiro;
     } catch (erro) {
