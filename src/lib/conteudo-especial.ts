@@ -1,89 +1,157 @@
 /* eslint-disable @remotion/deterministic-randomness -- script Node apenas */
 import crypto from 'crypto';
 import { isLocaleUS } from './locale';
+import { obterVarianteQuarta, type VarianteQuarta } from './quarta-alternada';
 
-export const TITULO_VIP_DIVULGACAO = 'VIP POR DIVULGAÇÃO';
-export const TITULO_VIP_DIVULGACAO_EN = 'VIP FOR PROMOTION';
+export const TITULO_VIP_DIVULGACAO = 'O TEU VIP VITALÍCIO';
+export const TITULO_VIP_DIVULGACAO_EN = 'YOUR LIFETIME VIP';
 
+/** Copy PNL + marketing — ecrã progressivo (gancho → benefício → prova → CTA) */
 export const SEGMENTOS_VIP_ECRA = [
-  'VIP por Divulgação ✨',
-  'Cria conteúdo autêntico — mapa astral, tarot ou oráculo do SidusAstro',
-  'Marca @sidusastro e sidusastro.com',
-  'Envia o pedido em sidusastro.com/pt/divulgacao-vip',
-  'VIP vitalício: mapa completo, tarot ilimitado, bússola cósmica e sinastria',
+  'E se o universo te desse acesso total. Para sempre?',
+  'Mapa astral completo · Tarot ilimitado · Oráculo sem limites',
+  'Tu já crias conteúdo. Agora transforma isso em VIP vitalício.',
+  '3 passos: grava · marca @sidusastro · envia o pedido',
+  'sidusastro.com/pt/divulgacao-vip — aprovação em 48 horas',
 ];
 
 export const SEGMENTOS_VIP_ECRA_EN = [
-  'VIP for Promotion ✨',
-  'Create authentic content — natal chart, tarot or oracle on SidusAstro',
-  'Tag @sidusastro and sidusastro.com',
-  'Submit at sidusastro.com/en/divulgacao-vip',
-  'Lifetime VIP: full chart, unlimited tarot, Cosmic Compass and synastry',
+  'What if the universe gave you full access. Forever?',
+  'Complete natal chart · Unlimited tarot · Oracle without limits',
+  'You already create content. Now turn it into lifetime VIP.',
+  '3 steps: record · tag @sidusastro · submit your request',
+  'sidusastro.com/en/divulgacao-vip — approval within 48 hours',
 ];
 
+/** Narração TTS — PNL: gancho, future pacing, prova social, pilha de benefícios, CTA */
 export const TEXTO_VIP_FALADO =
-  'Queres VIP vitalício no SidusAstro? Grava um vídeo curto ou publica um post a mostrar o mapa astral, o tarot ou o oráculo. ' +
-  'Inclui sidusastro.com e marca arroba sidusastro no Instagram ou TikTok. Story com menção também conta. ' +
-  'Depois envia o teu pedido em sidusastro.com, na página VIP por divulgação, com o link da publicação e o teu arroba. ' +
-  'A equipa analisa em até quarenta e oito horas úteis e activa o VIP na tua conta. ' +
-  'Recebes mapa astral completo, fases da lua em tempo real, numerologia, tarot ilimitado, bússola cósmica e sinastria. ' +
-  'VIP vitalício confirmado por escrito, sem renovações. Dúvidas? suporte.sidusapp arroba gmail.com.';
+  'Pára um segundo. E se te dissesse que podes ter o SidusAstro completo, para sempre, sem pagar mais nada? ' +
+  'Imagina abrir a app e sentir que o universo finalmente te responde: mapa astral profissional em PDF, tarot ilimitado em todos os baralhos, oráculo sem restrições, e a Bússola Cósmica de dois mil e vinte e seis, sempre contigo. ' +
+  'Milhares de pessoas já usam o SidusAstro para ler o céu e perceber o seu caminho. Agora podes juntar-te a elas com VIP vitalício, só por mostrares o que já amas. ' +
+  'É simples. Grava um vídeo curto ou publica um post com o mapa astral, o tarot ou o oráculo. Marca sidusastro.com e arroba sidusastro no Instagram ou TikTok. Story com menção também conta. ' +
+  'Depois envia o link da tua publicação em sidusastro.com, na página VIP por divulgação. A equipa analisa em até quarenta e oito horas úteis e activa o VIP na tua conta automaticamente. ' +
+  'VIP vitalício confirmado por escrito, sem renovações, sem letras pequenas. Mapa astral, fases da lua em tempo real, numerologia, sinastria e radar de afinidades. Tudo teu. ' +
+  'O universo já te deu o sinal. Agora é contigo. sidusastro.com barra pt barra divulgacao-vip.';
 
 export const TEXTO_VIP_FALADO_EN =
-  'Want lifetime VIP on SidusAstro? Record a short video or post showing the natal chart, tarot or oracle. ' +
-  'Include sidusastro.com and tag at sidusastro on Instagram or TikTok. Story mentions count too. ' +
-  'Then submit your request at sidusastro.com, on the VIP for Promotion page, with your post link and your handle. ' +
-  'Our team reviews within forty-eight business hours and activates VIP on your account. ' +
-  'You get a complete natal chart, real-time moon phases, numerology, unlimited tarot, Cosmic Compass and synastry. ' +
-  'Lifetime VIP confirmed in writing, no renewals. Questions? suporte.sidusapp at gmail.com.';
+  'Stop for a second. What if I told you that you could have full SidusAstro access, forever, without paying another cent? ' +
+  'Picture opening the app and feeling the universe finally answer: professional natal chart PDF, unlimited tarot across every deck, oracle without limits, and the Cosmic Compass for twenty twenty-six, always with you. ' +
+  'Thousands already use SidusAstro to read the sky and understand their path. Now you can join them with lifetime VIP, just by sharing what you already love. ' +
+  'It is simple. Record a short video or post your natal chart, tarot or oracle reading. Tag sidusastro.com and at sidusastro on Instagram or TikTok. Story mentions count too. ' +
+  'Then submit your post link at sidusastro.com, on the VIP for Promotion page. Our team reviews within forty-eight business hours and activates VIP on your account automatically. ' +
+  'Lifetime VIP confirmed in writing, no renewals, no fine print. Natal chart, real-time moon phases, numerology, synastry and affinity radar. All yours. ' +
+  'The universe already sent you a sign. The next move is yours. sidusastro.com slash en slash divulgacao-vip.';
 
 export const LEGENDA_VIP_TIKTOK =
-  'VIP vitalício no SidusAstro — só por divulgação! 🔮✨\n\n' +
-  'Como funciona:\n' +
-  '1️⃣ Cria conteúdo autêntico com mapa astral, tarot ou oráculo\n' +
-  '2️⃣ Marca @sidusastro e sidusastro.com\n' +
-  '3️⃣ Envia o pedido: sidusastro.com/pt/divulgacao-vip\n\n' +
-  'O que recebes com VIP:\n' +
-  '☀️ Mapa Astral completo (PDF profissional)\n' +
+  'O universo não te dá sinais por acaso ✨🔮\n\n' +
+  'E se pudesses ter o SidusAstro COMPLETO — para sempre — só por divulgares o que já amas?\n\n' +
+  '🎁 VIP VITALÍCIO por divulgação:\n' +
+  '☀️ Mapa Astral profissional (PDF)\n' +
   '🌙 Fases da Lua em tempo real\n' +
   '🔢 Numerologia espiritual\n' +
-  '🔮 Tarot ilimitado\n' +
+  '🔮 Tarot ILIMITADO\n' +
   '🧭 Bússola Cósmica 2026\n' +
-  '💫 Sinastria e Radar de Afinidades\n\n' +
-  'VIP vitalício confirmado por escrito — sem renovações.\n\n' +
-  '#sidusastro #vip #mapaastral #tarot #astrologia #horoscopo #portugal #brasil #divulgacao';
+  '💫 Sinastria + Radar de Afinidades\n\n' +
+  'Como activar (3 passos):\n' +
+  '1️⃣ Grava/posta com mapa astral, tarot ou oráculo\n' +
+  '2️⃣ Marca @sidusastro + sidusastro.com\n' +
+  '3️⃣ Envia: sidusastro.com/pt/divulgacao-vip\n\n' +
+  '⏱️ Aprovação em até 48h · VIP confirmado por escrito\n\n' +
+  '#sidusastro #vip #mapaastral #tarot #astrologia #horoscopo #manifestacao #portugal #brasil';
 
 export const LEGENDA_VIP_INSTAGRAM =
-  'Queres VIP vitalício no SidusAstro? É mais simples do que pensas ✨🔮\n\n' +
-  'Grava um vídeo ou publica um post a mostrar o mapa astral, tarot ou oráculo. ' +
-  'Marca @sidusastro e sidusastro.com. Depois envia o pedido em sidusastro.com/pt/divulgacao-vip.\n\n' +
-  'A equipa analisa em até 48 horas úteis e activa o VIP na tua conta automaticamente.\n\n' +
+  'Imagina ter o SidusAstro completo. Para sempre. Sem pagar mais nada. ✨🔮\n\n' +
+  'O programa VIP por Divulgação está aberto: mostras o mapa astral, tarot ou oráculo, marcas @sidusastro, e recebes VIP vitalício na tua conta.\n\n' +
+  '✅ Confirmado por escrito\n' +
+  '✅ Sem renovações\n' +
+  '✅ Análise em até 48 horas úteis\n\n' +
   '👉 sidusastro.com/pt/divulgacao-vip\n\n' +
-  '#sidusastro #vip #mapaastral #tarot #astrologia #parceiros #portugal #brasil';
+  '#sidusastro #vip #mapaastral #tarot #astrologia #parceiros #portugal #brasil #autoconhecimento';
 
 export const LEGENDA_VIP_TIKTOK_EN =
-  'Lifetime VIP on SidusAstro — just for promoting! 🔮✨\n\n' +
-  'How it works:\n' +
-  '1️⃣ Create authentic content with natal chart, tarot or oracle\n' +
-  '2️⃣ Tag @sidusastro and sidusastro.com\n' +
-  '3️⃣ Submit: sidusastro.com/en/divulgacao-vip\n\n' +
-  'What you get:\n' +
-  '☀️ Complete Natal Chart (professional PDF)\n' +
-  '🌙 Real-time Moon phases\n' +
+  'The universe does not send signs by accident ✨🔮\n\n' +
+  'What if you could have FULL SidusAstro — forever — just by sharing what you already love?\n\n' +
+  '🎁 LIFETIME VIP for promotion:\n' +
+  '☀️ Professional natal chart (PDF)\n' +
+  '🌙 Real-time moon phases\n' +
   '🔢 Spiritual numerology\n' +
-  '🔮 Unlimited tarot\n' +
+  '🔮 UNLIMITED tarot\n' +
   '🧭 Cosmic Compass 2026\n' +
-  '💫 Synastry & Affinity Radar\n\n' +
-  'Lifetime VIP confirmed in writing — no renewals.\n\n' +
-  '#sidusastro #vip #birthchart #tarot #astrology #horoscope #spiritualtiktok';
+  '💫 Synastry + Affinity Radar\n\n' +
+  'How to activate (3 steps):\n' +
+  '1️⃣ Post with natal chart, tarot or oracle\n' +
+  '2️⃣ Tag @sidusastro + sidusastro.com\n' +
+  '3️⃣ Submit: sidusastro.com/en/divulgacao-vip\n\n' +
+  '⏱️ Approval within 48h · VIP confirmed in writing\n\n' +
+  '#sidusastro #vip #birthchart #tarot #astrology #horoscope #manifestation #spiritualtiktok';
 
 export const LEGENDA_VIP_INSTAGRAM_EN =
-  'Want lifetime VIP on SidusAstro? It is simpler than you think ✨🔮\n\n' +
-  'Record a video or post showing the natal chart, tarot or oracle. ' +
-  'Tag @sidusastro and sidusastro.com. Then submit at sidusastro.com/en/divulgacao-vip.\n\n' +
-  'Our team reviews within 48 business hours and activates VIP on your account.\n\n' +
+  'Picture having full SidusAstro. Forever. Without paying another cent. ✨🔮\n\n' +
+  'The VIP for Promotion program is open: show the natal chart, tarot or oracle, tag @sidusastro, and get lifetime VIP on your account.\n\n' +
+  '✅ Confirmed in writing\n' +
+  '✅ No renewals\n' +
+  '✅ Review within 48 business hours\n\n' +
   '👉 sidusastro.com/en/divulgacao-vip\n\n' +
   '#sidusastro #vip #birthchart #tarot #astrology #partners #spiritualreels';
+
+export const TITULO_AFILIADOS = 'GANHA COM O CÉU';
+export const TITULO_AFILIADOS_EN = 'EARN WITH THE STARS';
+
+export const TEXTO_AFILIADOS_ECRA =
+  'SidusAstro | Portal Místico. Descobre o teu Mapa Astral ou junta-te à equipa para ganhares 50% de comissão por cada venda! Acede abaixo 👇';
+
+export const TEXTO_AFILIADOS_ECRA_EN =
+  'SidusAstro | Mystic Portal. Get your birth chart or join our team and earn 50% commission on every sale! Link below 👇';
+
+export const TEXTO_AFILIADOS_FALADO =
+  'SidusAstro, Portal Místico. Descobre o teu Mapa Astral ou junta-te à equipa para ganhares cinquenta por cento de comissão por cada venda. Acede abaixo.';
+
+export const TEXTO_AFILIADOS_FALADO_EN =
+  'SidusAstro, Mystic Portal. Get your birth chart or join our team and earn fifty percent commission on every sale. Link below.';
+
+export const LEGENDA_AFILIADOS_TIKTOK =
+  'Queres ganhar dinheiro na internet sem precisar de investir nada? 🤑💰\n\n' +
+  'Lançámos o SidusAstro (sidusastro.com) e estamos a dividir 50% dos lucros com qualquer pessoa que se queira juntar à equipa!\n\n' +
+  'Como funciona?\n' +
+  '1️⃣ Fazes a tua inscrição gratuita no nosso perfil.\n' +
+  '2️⃣ Recebes o teu link exclusivo.\n' +
+  '3️⃣ Divulgas onde quiseres.\n' +
+  '4️⃣ Sempre que alguém comprar pelo teu link, ganhas METADE do valor direto na tua conta!\n\n' +
+  'Não precisas de ter milhares de seguidores, só precisas de querer começar. 🚀\n\n' +
+  '👉 COPIA o link da nossa bio e inscreve-te hoje: linktr.ee/sidusastro\n\n' +
+  '#rendaextra #afiliados #marketingdeafiliados #ganhardinheiro #trabalharonline #sidusastro #portugal #brasil #dinheiroonline #empreendedorismo';
+
+export const LEGENDA_AFILIADOS_INSTAGRAM =
+  'Tu e os teus amigos passam o dia nas redes sociais? Que tal começar a ganhar dinheiro com isso? 💸✨\n\n' +
+  'O SidusAstro está oficialmente a recrutar parceiros! Estamos a dividir 50% da comissão de todas as vendas que trouxeres para o nosso site de astrologia. 🔮\n\n' +
+  '🚫 Sem taxas de inscrição\n' +
+  '🚫 Sem precisar de investir nada\n' +
+  '🚫 Não precisas de ter milhares de seguidores\n\n' +
+  'Basta fazeres o teu registo gratuito, pegar no teu link exclusivo e começar a partilhar. Tu ficas com metade do lucro de cada subscrição vendida!\n\n' +
+  '🔗 Clica no link da nossa bio ou acede a linktr.ee/sidusastro para fazeres a tua inscrição gratuita agora mesmo! 🚀\n\n' +
+  '#rendaextra #marketingdeafiliados #afiliados #trabalhoremoto #ganhardinheiroonline #sidusastro #portugal #brasil #parcerias #marketingdigital';
+
+export const LEGENDA_AFILIADOS_TIKTOK_EN =
+  'Want to make money online without investing anything? 🤑💰\n\n' +
+  'We launched SidusAstro (sidusastro.com/en) and we split 50% of profits with anyone who joins the team!\n\n' +
+  'How it works:\n' +
+  '1️⃣ Free sign-up on our profile.\n' +
+  '2️⃣ Get your exclusive link.\n' +
+  '3️⃣ Share anywhere you want.\n' +
+  '4️⃣ Every time someone buys through your link, you earn HALF — straight to your account!\n\n' +
+  'You don\'t need millions of followers. You just need to start. 🚀\n\n' +
+  '👉 Copy the link in our bio and sign up today: sidusastro.com/en\n\n' +
+  '#sidehustle #affiliatemarketing #makemoneyonline #passiveincome #sidusastro #astrology #workfromhome #entrepreneur';
+
+export const LEGENDA_AFILIADOS_INSTAGRAM_EN =
+  'You and your friends scroll social media all day? What if you got paid for it? 💸✨\n\n' +
+  'SidusAstro is officially recruiting partners! We split 50% commission on every sale you bring to our astrology site. 🔮\n\n' +
+  '🚫 No sign-up fees\n' +
+  '🚫 No investment needed\n' +
+  '🚫 No huge following required\n\n' +
+  'Free registration, your exclusive link, start sharing. You keep half of every subscription sold!\n\n' +
+  '🔗 Link in bio — sidusastro.com/en 🚀\n\n' +
+  '#sidehustle #affiliatemarketing #makemoneyonline #sidusastro #astrology #workfromhome #partnerships';
 
 const FRASES_MOTIVACIONAIS = [
   'Hoje não precisas de ter tudo resolvido. Basta dar um passo de cada vez, com calma e com confiança no teu caminho.',
@@ -229,6 +297,35 @@ export function obterLegendasMotivacional(): { tiktok: string; instagram: string
   };
 }
 
+export function obterConteudoAfiliados(): {
+  titulo: string;
+  textoEcra: string;
+  textoNarracao: string;
+  segmentosEcra?: string[];
+  legendas: { tiktok: string; instagram: string };
+} {
+  if (isLocaleUS()) {
+    return {
+      titulo: TITULO_AFILIADOS_EN,
+      textoEcra: TEXTO_AFILIADOS_ECRA_EN,
+      textoNarracao: TEXTO_AFILIADOS_FALADO_EN,
+      legendas: {
+        tiktok: LEGENDA_AFILIADOS_TIKTOK_EN,
+        instagram: LEGENDA_AFILIADOS_INSTAGRAM_EN,
+      },
+    };
+  }
+  return {
+    titulo: TITULO_AFILIADOS,
+    textoEcra: TEXTO_AFILIADOS_ECRA,
+    textoNarracao: TEXTO_AFILIADOS_FALADO,
+    legendas: {
+      tiktok: LEGENDA_AFILIADOS_TIKTOK,
+      instagram: LEGENDA_AFILIADOS_INSTAGRAM,
+    },
+  };
+}
+
 export function obterConteudoVipDivulgacao(): {
   titulo: string;
   textoEcra: string;
@@ -258,6 +355,24 @@ export function obterConteudoVipDivulgacao(): {
       instagram: LEGENDA_VIP_INSTAGRAM,
     },
   };
+}
+
+export interface ConteudoQuarta {
+  titulo: string;
+  textoEcra: string;
+  textoNarracao: string;
+  segmentosEcra?: string[];
+  legendas: { tiktok: string; instagram: string };
+}
+
+export function obterConteudoQuarta(data: string): {
+  variante: VarianteQuarta;
+  conteudo: ConteudoQuarta;
+} {
+  const variante = obterVarianteQuarta(data);
+  const conteudo =
+    variante === 'vip' ? obterConteudoVipDivulgacao() : obterConteudoAfiliados();
+  return { variante, conteudo };
 }
 
 export const LEGENDA_MOTIVACIONAL_TIKTOK =

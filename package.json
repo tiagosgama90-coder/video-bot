@@ -42,6 +42,8 @@
     "gerar-quinta-us": "LOCALE=en-US npx ts-node gerar-video-quinta.ts",
     "gerar-segunda": "npx ts-node gerar-video-segunda.ts",
     "gerar-quarta": "npx ts-node gerar-video-quarta.ts",
+    "preview-quarta-vip": "SKIP_PUBLICAR=1 FORCAR_QUARTA=vip npx ts-node gerar-video-quarta.ts",
+    "preview-quarta-afiliados": "SKIP_PUBLICAR=1 FORCAR_QUARTA=afiliados npx ts-node gerar-video-quarta.ts",
     "gerar-quinta": "npx ts-node gerar-video-quinta.ts",
     "canais": "npx ts-node listar-canais-buffer.ts",
     "upgrade": "remotion upgrade",
