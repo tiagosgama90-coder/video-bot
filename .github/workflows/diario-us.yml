@@ -2,7 +2,8 @@ name: Horóscopo Diário US (sidusastro_en)
 
 # Primário: cron-job.org às 07:30 America/New_York (scripts/configurar-cron-us.sh).
 # Backup: schedule GitHub abaixo + monitor-crons.yml dispara recuperação se ambos falharem.
-# Publica só no TikTok @sidusastro_en em inglês. Slots Buffer: 09:00/10:30/12:00 NY.
+# Publica TikTok @sidusastro_en (+ Instagram US se BUFFER_INSTAGRAM_US_CHANNEL_ID definido).
+# Slots Buffer: 09:00/10:30/12:00/18:00/20:00 NY — 5 vídeos/dia.
 on:
   workflow_dispatch:
   schedule:
@@ -104,6 +105,7 @@ jobs:
           LOCALE: en-US
           BUFFER_ACCESS_TOKEN: ${{ secrets.BUFFER_ACCESS_TOKEN }}
           BUFFER_TIKTOK_US_CHANNEL_ID: ${{ secrets.BUFFER_TIKTOK_US_CHANNEL_ID }}
+          BUFFER_INSTAGRAM_US_CHANNEL_ID: ${{ secrets.BUFFER_INSTAGRAM_US_CHANNEL_ID }}
           BUFFER_TIKTOK_US_USERNAME: sidusastro_en
           FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
           AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}

@@ -12,31 +12,31 @@ import { isLocaleUS } from './locale';
 import { obterNomeSigno, type SignoZodiaco } from './signos';
 
 export const FINAL_CLOSINGS = [
-  'Aprofunda esta análise no sidusastro.com',
-  'Vê o teu mapa completo em sidusastro.com',
-  'Mais detalhes sobre o teu dia em sidusastro.com',
+  'Mapa astral grátis → sidusastro.com',
+  'Vê o teu mapa → sidusastro.com',
+  'Detalhes do teu dia → sidusastro.com',
 ] as const;
 
 export const FINAL_CLOSINGS_EN = [
-  'Get your full reading at sidusastro.com/en',
-  'See your complete birth chart at sidusastro.com/en',
-  'More details about your day at sidusastro.com/en',
+  'Free birth chart → sidusastro.com/en',
+  'Your full chart → sidusastro.com/en',
+  'More today → sidusastro.com/en',
 ] as const;
 
 const HOOKS_LEGENDA: Array<(nomeSigno: string) => string> = [
   (nome) => nome + ' — horóscopo de hoje ✨',
-  (nome) => 'O céu deixou uma mensagem para ' + nome + ' hoje',
-  (nome) => 'Se és ' + nome + ', lê isto antes de começares o dia',
+  (nome) => 'Mensagem do céu para ' + nome + ' hoje',
+  (nome) => 'Se és ' + nome + ', lê isto agora',
   (nome) => 'A energia de hoje para ' + nome + ' 🔮',
-  (nome) => 'Horóscopo de ' + nome + ' — o que os astros revelam',
+  (nome) => 'Horóscopo de ' + nome + ' — o que os astros dizem',
   (nome) => nome + ': o que precisas de saber hoje',
   (nome) => 'Como será o dia de ' + nome + '?',
 ];
 
 const HOOKS_LEGENDA_EN: Array<(nomeSigno: string) => string> = [
   (nome) => nome + ' — today\'s horoscope ✨',
-  (nome) => 'Today\'s cosmic message for ' + nome,
-  (nome) => 'If you\'re a ' + nome + ', read this before your day starts',
+  (nome) => 'Cosmic message for ' + nome + ' today',
+  (nome) => 'If you\'re a ' + nome + ', read this now',
   (nome) => nome + ' energy today 🔮',
   (nome) => 'Daily horoscope for ' + nome,
   (nome) => 'What ' + nome + ' needs to hear today',
@@ -60,14 +60,16 @@ function obterHooks(): Array<(nomeSigno: string) => string> {
   return isLocaleUS() ? HOOKS_LEGENDA_EN : HOOKS_LEGENDA;
 }
 
-function gerarCorpoLegenda(signo: SignoZodiaco, previsao: string): string {
+function escolherHook(signo: SignoZodiaco): string {
   const nomeSigno = obterNomeSigno(signo);
   const hooks = obterHooks();
   const indiceHook = crypto.randomInt(0, hooks.length);
-  const hook = hooks[indiceHook](nomeSigno);
-  const resumo =
-    previsao.length > 100 ? previsao.slice(0, 97).trim() + '...' : previsao;
+  return hooks[indiceHook](nomeSigno);
+}
 
+function gerarCorpoLegenda(signo: SignoZodiaco, previsao: string, hook: string): string {
+  const resumo =
+    previsao.length > 80 ? previsao.slice(0, 77).trim() + '...' : previsao;
   return hook + '\n\n' + resumo;
 }
 
@@ -87,30 +89,34 @@ function sufixoInstagram(signo: SignoZodiaco): string {
   return CTA_DIARIO_PT + '\n\n' + HASHTAGS_DIARIO_PT_INSTAGRAM + ' ' + tagSigno;
 }
 
-/** Sempre uma das 3 frases de fecho definidas (com pausa antes) */
+/** Frase final no ecrã (não narrada — melhor retenção) */
 export function escolherFechoNarracao(): string {
   const fechos = isLocaleUS() ? FINAL_CLOSINGS_EN : FINAL_CLOSINGS;
   const indice = crypto.randomInt(0, fechos.length);
-  return '. ' + fechos[indice];
+  return fechos[indice];
 }
 
 /** Legenda TikTok — hook + resumo + CTA + hashtags */
 export function gerarLegendaTikTok(signo: SignoZodiaco, previsao: string): string {
-  return gerarCorpoLegenda(signo, previsao) + '\n\n' + sufixoTikTok(signo);
+  const hook = escolherHook(signo);
+  return gerarCorpoLegenda(signo, previsao, hook) + '\n\n' + sufixoTikTok(signo);
 }
 
 /** Legenda Instagram — hook + resumo + CTA + hashtags */
 export function gerarLegendaInstagram(signo: SignoZodiaco, previsao: string): string {
-  return gerarCorpoLegenda(signo, previsao) + '\n\n' + sufixoInstagram(signo);
+  const hook = escolherHook(signo);
+  return gerarCorpoLegenda(signo, previsao, hook) + '\n\n' + sufixoInstagram(signo);
 }
 
-/** Gera ambas as legendas com o mesmo hook e resumo */
+/** Gera ambas as legendas com o mesmo hook (usado também no overlay do vídeo) */
 export function gerarLegendas(
   signo: SignoZodiaco,
   previsao: string,
-): { tiktok: string; instagram: string } {
-  const corpo = gerarCorpoLegenda(signo, previsao);
+): { tiktok: string; instagram: string; hook: string } {
+  const hook = escolherHook(signo);
+  const corpo = gerarCorpoLegenda(signo, previsao, hook);
   return {
+    hook,
     tiktok: corpo + '\n\n' + sufixoTikTok(signo),
     instagram: corpo + '\n\n' + sufixoInstagram(signo),
   };

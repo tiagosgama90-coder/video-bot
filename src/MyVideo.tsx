@@ -26,6 +26,7 @@ const logoSidus = require('../public/logo-sidus.png') as string;
 export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   signo,
   previsao,
+  hookTexto,
   fechoTexto,
   imagemFundoUrl,
   musicaFundoArquivo,
@@ -57,6 +58,14 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
     extrapolateRight: 'clamp',
   });
 
+  const duracaoHookFrames = Math.round(fps * 3);
+  const opacidadeHook = hookTexto
+    ? interpolate(frame, [0, 8, duracaoHookFrames - 10, duracaoHookFrames], [0, 1, 1, 0], {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+      })
+    : 0;
+
   return (
     <AbsoluteFill style={{ backgroundColor: '#09070f', fontFamily: 'system-ui, sans-serif' }}>
       <AbsoluteFill style={{ transform: `scale(${scale})`, opacity: 0.35 }}>
@@ -67,6 +76,40 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
       </AbsoluteFill>
 
       <EfeitosUniverso />
+
+      {hookTexto ? (
+        <AbsoluteFill
+          style={{
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            paddingTop: 120,
+            paddingLeft: 40,
+            paddingRight: 40,
+            opacity: opacidadeHook,
+            pointerEvents: 'none',
+            zIndex: 20,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: 'rgba(20, 12, 40, 0.88)',
+              border: '2px solid rgba(243, 204, 99, 0.85)',
+              borderRadius: 24,
+              padding: '22px 28px',
+              color: '#ffffff',
+              fontSize: hookTexto.length > 45 ? 34 : 40,
+              fontWeight: 900,
+              textAlign: 'center',
+              lineHeight: 1.2,
+              boxShadow: '0 12px 40px rgba(0,0,0,0.55)',
+              textShadow: '0 2px 12px rgba(0,0,0,0.65)',
+              maxWidth: 980,
+            }}
+          >
+            {hookTexto}
+          </div>
+        </AbsoluteFill>
+      ) : null}
 
       <AbsoluteFill
         style={{

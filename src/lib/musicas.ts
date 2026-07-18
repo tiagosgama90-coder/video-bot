@@ -13,10 +13,12 @@ const ESTADO_ROTACAO = path.resolve('./config/musica-rotacao.json');
 
 /** Slots fixos por tipo de vídeo — garantem faixas diferentes no mesmo dia (PT/US têm ordens distintas). */
 export const SLOT_MUSICA = {
-  /** Horóscopo diário: slots 0, 1 e 2 (ver gerar-e-publicar.ts) */
+  /** Horóscopo diário: slots 0–4 (ver gerar-e-publicar.ts) */
   HOROSCOPO_0: 0,
   HOROSCOPO_1: 1,
   HOROSCOPO_2: 2,
+  HOROSCOPO_3: 6,
+  HOROSCOPO_4: 7,
   /** Segunda-feira motivacional */
   MOTIVACIONAL_SEGUNDA: 3,
   /** Quarta-feira VIP por divulgação */

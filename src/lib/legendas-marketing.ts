@@ -1,56 +1,56 @@
 /**
  * Hashtags e blocos CTA optimizados para alcance (TikTok / Instagram / Reels).
- * TikTok: 5–8 hashtags estratégicas (excesso penaliza alcance).
- * Instagram: até 12 hashtags (Reels tolera mais).
+ * TikTok: máx. 5 hashtags + tag do signo (excesso penaliza alcance).
+ * Instagram: até 10 hashtags (Reels tolera mais).
  */
 
 export const HASHTAGS_DIARIO_PT_TIKTOK =
-  '#horoscopodiario #astrologia #sidusastro #signos #fyp #parati #portugal #mapaastral';
+  '#horoscopodiario #astrologia #sidusastro #fyp #signos';
 
 export const HASHTAGS_DIARIO_PT_INSTAGRAM =
   '#astrologiapt #horoscopodiario #mapaastral #sidusastro #signos #zodiaco #portugal #brasil #reels #astrologia';
 
 export const HASHTAGS_DIARIO_EN_TIKTOK =
-  '#horoscope #astrology #sidusastro #zodiac #fyp #foryou #spiritualtiktok #birthchart';
+  '#horoscope #astrology #sidusastro #fyp #zodiac';
 
 export const HASHTAGS_DIARIO_EN_INSTAGRAM =
   '#horoscope #astrology #sidusastro #birthchart #zodiacsigns #spiritualreels #manifestation #reels #fyp';
 
 export const HASHTAGS_MOTIVACIONAL_PT_TIKTOK =
-  '#motivacao #astrologia #sidusastro #horoscopo #fyp #parati #portugal #autoconhecimento';
+  '#motivacao #astrologia #sidusastro #fyp #horoscopo';
 
 export const HASHTAGS_MOTIVACIONAL_PT_INSTAGRAM =
-  '#motivacao #astrologiapt #sidusastro #horoscopo #reels #inspiracao #portugal #autoconhecimento #astrologia';
+  '#motivacao #astrologiapt #sidusastro #horoscopo #reels #inspiracao #portugal #autoconhecimento';
 
 export const HASHTAGS_MOTIVACIONAL_EN_TIKTOK =
-  '#motivation #horoscope #astrology #sidusastro #fyp #foryou #spiritualtiktok #selfgrowth';
+  '#motivation #horoscope #astrology #sidusastro #fyp';
 
 export const HASHTAGS_MOTIVACIONAL_EN_INSTAGRAM =
-  '#motivation #horoscope #astrology #sidusastro #spiritualreels #selfgrowth #reels #manifestation';
+  '#motivation #horoscope #astrology #sidusastro #spiritualreels #selfgrowth #reels';
 
 export const HASHTAGS_VIP_PT_TIKTOK =
-  '#vip #sidusastro #mapaastral #astrologia #gratis #fyp #parati #portugal';
+  '#vip #sidusastro #mapaastral #astrologia #fyp';
 
 export const HASHTAGS_VIP_PT_INSTAGRAM =
-  '#vip #sidusastro #mapaastral #astrologiapt #gratis #reels #portugal #autoconhecimento';
+  '#vip #sidusastro #mapaastral #astrologiapt #gratis #reels #portugal';
 
 export const HASHTAGS_VIP_EN_TIKTOK =
-  '#vip #sidusastro #birthchart #astrology #free #fyp #foryou #spiritualtiktok';
+  '#vip #sidusastro #birthchart #astrology #fyp';
 
 export const HASHTAGS_VIP_EN_INSTAGRAM =
-  '#vip #sidusastro #birthchart #astrology #free #spiritualreels #manifestation #reels';
+  '#vip #sidusastro #birthchart #astrology #free #spiritualreels #reels';
 
 export const HASHTAGS_AFILIADOS_PT_TIKTOK =
-  '#rendaextra #afiliados #sidusastro #empreendedorismo #fyp #parati #portugal #astrologia';
+  '#rendaextra #afiliados #sidusastro #fyp #astrologia';
 
 export const HASHTAGS_AFILIADOS_PT_INSTAGRAM =
-  '#rendaextra #afiliados #sidusastro #marketingdigital #reels #portugal #empreendedorismo #astrologia';
+  '#rendaextra #afiliados #sidusastro #marketingdigital #reels #portugal #empreendedorismo';
 
 export const HASHTAGS_AFILIADOS_EN_TIKTOK =
-  '#sidehustle #affiliatemarketing #sidusastro #makemoneyonline #fyp #foryou #usa #astrology';
+  '#sidehustle #affiliatemarketing #sidusastro #fyp #astrology';
 
 export const HASHTAGS_AFILIADOS_EN_INSTAGRAM =
-  '#sidehustle #affiliatemarketing #sidusastro #makemoneyonline #reels #workfromhome #astrology #usa';
+  '#sidehustle #affiliatemarketing #sidusastro #makemoneyonline #reels #workfromhome';
 
 export const CTA_DIARIO_PT =
   '🔮 Mapa astral GRÁTIS → sidusastro.com/login';
