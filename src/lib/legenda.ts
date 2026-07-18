@@ -24,23 +24,23 @@ export const FINAL_CLOSINGS_EN = [
 ] as const;
 
 const HOOKS_LEGENDA: Array<(nomeSigno: string) => string> = [
-  (nome) => '⚠️ ' + nome + ', pára o scroll — isto é para ti',
-  (nome) => 'O céu deixou uma mensagem para ' + nome + ' hoje ✨',
+  (nome) => nome + ' — horóscopo de hoje ✨',
+  (nome) => 'O céu deixou uma mensagem para ' + nome + ' hoje',
   (nome) => 'Se és ' + nome + ', lê isto antes de começares o dia',
-  (nome) => 'A energia de hoje para ' + nome + ' vai surpreender-te 🔮',
-  (nome) => 'Horóscopo de ' + nome + ' — o que os astros revelam agora',
-  (nome) => nome + ': o signo que mais precisa de ouvir isto hoje',
-  (nome) => 'Como será o dia de ' + nome + '? Os astros já responderam',
+  (nome) => 'A energia de hoje para ' + nome + ' 🔮',
+  (nome) => 'Horóscopo de ' + nome + ' — o que os astros revelam',
+  (nome) => nome + ': o que precisas de saber hoje',
+  (nome) => 'Como será o dia de ' + nome + '?',
 ];
 
 const HOOKS_LEGENDA_EN: Array<(nomeSigno: string) => string> = [
-  (nome) => '⚠️ ' + nome + ', stop scrolling — the universe sent this for you',
-  (nome) => 'If you\'re a ' + nome + ', you NEED to hear this today ✨',
-  (nome) => 'Today\'s cosmic message for ' + nome + ' 🔮',
-  (nome) => nome + ': what the stars reveal RIGHT NOW',
-  (nome) => 'Daily horoscope for ' + nome + ' — save this',
-  (nome) => 'The sky has something important for ' + nome + ' today',
-  (nome) => nome + ' energy today hits different — read this',
+  (nome) => nome + ' — today\'s horoscope ✨',
+  (nome) => 'Today\'s cosmic message for ' + nome,
+  (nome) => 'If you\'re a ' + nome + ', read this before your day starts',
+  (nome) => nome + ' energy today 🔮',
+  (nome) => 'Daily horoscope for ' + nome,
+  (nome) => 'What ' + nome + ' needs to hear today',
+  (nome) => 'How will ' + nome + '\'s day unfold?',
 ];
 
 function normalizarHashtag(texto: string): string {
@@ -66,7 +66,7 @@ function gerarCorpoLegenda(signo: SignoZodiaco, previsao: string): string {
   const indiceHook = crypto.randomInt(0, hooks.length);
   const hook = hooks[indiceHook](nomeSigno);
   const resumo =
-    previsao.length > 140 ? previsao.slice(0, 137).trim() + '...' : previsao;
+    previsao.length > 100 ? previsao.slice(0, 97).trim() + '...' : previsao;
 
   return hook + '\n\n' + resumo;
 }

@@ -1,0 +1,78 @@
+name: Monitor crons diários
+
+# Verifica se PT/US já correram hoje; dispara recuperação se o cron externo falhou.
+# Horário: 09:30 Lisboa (PT) e 14:00 UTC (~10:00 NY) — depois dos crons principais.
+on:
+  schedule:
+    - cron: '30 8 * * *'   # ~09:30 Lisboa (verão) — verificar PT
+    - cron: '0 14 * * *'    # ~10:00 NY (verão) — verificar US
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  verificar-pt:
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '30 8 * * *'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Recuperar diário PT se em falta
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const hoje = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Lisbon' });
+            const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'diario.yml',
+              status: 'success',
+              per_page: 20,
+            });
+            const correu = runs.some((r) =>
+              r.created_at.startsWith(hoje) ||
+              new Date(r.created_at).toLocaleDateString('en-CA', { timeZone: 'Europe/Lisbon' }) === hoje,
+            );
+            if (correu) {
+              core.info('Diário PT já correu hoje (' + hoje + ' Lisboa).');
+              return;
+            }
+            core.warning('Diário PT em falta — a disparar diario.yml');
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'diario.yml',
+              ref: 'main',
+            });
+
+  verificar-us:
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 14 * * *'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Recuperar diário US se em falta
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const hoje = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+            const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'diario-us.yml',
+              status: 'success',
+              per_page: 20,
+            });
+            const correu = runs.some((r) =>
+              r.created_at.startsWith(hoje) ||
+              new Date(r.created_at).toLocaleDateString('en-CA', { timeZone: 'America/New_York' }) === hoje,
+            );
+            if (correu) {
+              core.info('Diário US já correu hoje (' + hoje + ' NY).');
+              return;
+            }
+            core.warning('Diário US em falta — a disparar diario-us.yml');
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'diario-us.yml',
+              ref: 'main',
+            });
