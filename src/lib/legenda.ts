@@ -1,5 +1,13 @@
 /* eslint-disable @remotion/deterministic-randomness -- usado apenas no script Node, não no render Remotion */
 import crypto from 'crypto';
+import {
+  CTA_DIARIO_EN,
+  CTA_DIARIO_PT,
+  HASHTAGS_DIARIO_EN_INSTAGRAM,
+  HASHTAGS_DIARIO_EN_TIKTOK,
+  HASHTAGS_DIARIO_PT_INSTAGRAM,
+  HASHTAGS_DIARIO_PT_TIKTOK,
+} from './legendas-marketing';
 import { isLocaleUS } from './locale';
 import { obterNomeSigno, type SignoZodiaco } from './signos';
 
@@ -16,21 +24,23 @@ export const FINAL_CLOSINGS_EN = [
 ] as const;
 
 const HOOKS_LEGENDA: Array<(nomeSigno: string) => string> = [
-  (nome) => 'Como será o dia de hoje para ' + nome + '?',
-  (nome) => 'A energia astrológica para ' + nome,
-  (nome) => 'O que os astros dizem a ' + nome + '?',
-  (nome) => 'Previsão diária para ' + nome + ' ✨',
-  (nome) => nome + ': o que o céu reserva para ti hoje?',
-  (nome) => 'Horóscopo de hoje para ' + nome,
+  (nome) => '⚠️ ' + nome + ', pára o scroll — isto é para ti',
+  (nome) => 'O céu deixou uma mensagem para ' + nome + ' hoje ✨',
+  (nome) => 'Se és ' + nome + ', lê isto antes de começares o dia',
+  (nome) => 'A energia de hoje para ' + nome + ' vai surpreender-te 🔮',
+  (nome) => 'Horóscopo de ' + nome + ' — o que os astros revelam agora',
+  (nome) => nome + ': o signo que mais precisa de ouvir isto hoje',
+  (nome) => 'Como será o dia de ' + nome + '? Os astros já responderam',
 ];
 
 const HOOKS_LEGENDA_EN: Array<(nomeSigno: string) => string> = [
-  (nome) => 'What does today hold for ' + nome + '?',
-  (nome) => 'Today\'s cosmic energy for ' + nome + ' ✨',
-  (nome) => 'If you\'re a ' + nome + ', stop scrolling — this is for you',
-  (nome) => 'Daily horoscope for ' + nome,
-  (nome) => nome + ': what the stars have in store today',
-  (nome) => 'Your sign today: ' + nome,
+  (nome) => '⚠️ ' + nome + ', stop scrolling — the universe sent this for you',
+  (nome) => 'If you\'re a ' + nome + ', you NEED to hear this today ✨',
+  (nome) => 'Today\'s cosmic message for ' + nome + ' 🔮',
+  (nome) => nome + ': what the stars reveal RIGHT NOW',
+  (nome) => 'Daily horoscope for ' + nome + ' — save this',
+  (nome) => 'The sky has something important for ' + nome + ' today',
+  (nome) => nome + ' energy today hits different — read this',
 ];
 
 function normalizarHashtag(texto: string): string {
@@ -64,31 +74,17 @@ function gerarCorpoLegenda(signo: SignoZodiaco, previsao: string): string {
 function sufixoTikTok(signo: SignoZodiaco): string {
   const tagSigno = hashtagSigno(signo);
   if (isLocaleUS()) {
-    return (
-      '👉 FREE birth chart (Sun, Moon & Rising)\n' +
-      '🔗 sidusastro.com/en/login\n\n' +
-      '#horoscope #zodiac #astrology #sidusastro #birthchart #zodiacsigns ' +
-      tagSigno
-    );
+    return CTA_DIARIO_EN + '\n\n' + HASHTAGS_DIARIO_EN_TIKTOK + ' ' + tagSigno;
   }
-
-  return (
-    '👉 Mapa astral GRÁTIS (Sol, Lua e Ascendente)\n' +
-    '🔗 sidusastro.com/login\n\n' +
-    '#astrologia #horoscopo #sidusastro #mapastral #ascendente ' +
-    tagSigno
-  );
+  return CTA_DIARIO_PT + '\n\n' + HASHTAGS_DIARIO_PT_TIKTOK + ' ' + tagSigno;
 }
 
 function sufixoInstagram(signo: SignoZodiaco): string {
   const tagSigno = hashtagSigno(signo);
-  return (
-    '✨ Mapa astral GRÁTIS\n' +
-    '☀️ Sol · 🌙 Lua · ⬆️ Ascendente\n' +
-    '👆 Link na bio\n\n' +
-    '#astrologia #horoscopo #sidusastro #mapastral #reels #astrologiapt ' +
-    tagSigno
-  );
+  if (isLocaleUS()) {
+    return CTA_DIARIO_EN + '\n\n' + HASHTAGS_DIARIO_EN_INSTAGRAM + ' ' + tagSigno;
+  }
+  return CTA_DIARIO_PT + '\n\n' + HASHTAGS_DIARIO_PT_INSTAGRAM + ' ' + tagSigno;
 }
 
 /** Sempre uma das 3 frases de fecho definidas (com pausa antes) */
