@@ -15,6 +15,8 @@ public/musica-*.mp3
 public/preview-voz.mp3
 config/musicas/*.mp3
 !config/musicas/.gitkeep
+dist-studio/
+SidusStudio.exe
 firebase-admin.json
 video-bot/
 public/narracao-*.mp3

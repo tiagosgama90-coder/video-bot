@@ -53,7 +53,10 @@
     "configurar-cron-us": "bash scripts/configurar-cron-us.sh",
     "disparar-diario-us": "bash scripts/disparar-diario-us.sh",
     "testar-buffer": "npx ts-node testar-upload-buffer.ts",
-    "studio": "electron studio/main.cjs",
+    "studio": "node studio/launcher.cjs",
+    "studio:electron": "electron studio/main.cjs",
+    "studio:fix": "powershell -ExecutionPolicy Bypass -File scripts/reparar-electron.ps1",
+    "studio:build-exe": "powershell -ExecutionPolicy Bypass -File scripts/build-sidus-studio-exe.ps1",
     "testar-voz": "npx ts-node scripts/testar-voz.ts",
     "setup-local": "powershell -ExecutionPolicy Bypass -File configurar-local.ps1"
   }

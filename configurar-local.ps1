@@ -74,6 +74,8 @@ npm run verificar
 
 Write-Host ""
 Write-Host "=== Pronto! Comandos de teste ===" -ForegroundColor Green
+Write-Host "  npm run studio:fix     # se Electron falhar no Windows"
+Write-Host "  npm run studio         # app Sidus Studio (voz, musica, imagem)"
 Write-Host "  npm run gerar          # horoscopo diario (1 signo com TESTE_LOCAL=1)"
 Write-Host "  npm run gerar-segunda  # video motivacional"
 Write-Host "  npm run gerar-quarta   # video afiliados"
