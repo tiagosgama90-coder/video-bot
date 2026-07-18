@@ -15,6 +15,7 @@ public/musica-*.mp3
 public/preview-voz.mp3
 config/musicas/*.mp3
 !config/musicas/.gitkeep
+config/musica-rotacao.json
 dist-studio/
 SidusStudio.exe
 firebase-admin.json
