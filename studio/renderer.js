@@ -32,15 +32,38 @@ function renderMusicas() {
       '</strong><br><small>' +
       entrada.fonte +
       '</small></span>';
+    const acoes = document.createElement('span');
+    acoes.className = 'li-acoes';
+    const btnOuvir = document.createElement('button');
+    btnOuvir.textContent = '▶ Ouvir';
+    btnOuvir.onclick = () => window.sidusStudio.openMusic(entrada.fonte);
     const btn = document.createElement('button');
     btn.textContent = 'Remover';
     btn.onclick = () => {
       config.musica.entradas.splice(i, 1);
       renderMusicas();
     };
-    li.appendChild(btn);
+    acoes.appendChild(btnOuvir);
+    acoes.appendChild(btn);
+    li.appendChild(acoes);
     ul.appendChild(li);
   });
+}
+
+async function atualizarGit() {
+  const info = await window.sidusStudio.gitInfo();
+  const branchEl = document.getElementById('git-branch');
+  const remoteEl = document.getElementById('git-remote');
+  const statusEl = document.getElementById('git-status');
+  if (!info.ok) {
+    branchEl.textContent = '—';
+    remoteEl.textContent = '—';
+    statusEl.textContent = 'Git não disponível: ' + info.erro;
+    return;
+  }
+  branchEl.textContent = info.branch || '—';
+  remoteEl.textContent = info.remote || '—';
+  statusEl.textContent = info.status.trim() || '(sem alterações pendentes)';
 }
 
 async function renderVideos() {
@@ -131,6 +154,43 @@ document.getElementById('btn-import-musica').addEventListener('click', async () 
   }
 });
 
+document.getElementById('btn-preset-zen').addEventListener('click', async () => {
+  const presets = await window.sidusStudio.getMusicPresets();
+  if (!confirm('Substituir a lista atual pelo preset Zen Enigma (16 faixas)?')) return;
+  config.musica.entradas = presets.zen.map((e) => ({ ...e }));
+  renderMusicas();
+  setStatus('Preset Zen Enigma aplicado — guarda ou envia para GitHub.');
+});
+
+document.getElementById('btn-preset-acustico').addEventListener('click', async () => {
+  const presets = await window.sidusStudio.getMusicPresets();
+  if (!confirm('Substituir a lista atual pelo preset Acústico (15 faixas)?')) return;
+  config.musica.entradas = presets.acusticas.map((e) => ({ ...e }));
+  renderMusicas();
+  setStatus('Preset Acústico aplicado — guarda ou envia para GitHub.');
+});
+
+document.getElementById('btn-git-atualizar').addEventListener('click', () => atualizarGit());
+
+document.getElementById('btn-git-enviar').addEventListener('click', async () => {
+  formParaConfig();
+  await window.sidusStudio.saveConfig(config);
+  const mensagem = document.getElementById('git-mensagem').value;
+  setStatus('A enviar para GitHub...');
+  try {
+    const r = await window.sidusStudio.gitCommitPush(mensagem);
+    if (r.aviso) {
+      setStatus('ℹ️ ' + r.aviso);
+    } else {
+      setStatus('✅ Enviado para GitHub (' + r.branch + ')');
+    }
+    await atualizarGit();
+  } catch (e) {
+    setStatus('❌ Erro Git — vê o log');
+    log('\nGIT: ' + String(e));
+  }
+});
+
 document.getElementById('btn-open-output').addEventListener('click', () => {
   window.sidusStudio.openOutput();
 });
@@ -205,4 +265,5 @@ window.sidusStudio.onLog((msg) => log(msg));
   }
   configParaForm();
   await renderVideos();
+  await atualizarGit();
 })();

@@ -1,0 +1,32 @@
+name: Build SidusStudio.exe
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'studio/**'
+      - 'scripts/build-sidus-studio-exe.ps1'
+      - '.github/workflows/build-sidus-studio.yml'
+
+jobs:
+  build-windows-exe:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Compilar SidusStudio.exe
+        shell: pwsh
+        run: npm run studio:build-exe
+
+      - name: Upload executável
+        uses: actions/upload-artifact@v4
+        with:
+          name: SidusStudio-Windows
+          path: SidusStudio.exe
+          retention-days: 90
