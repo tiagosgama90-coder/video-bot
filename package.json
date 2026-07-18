@@ -54,6 +54,8 @@
     "disparar-diario-us": "bash scripts/disparar-diario-us.sh",
     "testar-buffer": "npx ts-node testar-upload-buffer.ts",
     "studio": "electron studio/main.cjs",
+    "studio:fix": "powershell -ExecutionPolicy Bypass -File scripts/reparar-electron.ps1",
+    "postinstall": "node -e \"try{require('fs').accessSync('node_modules/electron/install.js');require('child_process').execSync('node node_modules/electron/install.js',{stdio:'inherit'})}catch(e){}\"",
     "testar-voz": "npx ts-node scripts/testar-voz.ts",
     "setup-local": "powershell -ExecutionPolicy Bypass -File configurar-local.ps1"
   }
