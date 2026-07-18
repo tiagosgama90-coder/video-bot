@@ -75,6 +75,7 @@ async function processarSigno(
   signo: SignoZodiaco,
   data: string,
   indiceSlot: number,
+  offsetSlot: number,
 ): Promise<void> {
   console.log('\n══════════════════════════════════════');
   console.log('🔮 A processar signo: ' + obterNomeSigno(signo));
@@ -86,7 +87,11 @@ async function processarSigno(
   console.log('✂️ Vídeo (1.ª + 2.ª frase por ponto final): "' + previsaoVideo + '"');
 
   const imagemFundoUrl = await obterImagemFundo(signo, data);
-  const musicaFundoArquivo = await prepararMusicaParaVideo(signo, data);
+  const musicaFundoArquivo = await prepararMusicaParaVideo(
+    signo,
+    data,
+    offsetSlot + indiceSlot,
+  );
 
   const fechoNarracao = escolherFechoNarracao();
   const fechoEcra = fechoNarracao.replace(/^\.\s+/, '');
@@ -160,7 +165,7 @@ async function executarRoboSidusAstro(): Promise<void> {
   let sucessos = 0;
   for (let i = 0; i < signosDoDia.length; i++) {
     try {
-      await processarSigno(signosDoDia[i], data, i);
+      await processarSigno(signosDoDia[i], data, i, signosJaGerados.length);
       sucessos++;
     } catch (erro) {
       erros++;

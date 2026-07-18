@@ -1,5 +1,4 @@
 /* eslint-disable @remotion/deterministic-randomness -- usado apenas no script Node, não no render Remotion */
-import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
@@ -9,6 +8,8 @@ import {
   obterFontesMusica,
   resolverFonteMusica,
 } from './project-config';
+
+const ESTADO_ROTACAO = path.resolve('./config/musica-rotacao.json');
 
 /** Pool único: diário, viral, motivacional, afiliados — PT-PT e en-US */
 function obterPoolMusica(): string[] {
@@ -25,6 +26,81 @@ function caminhoPublico(nomeFicheiro: string): string {
 
 function fonteEhLocal(fonte: string): boolean {
   return !fonte.startsWith('http://') && !fonte.startsWith('https://');
+}
+
+function hashString(texto: string): number {
+  let hash = 0;
+  for (let i = 0; i < texto.length; i++) {
+    hash = (hash * 31 + texto.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+}
+
+function baralharComSeed<T>(lista: T[], seed: number): T[] {
+  const copia = [...lista];
+  let estado = seed || 1;
+
+  for (let i = copia.length - 1; i > 0; i--) {
+    estado = (estado * 1664525 + 1013904223) >>> 0;
+    const j = estado % (i + 1);
+    [copia[i], copia[j]] = [copia[j], copia[i]];
+  }
+
+  return copia;
+}
+
+/** Ordem baralhada das faixas — muda todos os dias e entre PT/US */
+function ordemMusicasDoDia(data: string, poolSize: number): number[] {
+  const locale = process.env.LOCALE === 'en-US' ? 'us' : 'pt';
+  const seed = hashString(`sidusastro-musica-v2-${data}-${locale}`);
+  return baralharComSeed(
+    Array.from({ length: poolSize }, (_, i) => i),
+    seed,
+  );
+}
+
+/** Contador persistente para execuções locais no mesmo dia */
+function reservarSlotDoDia(data: string): number {
+  const locale = process.env.LOCALE === 'en-US' ? 'us' : 'pt';
+  let estado = { data: '', locale: '', slot: 0 };
+
+  if (fs.existsSync(ESTADO_ROTACAO)) {
+    try {
+      estado = JSON.parse(fs.readFileSync(ESTADO_ROTACAO, 'utf8'));
+    } catch {
+      /* ficheiro corrompido — recomeça */
+    }
+  }
+
+  if (estado.data !== data || estado.locale !== locale) {
+    estado = { data, locale, slot: 0 };
+  }
+
+  const atual = estado.slot;
+  estado.slot = atual + 1;
+
+  fs.mkdirSync(path.dirname(ESTADO_ROTACAO), { recursive: true });
+  fs.writeFileSync(ESTADO_ROTACAO, JSON.stringify(estado, null, 2));
+
+  return atual;
+}
+
+/**
+ * Escolhe índice no pool: rotação diária + slot único por vídeo.
+ * Com 26 faixas e 3 vídeos/dia, os 3 slots usam sempre músicas diferentes.
+ */
+export function escolherIndiceMusica(
+  poolSize: number,
+  data: string,
+  slotNoDia?: number,
+): number {
+  if (poolSize <= 0) {
+    return 0;
+  }
+  const ordem = ordemMusicasDoDia(data, poolSize);
+  const slot =
+    slotNoDia !== undefined ? slotNoDia : reservarSlotDoDia(data);
+  return ordem[slot % poolSize];
 }
 
 async function obterMusicaDeFonte(fonte: string, destino: string): Promise<void> {
@@ -89,24 +165,19 @@ function gerarMusicaOffline(destino: string, indice: number): void {
   );
 }
 
-function escolherIndice(pool: string[], signo: string, data: string): number {
-  const bytes = crypto.randomBytes(4);
-  let hash = bytes.readUInt32BE(0);
-  const mistura = data + signo + Date.now();
-  for (let i = 0; i < mistura.length; i++) {
-    hash = (hash * 31 + mistura.charCodeAt(i)) >>> 0;
-  }
-  return hash % pool.length;
-}
-
-export async function prepararMusicaParaVideo(signo: string, data: string): Promise<string> {
-  return prepararMusicaEspecial(signo, data, 'zen');
+export async function prepararMusicaParaVideo(
+  signo: string,
+  data: string,
+  slotNoDia?: number,
+): Promise<string> {
+  return prepararMusicaEspecial(signo, data, 'zen', slotNoDia);
 }
 
 export async function prepararMusicaEspecial(
   id: string,
   data: string,
   tipo: 'zen' | 'mistico' | 'viral' | 'aleatoria' = 'zen',
+  slotNoDia?: number,
 ): Promise<string> {
   if (!fs.existsSync('./public')) {
     fs.mkdirSync('./public', { recursive: true });
@@ -126,16 +197,31 @@ export async function prepararMusicaEspecial(
     throw new Error('Pool de músicas vazio — edita config/sidusastro.json');
   }
 
-  const indice = escolherIndice(pool, id, data);
+  const slot =
+    slotNoDia ??
+    hashString(`sidusastro-slot-${data}-${id}-${process.env.LOCALE ?? 'pt'}`) %
+      10_000;
+
+  const indice = escolherIndiceMusica(pool.length, data, slot);
   const nomeFicheiro = 'musica-' + id + '.mp3';
   const destino = caminhoPublico(nomeFicheiro);
   const fontes = [
     pool[indice],
+    pool[(indice + 1) % pool.length],
     pool[(indice + 2) % pool.length],
-    pool[(indice + 5) % pool.length],
   ];
 
-  const etiquetaFinal = etiqueta + ' [' + (indice + 1) + '/' + pool.length + ']';
+  const etiquetaFinal =
+    etiqueta +
+    ' [faixa ' +
+    (indice + 1) +
+    '/' +
+    pool.length +
+    ', slot ' +
+    slot +
+    ', ' +
+    data +
+    ']';
   console.log('🎵 Música ' + etiquetaFinal + ' para ' + id);
 
   for (const fonte of fontes) {
