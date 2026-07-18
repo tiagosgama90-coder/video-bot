@@ -22,7 +22,8 @@ npx pkg studio/launcher.cjs `
   --assets studio/index.html `
   --assets studio/styles.css `
   --assets studio/renderer.js `
-  --assets studio/api-client.js
+  --assets studio/api-client.js `
+  --assets studio/music-search.cjs
 
 if (-not (Test-Path "dist-studio/SidusStudio.exe")) {
     Write-Host "Falha na compilacao pkg." -ForegroundColor Red
