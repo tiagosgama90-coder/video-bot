@@ -69,6 +69,17 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   font-size: 0.85rem;
 }
 #lista-musicas li button { padding: 0.2rem 0.5rem; font-size: 0.75rem; }
+.li-acoes { display: flex; gap: 0.35rem; flex-shrink: 0; }
+.git-status {
+  background: #0a0a14;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 0.75rem;
+  max-height: 160px;
+  overflow: auto;
+  font-size: 0.75rem;
+  white-space: pre-wrap;
+}
 #log {
   background: #0a0a14;
   border: 1px solid #333;
