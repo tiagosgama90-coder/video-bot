@@ -11,7 +11,21 @@ import {
 
 const ESTADO_ROTACAO = path.resolve('./config/musica-rotacao.json');
 
-/** Pool único: diário, viral, motivacional, afiliados — PT-PT e en-US */
+/** Slots fixos por tipo de vídeo — garantem faixas diferentes no mesmo dia (PT/US têm ordens distintas). */
+export const SLOT_MUSICA = {
+  /** Horóscopo diário: slots 0, 1 e 2 (ver gerar-e-publicar.ts) */
+  HOROSCOPO_0: 0,
+  HOROSCOPO_1: 1,
+  HOROSCOPO_2: 2,
+  /** Segunda-feira motivacional */
+  MOTIVACIONAL_SEGUNDA: 3,
+  /** Quarta-feira VIP por divulgação */
+  VIP_DIVULGACAO_QUARTA: 4,
+  /** Quinta-feira motivacional */
+  MOTIVACIONAL_QUINTA: 5,
+} as const;
+
+/** Pool único: horóscopo diário, motivacional, VIP — PT-PT e en-US */
 function obterPoolMusica(): string[] {
   const fontes = obterFontesMusica();
   if (fontes.length > 0) {

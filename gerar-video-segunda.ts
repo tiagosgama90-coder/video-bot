@@ -7,6 +7,7 @@ import {
   obterTituloMotivacional,
 } from './src/lib/conteudo-especial';
 import { isLocaleUS, sufixoIdVideoEspecial } from './src/lib/locale';
+import { SLOT_MUSICA } from './src/lib/musicas';
 import { obterDataPublicacao } from './src/lib/signos';
 import { inicializarFirebaseSeNecessario } from './src/lib/inicializar-app';
 import { exigirDiaSemana } from './src/lib/dia-semana';
@@ -38,6 +39,7 @@ async function executar(): Promise<void> {
     generoVoz: 'aleatoria',
     tipoMusica: 'zen',
     slotHorario: obterSlotEspecial(),
+    slotMusica: SLOT_MUSICA.MOTIVACIONAL_SEGUNDA,
   });
 
   console.log(

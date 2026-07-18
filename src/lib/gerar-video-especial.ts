@@ -42,6 +42,8 @@ export interface OpcoesVideoEspecial {
   slotHorario?: string;
   segmentosEcra?: string[];
   fundoZenAstrologia?: boolean;
+  /** Slot de rotação musical (ver SLOT_MUSICA em musicas.ts) */
+  slotMusica?: number;
 }
 
 function garantirPasta(pasta: string): void {
@@ -75,6 +77,7 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
     idPublicacao,
     opcoes.data,
     opcoes.tipoMusica ?? 'zen',
+    opcoes.slotMusica,
   );
 
   console.log('🎙️ Narração especial (' + opcoes.generoVoz + ') [' + (isLocaleUS() ? 'en-US' : 'pt-PT') + ']');

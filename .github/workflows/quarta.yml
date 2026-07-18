@@ -1,11 +1,11 @@
-name: Vídeo Quarta-feira (Afiliados)
+name: Vídeo Quarta-feira (VIP por Divulgação)
 
 # Disparo via cron-job.org às 07:15 Lisboa às quartas (scripts/configurar-cron-externo.sh).
 on:
   workflow_dispatch:
 
 jobs:
-  gerar-afiliados:
+  gerar-vip-divulgacao:
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -70,7 +70,7 @@ jobs:
           AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
           AZURE_SPEECH_REGION: northeurope
 
-      - name: Gerar vídeo afiliados
+      - name: Gerar vídeo VIP por divulgação
         run: npx ts-node gerar-video-quarta.ts
         env:
           CI: true
@@ -86,7 +86,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: video-afiliados
-          path: output/afiliados-quarta.mp4
+          name: video-vip-divulgacao
+          path: output/vip-divulgacao-quarta.mp4
           retention-days: 7
           if-no-files-found: ignore

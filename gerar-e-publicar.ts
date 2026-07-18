@@ -7,7 +7,7 @@ import { obterTextoHoroscopo, extrairAteSegundoPontoFinal } from './src/lib/horo
 import { escolherFechoNarracao, gerarLegendas } from './src/lib/legenda';
 import { obterImagemFundo } from './src/lib/imagem-fundo';
 import { calcularDuracaoFrames } from './src/lib/duracao-video';
-import { prepararMusicaParaVideo } from './src/lib/musicas';
+import { prepararMusicaParaVideo, SLOT_MUSICA } from './src/lib/musicas';
 import {
   escolherSignosParaExecucao,
   obterDataPublicacao,
@@ -90,7 +90,7 @@ async function processarSigno(
   const musicaFundoArquivo = await prepararMusicaParaVideo(
     signo,
     data,
-    offsetSlot + indiceSlot,
+    offsetSlot + indiceSlot + SLOT_MUSICA.HOROSCOPO_0,
   );
 
   const fechoNarracao = escolherFechoNarracao();
