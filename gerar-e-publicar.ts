@@ -15,6 +15,7 @@ import {
   SIGNOS_ZODIACO,
   type SignoZodiaco,
 } from './src/lib/signos';
+import { VIDEOS_HOROSCOPO_POR_DIA } from './src/lib/publicacao-alcance';
 import { obterVolumeMusica } from './src/lib/project-config';
 import { gerarNarracao, obterPreferenciaVozConfig } from './src/lib/voz';
 import { inicializarFirebaseSeNecessario } from './src/lib/inicializar-app';
@@ -27,8 +28,6 @@ const SLOTS_MUSICA_HOROSCOPO = [
   SLOT_MUSICA.HOROSCOPO_0,
   SLOT_MUSICA.HOROSCOPO_1,
   SLOT_MUSICA.HOROSCOPO_2,
-  SLOT_MUSICA.HOROSCOPO_3,
-  SLOT_MUSICA.HOROSCOPO_4,
 ] as const;
 
 interface PropsVideo {
@@ -152,9 +151,9 @@ async function executarRoboSidusAstro(): Promise<void> {
 
   const signosJaGerados = obterSignosJaGerados();
   
-  // Obtém os signos calculados para o dia e força o limite máximo de 5 signos por execução
+  // 3 vídeos/dia — sweet spot algoritmo TikTok (test pool 200–500 views/vídeo)
   let signosDoDia = escolherSignosParaExecucao(data, signosJaGerados);
-  signosDoDia = signosDoDia.slice(0, 5);
+  signosDoDia = signosDoDia.slice(0, VIDEOS_HOROSCOPO_POR_DIA);
 
   if (process.env.TESTE_LOCAL === '1') {
     console.log('🧪 Modo teste local: 1 signo aleatório por execução');

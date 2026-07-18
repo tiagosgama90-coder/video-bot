@@ -1,7 +1,7 @@
 name: Horóscopo Diário SidusAstro
 
 # Disparo diário via cron-job.org às 07:15 Lisboa (scripts/configurar-cron-externo.sh).
-# O cron do GitHub Actions atrasa horas e falha os slots Buffer 09:00/10:30/12:00/18:00/20:00.
+# O cron do GitHub Actions atrasa horas e falha os slots Buffer 09:00/13:30/19:00.
 on:
   workflow_dispatch:
 

@@ -1,10 +1,10 @@
 import { isLocaleUS, obterFusoPublicacao, rotuloFusoPublicacao } from './locale';
+import {
+  SLOTS_PUBLICACAO_EST,
+  SLOTS_PUBLICACAO_LISBOA,
+} from './publicacao-alcance';
 
-/** Horários Buffer PT — Lisboa (5 publicações/dia para maior alcance) */
-export const SLOTS_PUBLICACAO_LISBOA = ['09:00', '10:30', '12:00', '18:00', '20:00'] as const;
-
-/** Horários Buffer US — New York — mesmos 5 slots locais */
-export const SLOTS_PUBLICACAO_EST = ['09:00', '10:30', '12:00', '18:00', '20:00'] as const;
+export { SLOTS_PUBLICACAO_EST, SLOTS_PUBLICACAO_LISBOA };
 
 const MARGEM_FUTURO_MS = 2 * 60 * 1000;
 

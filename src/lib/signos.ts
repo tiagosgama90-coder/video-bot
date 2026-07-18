@@ -163,11 +163,11 @@ function baralharComSeed<T>(lista: T[], seed: number): T[] {
   return copia;
 }
 
-/** 5 signos diferentes por dia — muda todos os dias, usado no GitHub Actions */
+/** 3 signos/dia — espaçados no Buffer para o test pool TikTok avaliar cada vídeo */
 export function escolherSignosDoDia(data: string): SignoZodiaco[] {
   const seed = hashString('sidusastro-' + data);
   const baralhado = baralharComSeed([...SIGNOS_ZODIACO], seed);
-  return baralhado.slice(0, 5);
+  return baralhado.slice(0, 3);
 }
 
 function escolherSignoAleatorio(excluir: SignoZodiaco[] = []): SignoZodiaco {
@@ -179,7 +179,7 @@ function escolherSignoAleatorio(excluir: SignoZodiaco[] = []): SignoZodiaco {
 /**
  * Local (TESTE_LOCAL=1): 1 signo aleatório por execução — diferente a cada npm run gerar.
  * Local (produção simulada): signos do dia que ainda não têm vídeo em output/.
- * GitHub Actions (CI): até 5 signos fixos do dia.
+ * GitHub Actions (CI): até 3 signos fixos do dia.
  */
 export function escolherSignosParaExecucao(
   data: string,
