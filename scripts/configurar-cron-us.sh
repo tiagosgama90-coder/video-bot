@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
-# Configura cron-job.org para disparar o workflow US às 07:30 New York.
-# Horóscopo EN no Firebase (gerado com o site) → bot US → Buffer publica 09:00/10:30/12:00 NY.
+# Configura cron-job.org para disparar o workflow US às 07:30 America/New_York.
+# Horóscopo EN → bot US → Buffer publica 09:00/13:30/19:00 NY.
 set -euo pipefail
 
 REPO_OWNER="${GITHUB_REPO_OWNER:-tiagosgama90-coder}"
 REPO_NAME="${GITHUB_REPO_NAME:-sidusastro-video-bot}"
 WORKFLOW_FILE="${WORKFLOW_FILE:-diario-us.yml}"
+# ID numérico estável (evita 404 se o nome do ficheiro mudar)
+WORKFLOW_ID="${WORKFLOW_ID:-313950729}"
 BRANCH="${GITHUB_REF_NAME:-main}"
 CRON_API="https://api.cron-job.org"
 JOB_TITLE="SidusAstro Horóscopo Diário US"
@@ -13,7 +15,7 @@ SCHEDULE_HOUR=7
 SCHEDULE_MINUTE=30
 TIMEZONE="America/New_York"
 
-GITHUB_DISPATCH_URL="https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/workflows/${WORKFLOW_FILE}/dispatches"
+GITHUB_DISPATCH_URL="https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/workflows/${WORKFLOW_ID}/dispatches"
 
 echo "══════════════════════════════════════════════════════════"
 echo "  SidusAstro US — Cron @sidusastro_en (cron-job.org)"
@@ -57,9 +59,14 @@ HTTP_CODE=$(curl -sS -o /tmp/validar-pat-us.json -w "%{http_code}" \
   -d "{\"ref\":\"${BRANCH}\"}")
 
 if [[ "$HTTP_CODE" != "204" ]]; then
-  echo "❌ GITHUB_PAT inválido ou sem permissão actions:write (HTTP ${HTTP_CODE}):"
+  echo "❌ GITHUB_PAT inválido ou sem permissão (HTTP ${HTTP_CODE}):"
   cat /tmp/validar-pat-us.json
   echo ""
+  if [[ "$HTTP_CODE" == "404" ]]; then
+    echo "   HTTP 404 no cron-job.org = token expirado ou sem acesso ao repo ${REPO_NAME}."
+    echo "   Cria token novo: https://github.com/settings/tokens?type=beta"
+    echo "   → Repository: ${REPO_NAME} → Actions: Read and write"
+  fi
   exit 1
 fi
 echo "✅ GITHUB_PAT válido — workflow US de teste disparado."
@@ -129,10 +136,13 @@ job_body = {
 
 print("🔍 A procurar job US existente no cron-job.org...", flush=True)
 jobs = api_request("GET", "/jobs")
-existing_id = next(
-    (job.get("jobId") for job in jobs.get("jobs", []) if job.get("title") == job_title),
-    None,
-)
+existing_id = None
+for job in jobs.get("jobs", []):
+    title = (job.get("title") or "").lower()
+    if title == job_title.lower() or "horóscopo diário us" in title or "cronjob americano" in title:
+        existing_id = job.get("jobId")
+        print(f"   Encontrado: {job.get('title')} (ID {existing_id})", flush=True)
+        break
 
 if existing_id:
     print(f"♻️  Job existente encontrado (ID {existing_id}) — a actualizar...", flush=True)
@@ -161,7 +171,7 @@ echo "✅ Cron US configurado!"
 echo ""
 echo "   Job ID:     ${JOB_ID}"
 echo "   Horário:    07:30 America/New_York (todos os dias)"
-echo "   Workflow:   ${WORKFLOW_FILE} → @sidusastro_en"
+echo "   Workflow:   ${WORKFLOW_FILE} (ID ${WORKFLOW_ID}) → @sidusastro_en"
 echo "   Console:    https://console.cron-job.org/jobs/${JOB_ID}"
 echo ""
 echo "   Mantém o cron PT separado (07:15 Lisboa → diario.yml)."
