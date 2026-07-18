@@ -39,7 +39,9 @@ exigirTexto('./gerar-video-quarta.ts', 'fundoZenAstrologia: true', 'Quarta: fund
 exigirTexto('./gerar-video-quarta.ts', 'SLOT_MUSICA.VIP_DIVULGACAO_QUARTA', 'Quarta: slot música');
 exigirTexto('./src/lib/conteudo-especial.ts', "export const TITULO_VIP_DIVULGACAO = 'O TEU VIP VITALÍCIO'", 'VIP: título marketing');
 exigirTexto('./src/lib/conteudo-especial.ts', 'obterConteudoAfiliados', 'Quarta: conteúdo afiliados');
-exigirFicheiro('./src/lib/quarta-alternada.ts');
+exigirFicheiro('./src/lib/legendas-marketing.ts');
+exigirTexto('./src/lib/legenda.ts', 'legendas-marketing', 'Diário: hashtags marketing');
+exigirTexto('./src/lib/conteudo-especial.ts', 'HASHTAGS_VIP_PT_TIKTOK', 'VIP: hashtags PT');
 
 exigirFicheiro('./gerar-video-quinta.ts');
 exigirTexto('./gerar-video-quinta.ts', 'escolherFraseMotivacional', 'Quinta: frase motivacional');
