@@ -54,17 +54,38 @@
           <input type="range" id="musica-volume" min="0.05" max="0.5" step="0.01" />
           <span id="musica-volume-val">0.22</span>
         </label>
-        <p class="hint">Enigma / ERA / worldbeat / gregoriano / new age sensual — todos os vídeos (PT, EN, motivacional, afiliados).</p>
-        <div class="actions">
-          <button id="btn-preset-zen">🎵 Preset Zen Enigma</button>
-          <button id="btn-preset-acustico">🪕 Preset Acústico</button>
-        </div>
+
+        <h3>As tuas músicas ativas (vão para os vídeos)</h3>
+        <p class="hint">Ficheiro: <code>config/sidusastro.json</code> — o bot lê daqui. Não está dentro do .exe.</p>
         <ul id="lista-musicas"></ul>
         <div class="actions">
-          <button id="btn-add-musica-url">+ URL</button>
-          <button id="btn-import-musica">📁 Importar MP3</button>
+          <button id="btn-add-musica-url">+ Colar URL MP3</button>
+          <button id="btn-import-musica">📁 Importar MP3 do PC</button>
         </div>
         <input type="file" id="input-import-mp3" accept=".mp3,audio/mpeg" hidden />
+
+        <h3>Explorar catálogo (centenas de milhares de faixas)</h3>
+        <p class="hint" id="catalogo-status">A verificar APIs...</p>
+        <div class="grid2">
+          <label>Base de dados
+            <select id="catalogo-fonte">
+              <option value="jamendo">Jamendo (~500 000 faixas)</option>
+              <option value="pixabay">Pixabay Music (~250 000 faixas)</option>
+            </select>
+          </label>
+          <label>Pesquisar
+            <input id="catalogo-query" placeholder="enigma gregorian worldbeat meditation sensual" />
+          </label>
+        </div>
+        <div class="actions">
+          <button id="btn-catalogo-enigma">Enigma / ERA</button>
+          <button id="btn-catalogo-gregorian">Gregoriano</button>
+          <button id="btn-catalogo-worldbeat">Worldbeat</button>
+          <button id="btn-catalogo-zen">Zen sensual</button>
+          <button class="primary" id="btn-catalogo-pesquisar">🔍 Pesquisar</button>
+        </div>
+        <ul id="lista-catalogo" class="catalogo-lista"></ul>
+        <p class="hint"><small>Chaves grátis no <code>.env</code>: <code>JAMENDO_CLIENT_ID</code> (devportal.jamendo.com) e <code>PIXABAY_API_KEY</code> (pixabay.com/api/docs). Mixkit deixou de ser a fonte principal.</small></p>
       </section>
 
       <section id="tab-imagem" class="panel">
