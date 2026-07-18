@@ -1,8 +1,12 @@
 name: Vídeo Quarta-feira (Afiliados)
 
-# Disparo via cron-job.org às 07:15 Lisboa às quartas (scripts/configurar-cron-externo.sh).
+# Disparo via cron-job.org às 07:30 Lisboa às quartas (scripts/configurar-todos-crons.sh).
 on:
   workflow_dispatch:
+
+concurrency:
+  group: especial-pt-quarta-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   gerar-afiliados:

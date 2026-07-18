@@ -1,9 +1,13 @@
 name: Vídeo Quinta-feira US (Motivacional)
 
-# Disparo via cron-job.org às quintas (fuso New York).
+# Disparo via cron-job.org às 07:30 America/New_York às quintas (scripts/configurar-todos-crons.sh).
 # Publica só no TikTok @sidusastro_en em inglês.
 on:
   workflow_dispatch:
+
+concurrency:
+  group: especial-us-quinta-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   gerar-motivacional-quinta-us:

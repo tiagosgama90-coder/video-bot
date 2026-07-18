@@ -51,6 +51,7 @@
     "disparar-diario": "bash scripts/disparar-diario.sh",
     "configurar-cron": "bash scripts/configurar-cron-externo.sh",
     "configurar-cron-us": "bash scripts/configurar-cron-us.sh",
+    "configurar-todos-crons": "bash scripts/configurar-todos-crons.sh",
     "disparar-diario-us": "bash scripts/disparar-diario-us.sh",
     "testar-buffer": "npx ts-node testar-upload-buffer.ts",
     "studio": "electron studio/main.cjs",

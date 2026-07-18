@@ -1,8 +1,12 @@
 name: Vídeo Segunda-feira (Motivacional)
 
-# Disparo via cron-job.org às 07:15 Lisboa às segundas (scripts/configurar-cron-externo.sh).
+# Disparo via cron-job.org às 07:30 Lisboa às segundas (scripts/configurar-todos-crons.sh).
 on:
   workflow_dispatch:
+
+concurrency:
+  group: especial-pt-segunda-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   gerar-motivacional:

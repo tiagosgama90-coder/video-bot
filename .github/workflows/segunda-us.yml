@@ -1,9 +1,13 @@
 name: Vídeo Segunda-feira US (Motivacional)
 
-# Disparo manual ou cron-job.org às segundas (fuso EST).
+# Disparo via cron-job.org às 07:30 America/New_York às segundas (scripts/configurar-todos-crons.sh).
 # Publica só no TikTok @sidusastro_en em inglês.
 on:
   workflow_dispatch:
+
+concurrency:
+  group: especial-us-segunda-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   gerar-motivacional-us:
