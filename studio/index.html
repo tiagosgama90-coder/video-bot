@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sidus Studio</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Sidus Studio</h1>
+      <p>Gere voz, música e imagens do SidusAstro — alterações aplicam-se no próximo disparo.</p>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="voz">Voz</button>
+      <button class="tab" data-tab="musica">Música</button>
+      <button class="tab" data-tab="imagem">Imagem</button>
+      <button class="tab" data-tab="gerar">Gerar</button>
+    </nav>
+
+    <main>
+      <section id="tab-voz" class="panel active">
+        <label>Preferência de voz
+          <select id="voz-preferencia">
+            <option value="aleatoria">Aleatória</option>
+            <option value="feminina">Feminina</option>
+            <option value="masculina">Masculina</option>
+          </select>
+        </label>
+        <h3>Português (PT-PT)</h3>
+        <div class="grid2">
+          <label>Feminina rate <input id="pt-fem-rate" /></label>
+          <label>Feminina pitch <input id="pt-fem-pitch" /></label>
+          <label>Masculina rate <input id="pt-masc-rate" /></label>
+          <label>Masculina pitch <input id="pt-masc-pitch" /></label>
+        </div>
+        <h3>English (en-US)</h3>
+        <div class="grid2">
+          <label>Feminina rate <input id="en-fem-rate" /></label>
+          <label>Feminina pitch <input id="en-fem-pitch" /></label>
+          <label>Masculina rate <input id="en-masc-rate" /></label>
+          <label>Masculina pitch <input id="en-masc-pitch" /></label>
+        </div>
+        <div class="actions">
+          <button id="btn-testar-voz-pt">▶ Testar voz PT</button>
+          <button id="btn-testar-voz-en">▶ Testar voz EN</button>
+        </div>
+      </section>
+
+      <section id="tab-musica" class="panel">
+        <label>Volume da música no vídeo (0–1)
+          <input type="range" id="musica-volume" min="0.05" max="0.5" step="0.01" />
+          <span id="musica-volume-val">0.22</span>
+        </label>
+        <label><input type="checkbox" id="musica-sempre-zen" checked /> Sempre música zen (sem upbeat)</label>
+        <h3>Lista de músicas</h3>
+        <p class="hint">Acústico / flauta / orquestral. Podes adicionar URLs Mixkit ou importar MP3.</p>
+        <ul id="lista-musicas"></ul>
+        <div class="actions">
+          <button id="btn-add-musica-url">+ URL</button>
+          <button id="btn-import-musica">📁 Importar MP3</button>
+        </div>
+      </section>
+
+      <section id="tab-imagem" class="panel">
+        <label>Temas (um por linha)
+          <textarea id="imagem-temas" rows="6"></textarea>
+        </label>
+        <label>Modificadores (um por linha)
+          <textarea id="imagem-mods" rows="4"></textarea>
+        </label>
+        <label>Paletas de cor (um por linha)
+          <textarea id="imagem-paletas" rows="3"></textarea>
+        </label>
+        <label>Sufixo do prompt
+          <input id="imagem-sufixo" />
+        </label>
+      </section>
+
+      <section id="tab-gerar" class="panel">
+        <p class="hint">Gera 1 vídeo de teste <strong>sem publicar</strong>. Usa a config guardada.</p>
+        <div class="actions">
+          <button class="primary" id="btn-gerar-pt">🎬 Gerar teste PT</button>
+          <button class="primary" id="btn-gerar-en">🎬 Gerar teste EN</button>
+          <button id="btn-open-output">📂 Abrir pasta output</button>
+        </div>
+        <h3>Vídeos recentes</h3>
+        <ul id="lista-videos"></ul>
+        <h3>Log</h3>
+        <pre id="log"></pre>
+      </section>
+    </main>
+
+    <footer>
+      <button class="primary" id="btn-guardar">💾 Guardar configuração</button>
+      <span id="status"></span>
+    </footer>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>

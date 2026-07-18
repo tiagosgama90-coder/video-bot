@@ -4,58 +4,49 @@ import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import axios from 'axios';
-
-/**
- * New age / Enigma / worldbeat — pads etéreos, ritmos tribais suaves, atmosfera zen.
- * Mixkit License — royalty-free. Aplica-se a PT-PT e en-US (mesmo pool).
- */
-const POOL_MUSICAS_ZEN: string[] = [
-  // Worldbeat / étnico suave
-  'https://assets.mixkit.co/music/21/21.mp3',
-  'https://assets.mixkit.co/music/37/37.mp3',
-  'https://assets.mixkit.co/music/45/45.mp3',
-  'https://assets.mixkit.co/music/178/178.mp3',
-  'https://assets.mixkit.co/music/233/233.mp3',
-  'https://assets.mixkit.co/music/1084/1084.mp3',
-  // Místico / Enigma
-  'https://assets.mixkit.co/music/114/114.mp3',
-  'https://assets.mixkit.co/music/138/138.mp3',
-  'https://assets.mixkit.co/music/139/139.mp3',
-  'https://assets.mixkit.co/music/141/141.mp3',
-  'https://assets.mixkit.co/music/325/325.mp3',
-  'https://assets.mixkit.co/music/538/538.mp3',
-  'https://assets.mixkit.co/music/578/578.mp3',
-  // New age / ambient
-  'https://assets.mixkit.co/music/324/324.mp3',
-  'https://assets.mixkit.co/music/441/441.mp3',
-  'https://assets.mixkit.co/music/442/442.mp3',
-];
+import {
+  carregarConfigProjeto,
+  obterFontesMusica,
+  resolverFonteMusica,
+} from './project-config';
 
 /**
  * Faixas mais rítmicas/upbeat — estilo "viral TikTok" mas royalty-free.
- * Sons virais reais do TikTok são copyright e não podem ser usados automaticamente.
- * ~30% dos vídeos escolhem deste pool.
  */
 const POOL_MUSICAS_ESTILO_VIRAL: string[] = [
   'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
   'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
   'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3',
   'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3',
 ];
 
-/** Sempre zen — sem faixas upbeat nos vídeos diários */
-const PROBABILIDADE_ESTILO_VIRAL = 0;
+function obterPoolZen(): string[] {
+  const fontes = obterFontesMusica();
+  if (fontes.length > 0) {
+    return fontes;
+  }
+  return carregarConfigProjeto().musica.entradas.map((e) => e.fonte);
+}
 
 function caminhoPublico(nomeFicheiro: string): string {
   return path.resolve('./public/' + nomeFicheiro);
 }
 
-async function descarregarMusica(url: string, destino: string): Promise<void> {
-  const resposta = await axios.get<ArrayBuffer>(url, {
+function fonteEhLocal(fonte: string): boolean {
+  return !fonte.startsWith('http://') && !fonte.startsWith('https://');
+}
+
+async function obterMusicaDeFonte(fonte: string, destino: string): Promise<void> {
+  if (fonteEhLocal(fonte)) {
+    const origem = resolverFonteMusica(fonte);
+    if (!fs.existsSync(origem)) {
+      throw new Error('Ficheiro local não encontrado: ' + origem);
+    }
+    fs.copyFileSync(origem, destino);
+    return;
+  }
+
+  const resposta = await axios.get<ArrayBuffer>(fonte, {
     responseType: 'arraybuffer',
     timeout: 90_000,
     headers: {
@@ -108,11 +99,11 @@ function gerarMusicaOffline(destino: string, indice: number): void {
 }
 
 function escolherPoolMusica(): { pool: string[]; tipo: 'zen' | 'viral-estilo' } {
-  const usarViral = crypto.randomInt(0, 100) < PROBABILIDADE_ESTILO_VIRAL * 100;
-  if (usarViral) {
-    return { pool: POOL_MUSICAS_ESTILO_VIRAL, tipo: 'viral-estilo' };
+  const cfg = carregarConfigProjeto();
+  if (cfg.musica.sempreZen) {
+    return { pool: obterPoolZen(), tipo: 'zen' };
   }
-  return { pool: POOL_MUSICAS_ZEN, tipo: 'zen' };
+  return { pool: POOL_MUSICAS_ESTILO_VIRAL, tipo: 'viral-estilo' };
 }
 
 function escolherIndice(pool: string[], signo: string, data: string): number {
@@ -142,13 +133,13 @@ export async function prepararMusicaEspecial(
   let etiqueta: string;
 
   if (tipo === 'zen') {
-    pool = POOL_MUSICAS_ZEN;
+    pool = obterPoolZen();
     etiqueta = 'zen';
   } else if (tipo === 'viral') {
     pool = POOL_MUSICAS_ESTILO_VIRAL;
     etiqueta = 'viral';
   } else if (tipo === 'mistico') {
-    pool = [...POOL_MUSICAS_ZEN, ...POOL_MUSICAS_ESTILO_VIRAL];
+    pool = [...obterPoolZen(), ...POOL_MUSICAS_ESTILO_VIRAL];
     etiqueta = 'místico';
   } else {
     const escolha = escolherPoolMusica();
@@ -156,30 +147,30 @@ export async function prepararMusicaEspecial(
     etiqueta = escolha.tipo;
   }
 
+  if (pool.length === 0) {
+    throw new Error('Pool de músicas vazio — edita config/sidusastro.json');
+  }
+
   const indice = escolherIndice(pool, id, data);
   const nomeFicheiro = 'musica-' + id + '.mp3';
   const destino = caminhoPublico(nomeFicheiro);
-  const urls = [
+  const fontes = [
     pool[indice],
     pool[(indice + 2) % pool.length],
     pool[(indice + 5) % pool.length],
   ];
 
-  const etiquetaFinal =
-    tipo === 'aleatoria'
-      ? etiqueta + ' [' + (indice + 1) + '/' + pool.length + ']'
-      : etiqueta + ' [' + (indice + 1) + '/' + pool.length + ']';
-
+  const etiquetaFinal = etiqueta + ' [' + (indice + 1) + '/' + pool.length + ']';
   console.log('🎵 Música ' + etiquetaFinal + ' para ' + id);
 
-  for (const url of urls) {
+  for (const fonte of fontes) {
     try {
-      await descarregarMusica(url, destino);
+      await obterMusicaDeFonte(fonte, destino);
       prepararMusicaZen(destino);
       console.log('✅ Música guardada: ' + nomeFicheiro);
       return nomeFicheiro;
     } catch (erro) {
-      console.log('⚠️ URL música falhou: ' + url);
+      console.log('⚠️ Fonte música falhou: ' + fonte);
       console.log(String(erro));
     }
   }

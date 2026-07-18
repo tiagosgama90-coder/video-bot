@@ -12,5 +12,9 @@ public/fundo-ia.jpg
 public/fundo-*.jpg
 public/props-temporarias.json
 public/musica-*.mp3
+public/preview-voz.mp3
+config/musicas/*.mp3
+!config/musicas/.gitkeep
 firebase-admin.json
 video-bot/
+public/narracao-*.mp3

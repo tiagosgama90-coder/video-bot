@@ -10,6 +10,8 @@ export interface HoroscopoProps {
   duracaoFrames: number;
   /** URL curta no canto do vídeo — ex. sidusastro.com/en */
   siteMarca?: string;
+  /** Volume da música de fundo (0–1) — vem de config/sidusastro.json */
+  volumeMusica?: number;
   /** Texto que vai aparecendo em sincronia com a voz (vídeo afiliados) */
   segmentosEcra?: Array<{ texto: string; frameInicio: number }>;
 }
