@@ -44,24 +44,26 @@ export interface ConfigProjeto {
   };
 }
 
-/** New age / Enigma / worldbeat — pads etéreos, ritmos tribais suaves */
+/** Enigma / ERA / worldbeat / new age sensual — gregoriano, pads etéreos, percussão tribal */
 export const PRESET_MUSICAS_ZEN: EntradaMusica[] = [
-  { nome: 'Worldbeat tribal', fonte: 'https://assets.mixkit.co/music/21/21.mp3' },
-  { nome: 'Ethnic zen', fonte: 'https://assets.mixkit.co/music/37/37.mp3' },
-  { nome: 'Soft worldbeat', fonte: 'https://assets.mixkit.co/music/45/45.mp3' },
-  { nome: 'Tribal ambient', fonte: 'https://assets.mixkit.co/music/178/178.mp3' },
-  { nome: 'World rhythm', fonte: 'https://assets.mixkit.co/music/233/233.mp3' },
-  { nome: 'Ethnic pads', fonte: 'https://assets.mixkit.co/music/1084/1084.mp3' },
-  { nome: 'Mystic meditation', fonte: 'https://assets.mixkit.co/music/114/114.mp3' },
-  { nome: 'Enigma atmosphere', fonte: 'https://assets.mixkit.co/music/138/138.mp3' },
-  { nome: 'Spiritual mystery', fonte: 'https://assets.mixkit.co/music/139/139.mp3' },
-  { nome: 'Deep zen pads', fonte: 'https://assets.mixkit.co/music/141/141.mp3' },
-  { nome: 'Ethereal chant', fonte: 'https://assets.mixkit.co/music/325/325.mp3' },
-  { nome: 'Mystic world', fonte: 'https://assets.mixkit.co/music/538/538.mp3' },
-  { nome: 'Ambient mystery', fonte: 'https://assets.mixkit.co/music/578/578.mp3' },
-  { nome: 'New age calm', fonte: 'https://assets.mixkit.co/music/324/324.mp3' },
-  { nome: 'Zen ambient', fonte: 'https://assets.mixkit.co/music/441/441.mp3' },
-  { nome: 'Peaceful pads', fonte: 'https://assets.mixkit.co/music/442/442.mp3' },
+  { nome: 'Gregorian chant (How)', fonte: 'https://assets.mixkit.co/music/32/32.mp3' },
+  { nome: 'Gregorian mystic', fonte: 'https://assets.mixkit.co/music/579/579.mp3' },
+  { nome: 'Games worldbeat', fonte: 'https://assets.mixkit.co/music/466/466.mp3' },
+  { nome: 'Voxscape ethereal', fonte: 'https://assets.mixkit.co/music/571/571.mp3' },
+  { nome: 'Meditation sitar', fonte: 'https://assets.mixkit.co/music/344/344.mp3' },
+  { nome: 'Tribal mystic 4', fonte: 'https://assets.mixkit.co/music/541/541.mp3' },
+  { nome: 'Tribal peaceful 2', fonte: 'https://assets.mixkit.co/music/539/539.mp3' },
+  { nome: 'Crystal chant', fonte: 'https://assets.mixkit.co/music/583/583.mp3' },
+  { nome: 'Rest now zen', fonte: 'https://assets.mixkit.co/music/584/584.mp3' },
+  { nome: 'Sensual arabic', fonte: 'https://assets.mixkit.co/music/701/701.mp3' },
+  { nome: 'Harp relaxation', fonte: 'https://assets.mixkit.co/music/669/669.mp3' },
+  { nome: 'Finding myself', fonte: 'https://assets.mixkit.co/music/993/993.mp3' },
+  { nome: 'Transcending space', fonte: 'https://assets.mixkit.co/music/347/347.mp3' },
+  { nome: 'Sun daughter', fonte: 'https://assets.mixkit.co/music/580/580.mp3' },
+  { nome: 'Western mystery', fonte: 'https://assets.mixkit.co/music/574/574.mp3' },
+  { nome: 'Opalescent pads', fonte: 'https://assets.mixkit.co/music/593/593.mp3' },
+  { nome: 'Charlotte ambient', fonte: 'https://assets.mixkit.co/music/586/586.mp3' },
+  { nome: 'New age love', fonte: 'https://assets.mixkit.co/music/958/958.mp3' },
 ];
 
 /** Acústico / flauta / orquestral — alternativa menos eletrónica */
