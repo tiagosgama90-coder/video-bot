@@ -1,12 +1,50 @@
 name: Horóscopo Diário US (sidusastro_en)
 
-# Disparo via cron-job.org às 07:30 America/New_York (scripts/configurar-cron-us.sh).
-# Publica só no TikTok @sidusastro_en em inglês. Slots Buffer: 09:00/10:30/12:00 NY.
+# Primário: cron-job.org às 07:30 America/New_York (scripts/configurar-cron-us.sh).
+# Backup: schedule GitHub abaixo + monitor-crons.yml dispara recuperação se ambos falharem.
+# Publica TikTok @sidusastro_en (+ Instagram US se BUFFER_INSTAGRAM_US_CHANNEL_ID definido).
+# Slots Buffer: 09:00/13:30/19:00 NY — 3 vídeos/dia (sweet spot algoritmo TikTok).
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '30 11 * * *'  # ~07:30 America/New_York (EDT)
+    - cron: '30 12 * * *'  # ~07:30 America/New_York (EST)
+
+permissions:
+  actions: read
+  contents: read
 
 jobs:
+  evitar-duplicado-schedule:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    outputs:
+      continuar: ${{ steps.decide.outputs.continuar }}
+    steps:
+      - name: Saltar backup se o diário US já correu hoje
+        id: decide
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const hoje = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+            const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'diario-us.yml',
+              status: 'success',
+              per_page: 20,
+            });
+            const correu = runs.some((r) =>
+              new Date(r.created_at).toLocaleDateString('en-CA', { timeZone: 'America/New_York' }) === hoje,
+            );
+            core.setOutput('continuar', correu ? 'false' : 'true');
+            if (correu) {
+              core.info('Diário US já correu hoje (' + hoje + ' NY) — backup schedule ignorado.');
+            }
+
   gerar-e-publicar-us:
+    needs: evitar-duplicado-schedule
+    if: always() && (github.event_name != 'schedule' || needs.evitar-duplicado-schedule.outputs.continuar == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 90
 
@@ -67,6 +105,7 @@ jobs:
           LOCALE: en-US
           BUFFER_ACCESS_TOKEN: ${{ secrets.BUFFER_ACCESS_TOKEN }}
           BUFFER_TIKTOK_US_CHANNEL_ID: ${{ secrets.BUFFER_TIKTOK_US_CHANNEL_ID }}
+          BUFFER_INSTAGRAM_US_CHANNEL_ID: ${{ secrets.BUFFER_INSTAGRAM_US_CHANNEL_ID }}
           BUFFER_TIKTOK_US_USERNAME: sidusastro_en
           FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
           AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}

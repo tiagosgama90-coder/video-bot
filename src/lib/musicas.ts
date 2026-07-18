@@ -13,10 +13,12 @@ const ESTADO_ROTACAO = path.resolve('./config/musica-rotacao.json');
 
 /** Slots fixos por tipo de vídeo — garantem faixas diferentes no mesmo dia (PT/US têm ordens distintas). */
 export const SLOT_MUSICA = {
-  /** Horóscopo diário: slots 0, 1 e 2 (ver gerar-e-publicar.ts) */
+  /** Horóscopo diário: slots 0–4 (ver gerar-e-publicar.ts) */
   HOROSCOPO_0: 0,
   HOROSCOPO_1: 1,
   HOROSCOPO_2: 2,
+  HOROSCOPO_3: 6,
+  HOROSCOPO_4: 7,
   /** Segunda-feira motivacional */
   MOTIVACIONAL_SEGUNDA: 3,
   /** Quarta-feira VIP por divulgação */
@@ -117,6 +119,10 @@ export function escolherIndiceMusica(
   return ordem[slot % poolSize];
 }
 
+async function dormir(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function obterMusicaDeFonte(fonte: string, destino: string): Promise<void> {
   if (fonteEhLocal(fonte)) {
     const origem = resolverFonteMusica(fonte);
@@ -127,21 +133,46 @@ async function obterMusicaDeFonte(fonte: string, destino: string): Promise<void>
     return;
   }
 
-  const resposta = await axios.get<ArrayBuffer>(fonte, {
-    responseType: 'arraybuffer',
-    timeout: 90_000,
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) SidusAstro/1.0',
-      Accept: 'audio/mpeg,audio/*,*/*',
-    },
-    maxRedirects: 5,
-  });
+  const maxTentativas = 3;
+  let ultimoErro: unknown;
 
-  if (resposta.data.byteLength < 10_000) {
-    throw new Error('Ficheiro de áudio demasiado pequeno');
+  for (let tentativa = 1; tentativa <= maxTentativas; tentativa++) {
+    try {
+      const resposta = await axios.get<ArrayBuffer>(fonte, {
+        responseType: 'arraybuffer',
+        timeout: 90_000,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) SidusAstro/1.0',
+          Accept: 'audio/mpeg,audio/*,*/*',
+        },
+        maxRedirects: 5,
+      });
+
+      if (resposta.data.byteLength < 10_000) {
+        throw new Error('Ficheiro de áudio demasiado pequeno');
+      }
+
+      fs.writeFileSync(destino, Buffer.from(resposta.data));
+      return;
+    } catch (erro) {
+      ultimoErro = erro;
+      if (tentativa < maxTentativas) {
+        const esperaMs = tentativa * 2000;
+        console.log(
+          '⚠️ Download música falhou (tentativa ' +
+            tentativa +
+            '/' +
+            maxTentativas +
+            ') — a repetir em ' +
+            esperaMs / 1000 +
+            's...',
+        );
+        await dormir(esperaMs);
+      }
+    }
   }
 
-  fs.writeFileSync(destino, Buffer.from(resposta.data));
+  throw ultimoErro;
 }
 
 /** Remove silêncio inicial — muitas faixas ambient começam em mute */

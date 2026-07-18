@@ -83,7 +83,8 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
   console.log('🎙️ Narração especial (' + opcoes.generoVoz + ') [' + (isLocaleUS() ? 'en-US' : 'pt-PT') + ']');
   await gerarNarracao(opcoes.textoNarracao, './public/narracao.mp3', opcoes.generoVoz);
 
-  const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3', 90);
+  const maxSegundos = opcoes.segmentosEcra?.length ? 35 : 25;
+  const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3', maxSegundos);
 
   const segmentosProgressivos = opcoes.segmentosEcra?.length
     ? calcularSegmentosProgressivos(opcoes.segmentosEcra, duracaoFrames)

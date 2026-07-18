@@ -1,0 +1,28 @@
+name: Recuperar Horóscopo Diário US
+
+# Disparo único via push do trigger — recupera dias em que o cron US falhou.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/triggers/disparar-diario-us-recuperacao'
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  disparar-us:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disparar Horóscopo Diário US
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'diario-us.yml',
+              ref: 'main',
+            });
+            core.info('Workflow diario-us.yml disparado (recuperação).');

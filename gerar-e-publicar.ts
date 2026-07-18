@@ -15,6 +15,7 @@ import {
   SIGNOS_ZODIACO,
   type SignoZodiaco,
 } from './src/lib/signos';
+import { VIDEOS_HOROSCOPO_POR_DIA } from './src/lib/publicacao-alcance';
 import { obterVolumeMusica } from './src/lib/project-config';
 import { gerarNarracao, obterPreferenciaVozConfig } from './src/lib/voz';
 import { inicializarFirebaseSeNecessario } from './src/lib/inicializar-app';
@@ -23,9 +24,16 @@ dotenv.config();
 
 inicializarFirebaseSeNecessario({ obrigatorio: process.env.SKIP_PUBLICAR !== '1' });
 
+const SLOTS_MUSICA_HOROSCOPO = [
+  SLOT_MUSICA.HOROSCOPO_0,
+  SLOT_MUSICA.HOROSCOPO_1,
+  SLOT_MUSICA.HOROSCOPO_2,
+] as const;
+
 interface PropsVideo {
   signo: string;
   previsao: string;
+  hookTexto: string;
   fechoTexto: string;
   imagemFundoUrl: string;
   musicaFundoArquivo: string;
@@ -75,7 +83,6 @@ async function processarSigno(
   signo: SignoZodiaco,
   data: string,
   indiceSlot: number,
-  offsetSlot: number,
 ): Promise<void> {
   console.log('\n══════════════════════════════════════');
   console.log('🔮 A processar signo: ' + obterNomeSigno(signo));
@@ -87,17 +94,16 @@ async function processarSigno(
   console.log('✂️ Vídeo (1.ª + 2.ª frase por ponto final): "' + previsaoVideo + '"');
 
   const imagemFundoUrl = await obterImagemFundo(signo, data);
-  const musicaFundoArquivo = await prepararMusicaParaVideo(
-    signo,
-    data,
-    offsetSlot + indiceSlot + SLOT_MUSICA.HOROSCOPO_0,
-  );
+  const slotMusica =
+    SLOTS_MUSICA_HOROSCOPO[indiceSlot] ??
+    SLOTS_MUSICA_HOROSCOPO[indiceSlot % SLOTS_MUSICA_HOROSCOPO.length];
+  const musicaFundoArquivo = await prepararMusicaParaVideo(signo, data, slotMusica);
 
   const fechoNarracao = escolherFechoNarracao();
   const fechoEcra = fechoNarracao.replace(/^\.\s+/, '');
-  const textoNarracao = previsaoVideo + fechoNarracao;
-  console.log('🎙️ Narração: "' + previsaoVideo + '"' + fechoNarracao);
-  await gerarNarracao(textoNarracao, './public/narracao.mp3', obterPreferenciaVozConfig());
+  // Narração só com a previsão — fecho aparece no ecrã (retenção + vídeo mais curto)
+  console.log('🎙️ Narração: "' + previsaoVideo + '"');
+  await gerarNarracao(previsaoVideo, './public/narracao.mp3', obterPreferenciaVozConfig());
 
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3');
 
@@ -108,6 +114,7 @@ async function processarSigno(
   const props: PropsVideo = {
     signo: obterNomeSigno(signo),
     previsao: previsaoVideo,
+    hookTexto: legendas.hook,
     fechoTexto: fechoEcra,
     imagemFundoUrl,
     musicaFundoArquivo,
@@ -144,9 +151,9 @@ async function executarRoboSidusAstro(): Promise<void> {
 
   const signosJaGerados = obterSignosJaGerados();
   
-  // Obtém os signos calculados para o dia e força o limite máximo de 3 signos por execução
+  // 3 vídeos/dia — sweet spot algoritmo TikTok (test pool 200–500 views/vídeo)
   let signosDoDia = escolherSignosParaExecucao(data, signosJaGerados);
-  signosDoDia = signosDoDia.slice(0, 3); // 👈 ADICIONADO: Garante estritamente o limite de 3 vídeos
+  signosDoDia = signosDoDia.slice(0, VIDEOS_HOROSCOPO_POR_DIA);
 
   if (process.env.TESTE_LOCAL === '1') {
     console.log('🧪 Modo teste local: 1 signo aleatório por execução');
@@ -165,7 +172,7 @@ async function executarRoboSidusAstro(): Promise<void> {
   let sucessos = 0;
   for (let i = 0; i < signosDoDia.length; i++) {
     try {
-      await processarSigno(signosDoDia[i], data, i, signosJaGerados.length);
+      await processarSigno(signosDoDia[i], data, signosJaGerados.length + i);
       sucessos++;
     } catch (erro) {
       erros++;
@@ -192,7 +199,8 @@ async function executarRoboSidusAstro(): Promise<void> {
     process.env.SKIP_PUBLICAR === '1'
       ? '\n🏁 Automação concluída — vídeos em output/ (sem publicar no Buffer).'
       : isLocaleUS()
-        ? '\n🏁 Automação concluída — vídeos publicados em TikTok US (@sidusastro_en)!'
+        ? '\n🏁 Automação concluída — vídeos publicados em TikTok US (@sidusastro_en)'
+          + (process.env.BUFFER_INSTAGRAM_US_CHANNEL_ID ? ' + Instagram US!' : '!')
         : '\n🏁 Automação concluída — vídeos publicados em Instagram + TikTok!',
   );
 }

@@ -134,6 +134,8 @@ export async function resolverCanaisPublicacao(): Promise<BufferChannel[]> {
 
   if (isLocaleUS()) {
     const tiktokUser = normalizar(process.env.BUFFER_TIKTOK_US_USERNAME ?? 'sidusastro_en');
+    const instagramId = process.env.BUFFER_INSTAGRAM_US_CHANNEL_ID;
+
     const tiktok =
       canais.find((c) => c.id === process.env.BUFFER_TIKTOK_US_CHANNEL_ID) ??
       canais.find(
@@ -149,7 +151,17 @@ export async function resolverCanaisPublicacao(): Promise<BufferChannel[]> {
       );
     }
 
-    return [tiktok];
+    const instagram =
+      instagramId != null && instagramId !== ''
+        ? (canais.find((c) => c.id === instagramId) ??
+          canais.find(
+            (c) =>
+              c.service.toLowerCase() === 'instagram' &&
+              (normalizar(c.name).includes('en') || normalizar(c.name).includes('sidusastro')),
+          ))
+        : undefined;
+
+    return instagram ? [instagram, tiktok] : [tiktok];
   }
 
   const instagramId = process.env.BUFFER_INSTAGRAM_CHANNEL_ID ?? '14967289874';

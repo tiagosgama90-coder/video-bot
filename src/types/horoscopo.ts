@@ -1,6 +1,8 @@
 export interface HoroscopoProps {
   signo: string;
   previsao: string;
+  /** Gancho nos primeiros 3s do vídeo — alinhado com a legenda */
+  hookTexto?: string;
   /** Frase final (texto) — aparece no fim no lugar da previsão */
   fechoTexto: string;
   imagemFundoUrl: string;
