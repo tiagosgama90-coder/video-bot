@@ -10,17 +10,8 @@ import {
   resolverFonteMusica,
 } from './project-config';
 
-/**
- * Faixas mais rítmicas/upbeat — estilo "viral TikTok" mas royalty-free.
- */
-const POOL_MUSICAS_ESTILO_VIRAL: string[] = [
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3',
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3',
-];
-
-function obterPoolZen(): string[] {
+/** Pool único: diário, viral, motivacional, afiliados — PT-PT e en-US */
+function obterPoolMusica(): string[] {
   const fontes = obterFontesMusica();
   if (fontes.length > 0) {
     return fontes;
@@ -98,14 +89,6 @@ function gerarMusicaOffline(destino: string, indice: number): void {
   );
 }
 
-function escolherPoolMusica(): { pool: string[]; tipo: 'zen' | 'viral-estilo' } {
-  const cfg = carregarConfigProjeto();
-  if (cfg.musica.sempreZen) {
-    return { pool: obterPoolZen(), tipo: 'zen' };
-  }
-  return { pool: POOL_MUSICAS_ESTILO_VIRAL, tipo: 'viral-estilo' };
-}
-
 function escolherIndice(pool: string[], signo: string, data: string): number {
   const bytes = crypto.randomBytes(4);
   let hash = bytes.readUInt32BE(0);
@@ -117,35 +100,27 @@ function escolherIndice(pool: string[], signo: string, data: string): number {
 }
 
 export async function prepararMusicaParaVideo(signo: string, data: string): Promise<string> {
-  return prepararMusicaEspecial(signo, data, 'aleatoria');
+  return prepararMusicaEspecial(signo, data, 'zen');
 }
 
 export async function prepararMusicaEspecial(
   id: string,
   data: string,
-  tipo: 'zen' | 'mistico' | 'viral' | 'aleatoria' = 'aleatoria',
+  tipo: 'zen' | 'mistico' | 'viral' | 'aleatoria' = 'zen',
 ): Promise<string> {
   if (!fs.existsSync('./public')) {
     fs.mkdirSync('./public', { recursive: true });
   }
 
-  let pool: string[];
-  let etiqueta: string;
-
-  if (tipo === 'zen') {
-    pool = obterPoolZen();
-    etiqueta = 'zen';
-  } else if (tipo === 'viral') {
-    pool = POOL_MUSICAS_ESTILO_VIRAL;
-    etiqueta = 'viral';
-  } else if (tipo === 'mistico') {
-    pool = [...obterPoolZen(), ...POOL_MUSICAS_ESTILO_VIRAL];
-    etiqueta = 'místico';
-  } else {
-    const escolha = escolherPoolMusica();
-    pool = escolha.pool;
-    etiqueta = escolha.tipo;
-  }
+  const pool = obterPoolMusica();
+  const etiqueta =
+    tipo === 'viral'
+      ? 'zen-viral'
+      : tipo === 'mistico'
+        ? 'zen-místico'
+        : tipo === 'aleatoria'
+          ? 'zen'
+          : 'zen';
 
   if (pool.length === 0) {
     throw new Error('Pool de músicas vazio — edita config/sidusastro.json');

@@ -30,7 +30,9 @@ export interface ConfigProjeto {
     pausaVirgulaMs: number;
   };
   musica: {
+    /** Volume no vídeo (0–1) — diário, motivacional, afiliados, PT e EN */
     volume: number;
+    /** @deprecated Mantido por compatibilidade; o pool é sempre o de entradas */
     sempreZen: boolean;
     entradas: EntradaMusica[];
   };

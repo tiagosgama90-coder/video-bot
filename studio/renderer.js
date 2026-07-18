@@ -70,7 +70,6 @@ function configParaForm() {
   document.getElementById('en-masc-pitch').value = config.voz.en.masculinaPitch;
   document.getElementById('musica-volume').value = config.musica.volume;
   document.getElementById('musica-volume-val').textContent = String(config.musica.volume);
-  document.getElementById('musica-sempre-zen').checked = config.musica.sempreZen;
   document.getElementById('imagem-temas').value = arrayParaLinhas(config.imagem.temas);
   document.getElementById('imagem-mods').value = arrayParaLinhas(config.imagem.modificadores);
   document.getElementById('imagem-paletas').value = arrayParaLinhas(config.imagem.paletas);
@@ -89,7 +88,7 @@ function formParaConfig() {
   config.voz.en.masculinaRate = document.getElementById('en-masc-rate').value;
   config.voz.en.masculinaPitch = document.getElementById('en-masc-pitch').value;
   config.musica.volume = parseFloat(document.getElementById('musica-volume').value);
-  config.musica.sempreZen = document.getElementById('musica-sempre-zen').checked;
+  config.musica.sempreZen = true;
   config.imagem.temas = linhasParaArray(document.getElementById('imagem-temas').value);
   config.imagem.modificadores = linhasParaArray(document.getElementById('imagem-mods').value);
   config.imagem.paletas = linhasParaArray(document.getElementById('imagem-paletas').value);
