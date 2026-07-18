@@ -1,12 +1,49 @@
 name: Horóscopo Diário SidusAstro
 
-# Disparo diário via cron-job.org às 07:15 Lisboa (scripts/configurar-cron-externo.sh).
-# O cron do GitHub Actions atrasa horas e falha os slots Buffer 09:00/13:30/19:00.
+# Primário: cron-job.org às 07:15 Europe/Lisbon (scripts/configurar-cron-externo.sh).
+# Backup: schedule GitHub abaixo + monitor-crons.yml dispara recuperação se ambos falharem.
+# Slots Buffer: 09:00/13:30/19:00 Lisboa — 3 vídeos/dia.
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '15 6 * * *'  # ~07:15 Europe/Lisbon (WEST)
+    - cron: '15 7 * * *'  # ~07:15 Europe/Lisbon (WET)
+
+permissions:
+  actions: read
+  contents: read
 
 jobs:
+  evitar-duplicado-schedule:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    outputs:
+      continuar: ${{ steps.decide.outputs.continuar }}
+    steps:
+      - name: Saltar backup se o diário PT já correu hoje
+        id: decide
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const hoje = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Lisbon' });
+            const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'diario.yml',
+              status: 'success',
+              per_page: 20,
+            });
+            const correu = runs.some((r) =>
+              new Date(r.created_at).toLocaleDateString('en-CA', { timeZone: 'Europe/Lisbon' }) === hoje,
+            );
+            core.setOutput('continuar', correu ? 'false' : 'true');
+            if (correu) {
+              core.info('Diário PT já correu hoje (' + hoje + ' Lisboa) — backup schedule ignorado.');
+            }
+
   gerar-e-publicar:
+    needs: evitar-duplicado-schedule
+    if: always() && (github.event_name != 'schedule' || needs.evitar-duplicado-schedule.outputs.continuar == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 90
 
