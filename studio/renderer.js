@@ -138,7 +138,7 @@ document.getElementById('btn-guardar').addEventListener('click', async () => {
 });
 
 document.getElementById('btn-add-musica-url').addEventListener('click', () => {
-  const url = prompt('URL da música MP3 (ex. Mixkit):');
+  const url = prompt('URL da música MP3 (Jamendo, Pixabay, etc.):');
   if (!url) return;
   const nome = prompt('Nome para identificar:', 'Nova música') || 'Nova música';
   config.musica.entradas.push({ nome, fonte: url.trim() });
@@ -154,20 +154,91 @@ document.getElementById('btn-import-musica').addEventListener('click', async () 
   }
 });
 
-document.getElementById('btn-preset-zen').addEventListener('click', async () => {
-  const presets = await window.sidusStudio.getMusicPresets();
-  if (!confirm('Substituir a lista atual pelo preset Zen Enigma (16 faixas)?')) return;
-  config.musica.entradas = presets.zen.map((e) => ({ ...e }));
-  renderMusicas();
-  setStatus('Preset Zen Enigma aplicado — guarda ou envia para GitHub.');
-});
+function renderCatalogo(faixas) {
+  const ul = document.getElementById('lista-catalogo');
+  ul.innerHTML = '';
+  (faixas || []).forEach((f) => {
+    const li = document.createElement('li');
+    const info = document.createElement('span');
+    const dur = f.duracao ? Math.round(f.duracao) + 's · ' : '';
+    info.innerHTML =
+      '<strong>' +
+      f.nome +
+      '</strong>' +
+      (f.artista ? ' — ' + f.artista : '') +
+      '<br><small>' +
+      dur +
+      (f.tags || '') +
+      '</small>';
+    const acoes = document.createElement('span');
+    acoes.className = 'li-acoes';
+    const btnOuvir = document.createElement('button');
+    btnOuvir.textContent = '▶ Ouvir';
+    btnOuvir.onclick = () => window.sidusStudio.openMusic(f.fonte);
+    const btnAdd = document.createElement('button');
+    btnAdd.textContent = '+ Usar';
+    btnAdd.onclick = () => {
+      const ja = config.musica.entradas.some((e) => e.fonte === f.fonte);
+      if (ja) {
+        setStatus('Já está na lista ativa.');
+        return;
+      }
+      config.musica.entradas.push({ nome: f.nome, fonte: f.fonte });
+      renderMusicas();
+      setStatus('Adicionada: ' + f.nome + ' — guarda ou envia para GitHub.');
+    };
+    acoes.appendChild(btnOuvir);
+    acoes.appendChild(btnAdd);
+    li.appendChild(info);
+    li.appendChild(acoes);
+    ul.appendChild(li);
+  });
+}
 
-document.getElementById('btn-preset-acustico').addEventListener('click', async () => {
-  const presets = await window.sidusStudio.getMusicPresets();
-  if (!confirm('Substituir a lista atual pelo preset Acústico (15 faixas)?')) return;
-  config.musica.entradas = presets.acusticas.map((e) => ({ ...e }));
-  renderMusicas();
-  setStatus('Preset Acústico aplicado — guarda ou envia para GitHub.');
+async function atualizarStatusCatalogo() {
+  const el = document.getElementById('catalogo-status');
+  const st = await window.sidusStudio.musicSearchStatus();
+  const partes = [];
+  if (st.jamendo) partes.push('✅ Jamendo');
+  else partes.push('❌ Jamendo (falta JAMENDO_CLIENT_ID no .env)');
+  if (st.pixabay) partes.push('✅ Pixabay');
+  else partes.push('❌ Pixabay (falta PIXABAY_API_KEY no .env)');
+  el.textContent = partes.join(' · ');
+}
+
+async function pesquisarCatalogo(query) {
+  const q = query || document.getElementById('catalogo-query').value;
+  const fonte = document.getElementById('catalogo-fonte').value;
+  setStatus('A pesquisar em ' + fonte + '...');
+  const r = await window.sidusStudio.searchMusic(q, fonte, 1);
+  if (!r.ok) {
+    setStatus('❌ ' + r.erro);
+    renderCatalogo([]);
+    return;
+  }
+  renderCatalogo(r.faixas);
+  setStatus('✅ ' + r.faixas.length + ' resultados — clica + Usar nas que gostares.');
+}
+
+document.getElementById('btn-catalogo-pesquisar').addEventListener('click', () => pesquisarCatalogo());
+document.getElementById('btn-catalogo-enigma').addEventListener('click', () => {
+  document.getElementById('catalogo-query').value = 'enigma gregorian ethereal meditation sensual new age';
+  pesquisarCatalogo();
+});
+document.getElementById('btn-catalogo-gregorian').addEventListener('click', () => {
+  document.getElementById('catalogo-query').value = 'gregorian chant monks spiritual';
+  pesquisarCatalogo();
+});
+document.getElementById('btn-catalogo-worldbeat').addEventListener('click', () => {
+  document.getElementById('catalogo-query').value = 'worldbeat tribal ethnic ambient';
+  pesquisarCatalogo();
+});
+document.getElementById('btn-catalogo-zen').addEventListener('click', () => {
+  document.getElementById('catalogo-query').value = 'zen meditation relaxing sensual pads';
+  pesquisarCatalogo();
+});
+document.getElementById('catalogo-query').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') pesquisarCatalogo();
 });
 
 document.getElementById('btn-git-atualizar').addEventListener('click', () => atualizarGit());
@@ -266,4 +337,5 @@ window.sidusStudio.onLog((msg) => log(msg));
   configParaForm();
   await renderVideos();
   await atualizarGit();
+  await atualizarStatusCatalogo();
 })();

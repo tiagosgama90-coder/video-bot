@@ -36,6 +36,16 @@
         body: JSON.stringify({ fonte }),
       }),
     getMusicPresets: () => api('/music-presets'),
+    musicSearchStatus: () => api('/music-search-status'),
+    searchMusic: (q, fonte, page) =>
+      api(
+        '/search-music?' +
+          new URLSearchParams({
+            q: q || '',
+            fonte: fonte || 'jamendo',
+            page: String(page || 1),
+          }).toString(),
+      ),
     importMusic: () =>
       new Promise((resolve) => {
         const input = document.getElementById('input-import-mp3');

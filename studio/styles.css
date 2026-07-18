@@ -59,8 +59,8 @@ button.primary { background: #5b3fa0; border-color: #7b5fd0; }
 button.primary:hover { background: #6b4fb8; }
 button:disabled { opacity: 0.5; cursor: not-allowed; }
 .hint { font-size: 0.82rem; opacity: 0.8; }
-#lista-musicas, #lista-videos { list-style: none; padding: 0; }
-#lista-musicas li, #lista-videos li {
+#lista-musicas, #lista-videos, #lista-catalogo { list-style: none; padding: 0; }
+#lista-musicas li, #lista-videos li, #lista-catalogo li {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -69,6 +69,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   font-size: 0.85rem;
 }
 #lista-musicas li button { padding: 0.2rem 0.5rem; font-size: 0.75rem; }
+.catalogo-lista { max-height: 320px; overflow: auto; border: 1px solid #333; border-radius: 6px; margin: 0.5rem 0; }
 .li-acoes { display: flex; gap: 0.35rem; flex-shrink: 0; }
 .git-status {
   background: #0a0a14;

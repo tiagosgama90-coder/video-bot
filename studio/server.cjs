@@ -99,7 +99,10 @@ function criarServidor(opcoes = {}) {
 
   const server = http.createServer(async (req, res) => {
     try {
-      if (req.url === '/api/log-stream' && req.method === 'GET') {
+      const parsed = new URL(req.url, 'http://127.0.0.1');
+      const pathname = parsed.pathname;
+
+      if (pathname === '/api/log-stream' && req.method === 'GET') {
         res.writeHead(200, {
           'Content-Type': 'text/event-stream',
           'Cache-Control': 'no-cache',
@@ -111,7 +114,25 @@ function criarServidor(opcoes = {}) {
         return;
       }
 
-      const chave = `${req.method} ${req.url.split('?')[0]}`;
+      if (pathname === '/api/music-search-status' && req.method === 'GET') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(backend.musicSearchStatus()));
+        return;
+      }
+
+      if (pathname === '/api/search-music' && req.method === 'GET') {
+        const resultado = await backend.searchMusicCatalog({
+          query: parsed.searchParams.get('q') || '',
+          fonte: parsed.searchParams.get('fonte') || 'jamendo',
+          page: parsed.searchParams.get('page') || '1',
+          limit: parsed.searchParams.get('limit') || '30',
+        });
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(resultado));
+        return;
+      }
+
+      const chave = `${req.method} ${pathname}`;
       if (rotas[chave]) {
         const body = req.method === 'POST' ? await lerBody(req) : null;
         const resultado = await rotas[chave](body, req);

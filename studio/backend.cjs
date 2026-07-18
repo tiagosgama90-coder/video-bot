@@ -1,6 +1,24 @@
 const path = require('path');
 const fs = require('fs');
 const { spawn, exec } = require('child_process');
+const { pesquisarMusicas, estadoApis } = require('./music-search.cjs');
+
+function carregarEnvLocal(root) {
+  const envPath = path.join(root, '.env');
+  if (!fs.existsSync(envPath)) return;
+  for (const line of fs.readFileSync(envPath, 'utf8').split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eq = trimmed.indexOf('=');
+    if (eq <= 0) continue;
+    const key = trimmed.slice(0, eq).trim();
+    let val = trimmed.slice(eq + 1).trim();
+    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+      val = val.slice(1, -1);
+    }
+    if (!process.env[key]) process.env[key] = val;
+  }
+}
 
 const PRESET_MUSICAS_ZEN = [
   { nome: 'Gregorian chant (How)', fonte: 'https://assets.mixkit.co/music/32/32.mp3' },
@@ -65,6 +83,7 @@ function resolverRaizProjeto() {
 
 function criarBackend(opcoes = {}) {
   const ROOT = opcoes.root || resolverRaizProjeto();
+  carregarEnvLocal(ROOT);
   const CONFIG_PATH = path.join(ROOT, 'config', 'sidusastro.json');
   const MUSICAS_DIR = path.join(ROOT, 'config', 'musicas');
   const OUTPUT_DIR = path.join(ROOT, 'output');
@@ -229,6 +248,16 @@ function criarBackend(opcoes = {}) {
       zen: PRESET_MUSICAS_ZEN,
       acusticas: PRESET_MUSICAS_ACUSTICAS,
     }),
+    musicSearchStatus: () => estadoApis(process.env),
+    searchMusicCatalog: async ({ query, fonte, page, limit }) =>
+      pesquisarMusicas({
+        query,
+        fonte,
+        page,
+        limit,
+        clientId: process.env.JAMENDO_CLIENT_ID,
+        apiKey: process.env.PIXABAY_API_KEY,
+      }),
     importMusicBuffer: (nomeFicheiro, buffer) => {
       if (!nomeFicheiro?.toLowerCase().endsWith('.mp3')) {
         throw new Error('Só MP3 é suportado.');
