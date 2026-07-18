@@ -2,6 +2,7 @@
 import crypto from 'crypto';
 import fs from 'fs';
 import axios from 'axios';
+import { carregarConfigProjeto } from './project-config';
 import type { SignoZodiaco } from './signos';
 import { NOMES_SIGNOS } from './signos';
 
@@ -43,14 +44,10 @@ const TEMAS_MISTICOS = [
 ];
 
 function montarPromptZenAstrologia(): string {
-  const tema = escolher(TEMAS_ZEN_ASTROLOGIA);
-  const modificador = escolher(MODIFICADORES_ZEN);
-  const paleta = escolher([
-    'deep indigo and gold',
-    'lavender and rose gold',
-    'midnight blue and silver',
-    'soft purple and celestial white',
-  ]);
+  const cfg = carregarConfigProjeto().imagem;
+  const tema = escolher(cfg.temas.length ? cfg.temas : TEMAS_ZEN_ASTROLOGIA);
+  const modificador = escolher(cfg.modificadores.length ? cfg.modificadores : MODIFICADORES_ZEN);
+  const paleta = escolher(cfg.paletas.length ? cfg.paletas : ['deep indigo and gold']);
 
   return (
     tema +
@@ -58,7 +55,7 @@ function montarPromptZenAstrologia(): string {
     modificador +
     ', color palette ' +
     paleta +
-    ', astrology horoscope theme, vertical portrait 9:16, no text, no watermark, calm masterpiece'
+    (cfg.sufixoPrompt || ', astrology horoscope theme, vertical portrait 9:16, no text, no watermark, calm masterpiece')
   );
 }
 
@@ -130,9 +127,13 @@ function gerarSeedUnico(signo: string, data: string): number {
 }
 
 function montarPrompt(signo: SignoZodiaco): string {
-  const tema = escolher(TEMAS_MISTICOS);
-  const modificador = escolher(MODIFICADORES_VISUAIS);
-  const paleta = escolher(PALETAS);
+  const cfg = carregarConfigProjeto().imagem;
+  const temas = cfg.temas.length ? cfg.temas : TEMAS_MISTICOS;
+  const mods = cfg.modificadores.length ? cfg.modificadores : MODIFICADORES_VISUAIS;
+  const pals = cfg.paletas.length ? cfg.paletas : PALETAS;
+  const tema = escolher(temas);
+  const modificador = escolher(mods);
+  const paleta = escolher(pals);
   const nomeSigno = NOMES_SIGNOS[signo];
 
   return (

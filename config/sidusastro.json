@@ -1,0 +1,74 @@
+{
+  "projeto": "SidusAstro",
+  "voz": {
+    "preferencia": "aleatoria",
+    "pt": {
+      "femininaId": "pt-PT-RaquelNeural",
+      "masculinaId": "pt-PT-DuarteNeural",
+      "feminina": "pt-PT-RaquelNeural",
+      "masculina": "pt-PT-DuarteNeural",
+      "femininaRate": "-15%",
+      "femininaPitch": "+3%",
+      "masculinaRate": "-14%",
+      "masculinaPitch": "+1%",
+      "volume": "soft"
+    },
+    "en": {
+      "femininaId": "en-US-AriaNeural",
+      "masculinaId": "en-US-RogerNeural",
+      "feminina": "en-US-AriaNeural",
+      "masculina": "en-US-RogerNeural",
+      "femininaRate": "-12%",
+      "femininaPitch": "+2%",
+      "masculinaRate": "-11%",
+      "masculinaPitch": "0%",
+      "volume": "soft"
+    },
+    "pausaFraseMs": 550,
+    "pausaVirgulaMs": 250
+  },
+  "musica": {
+    "volume": 0.22,
+    "sempreZen": true,
+    "entradas": [
+      { "nome": "Relaxing acoustic", "fonte": "https://assets.mixkit.co/music/522/522.mp3" },
+      { "nome": "Orchestral calm", "fonte": "https://assets.mixkit.co/music/100/100.mp3" },
+      { "nome": "Acoustic guitar zen", "fonte": "https://assets.mixkit.co/music/617/617.mp3" },
+      { "nome": "Flute meditation", "fonte": "https://assets.mixkit.co/music/24/24.mp3" },
+      { "nome": "Peaceful flute", "fonte": "https://assets.mixkit.co/music/23/23.mp3" },
+      { "nome": "Soft flute ambient", "fonte": "https://assets.mixkit.co/music/39/39.mp3" },
+      { "nome": "Acoustic strings", "fonte": "https://assets.mixkit.co/music/493/493.mp3" },
+      { "nome": "Native flute", "fonte": "https://assets.mixkit.co/music/15/15.mp3" },
+      { "nome": "Zen flute", "fonte": "https://assets.mixkit.co/music/19/19.mp3" },
+      { "nome": "Spiritual pads", "fonte": "https://assets.mixkit.co/music/525/525.mp3" },
+      { "nome": "Acoustic folk calm", "fonte": "https://assets.mixkit.co/music/13/13.mp3" },
+      { "nome": "Meditation harp", "fonte": "https://assets.mixkit.co/music/16/16.mp3" },
+      { "nome": "Orchestral meditation", "fonte": "https://assets.mixkit.co/music/114/114.mp3" },
+      { "nome": "Flute world", "fonte": "https://assets.mixkit.co/music/1106/1106.mp3" },
+      { "nome": "Calm acoustic", "fonte": "https://assets.mixkit.co/music/52/52.mp3" }
+    ]
+  },
+  "imagem": {
+    "temas": [
+      "peaceful zen meditation space zodiac wheel astrology chart soft golden candlelight",
+      "calm night sky zodiac constellations horoscope map stars serene atmosphere",
+      "minimalist astrology horoscope chart moon phases zen garden peaceful",
+      "zen japanese garden stone lantern zodiac wheel moon astrology tranquil",
+      "astrology birth chart celestial map soft glow peaceful zen aesthetic",
+      "mandala zodiac wheel soft bokeh stars meditation zen horoscope art"
+    ],
+    "modificadores": [
+      "soft cinematic lighting peaceful composition",
+      "minimalist zen aesthetic clean calm golden hour",
+      "ethereal soft glow dreamy peaceful atmosphere",
+      "watercolor soft pastel calm spiritual mood"
+    ],
+    "paletas": [
+      "deep indigo and gold",
+      "lavender and rose gold",
+      "midnight blue and silver",
+      "soft purple and celestial white"
+    ],
+    "sufixoPrompt": ", astrology horoscope theme, vertical portrait 9:16, no text, no watermark, calm masterpiece"
+  }
+}

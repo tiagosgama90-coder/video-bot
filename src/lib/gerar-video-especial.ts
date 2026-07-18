@@ -14,6 +14,7 @@ import {
 } from './locale';
 import { prepararMusicaEspecial } from './musicas';
 import { calcularSegmentosProgressivos } from './texto-progressivo';
+import { obterVolumeMusica } from './project-config';
 import { gerarNarracao } from './voz';
 import type { SignoZodiaco } from './signos';
 
@@ -25,6 +26,7 @@ interface PropsVideoEspecial {
   musicaFundoArquivo: string;
   duracaoFrames: number;
   siteMarca?: string;
+  volumeMusica?: number;
   segmentosEcra?: Array<{ texto: string; frameInicio: number }>;
 }
 
@@ -105,6 +107,7 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
     musicaFundoArquivo,
     duracaoFrames,
     siteMarca: urlSiteMarca(),
+    volumeMusica: obterVolumeMusica(),
     segmentosEcra: segmentosProgressivos,
   };
 

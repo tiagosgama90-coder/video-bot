@@ -15,7 +15,8 @@ import {
   SIGNOS_ZODIACO,
   type SignoZodiaco,
 } from './src/lib/signos';
-import { gerarNarracao } from './src/lib/voz';
+import { obterVolumeMusica } from './src/lib/project-config';
+import { gerarNarracao, obterPreferenciaVozConfig } from './src/lib/voz';
 import { inicializarFirebaseSeNecessario } from './src/lib/inicializar-app';
 import { isLocaleUS, sufixoVideoDiario, urlSiteMarca } from './src/lib/locale';
 dotenv.config();
@@ -30,6 +31,7 @@ interface PropsVideo {
   musicaFundoArquivo: string;
   duracaoFrames: number;
   siteMarca: string;
+  volumeMusica: number;
 }
 
 function garantirPasta(pasta: string): void {
@@ -90,7 +92,7 @@ async function processarSigno(
   const fechoEcra = fechoNarracao.replace(/^\.\s+/, '');
   const textoNarracao = previsaoVideo + fechoNarracao;
   console.log('🎙️ Narração: "' + previsaoVideo + '"' + fechoNarracao);
-  await gerarNarracao(textoNarracao, './public/narracao.mp3', 'aleatoria');
+  await gerarNarracao(textoNarracao, './public/narracao.mp3', obterPreferenciaVozConfig());
 
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3');
 
@@ -106,6 +108,7 @@ async function processarSigno(
     musicaFundoArquivo,
     duracaoFrames,
     siteMarca: urlSiteMarca(),
+    volumeMusica: obterVolumeMusica(),
   };
 
   const caminhoProps = './public/props-temporarias.json';

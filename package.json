@@ -26,6 +26,7 @@
     "@types/node": "^22.10.0",
     "@types/react": "19.2.7",
     "@types/web": "0.0.166",
+    "electron": "^35.0.0",
     "eslint": "9.19.0",
     "prettier": "3.8.1",
     "ts-node": "^10.9.2",
@@ -52,6 +53,8 @@
     "configurar-cron-us": "bash scripts/configurar-cron-us.sh",
     "disparar-diario-us": "bash scripts/disparar-diario-us.sh",
     "testar-buffer": "npx ts-node testar-upload-buffer.ts",
+    "studio": "electron studio/main.cjs",
+    "testar-voz": "npx ts-node scripts/testar-voz.ts",
     "setup-local": "powershell -ExecutionPolicy Bypass -File configurar-local.ps1"
   }
 }

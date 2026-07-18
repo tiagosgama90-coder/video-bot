@@ -4,6 +4,7 @@ import path from 'path';
 import axios from 'axios';
 import say from 'say';
 import { isLocaleUS } from './locale';
+import { carregarConfigProjeto, type PreferenciaVoz } from './project-config';
 
 interface VozNeural {
   id: string;
@@ -11,16 +12,6 @@ interface VozNeural {
   origem: 'azure' | 'helia';
   lang: string;
 }
-
-const VOZES_AZURE_PT: VozNeural[] = [
-  { id: 'pt-PT-RaquelNeural', genero: 'feminina', origem: 'azure', lang: 'pt-PT' },
-  { id: 'pt-PT-DuarteNeural', genero: 'masculina', origem: 'azure', lang: 'pt-PT' },
-];
-
-const VOZES_AZURE_EN: VozNeural[] = [
-  { id: 'en-US-AriaNeural', genero: 'feminina', origem: 'azure', lang: 'en-US' },
-  { id: 'en-US-RogerNeural', genero: 'masculina', origem: 'azure', lang: 'en-US' },
-];
 
 const VOZ_HELIA: VozNeural = {
   id: 'Microsoft Helia',
@@ -32,7 +23,17 @@ const VOZ_HELIA: VozNeural = {
 const VELOCIDADE_HELIA = 0.8;
 
 function obterVozesAzure(): VozNeural[] {
-  return isLocaleUS() ? VOZES_AZURE_EN : VOZES_AZURE_PT;
+  const cfg = carregarConfigProjeto();
+  if (isLocaleUS()) {
+    return [
+      { id: cfg.voz.en.femininaId, genero: 'feminina', origem: 'azure', lang: 'en-US' },
+      { id: cfg.voz.en.masculinaId, genero: 'masculina', origem: 'azure', lang: 'en-US' },
+    ];
+  }
+  return [
+    { id: cfg.voz.pt.femininaId, genero: 'feminina', origem: 'azure', lang: 'pt-PT' },
+    { id: cfg.voz.pt.masculinaId, genero: 'masculina', origem: 'azure', lang: 'pt-PT' },
+  ];
 }
 
 function escapeXml(texto: string): string {
@@ -44,29 +45,32 @@ function escapeXml(texto: string): string {
     .replace(/'/g, '&apos;');
 }
 
-/** Pausas suaves entre frases — narração zen, calma e humana */
 function prepararTextoSsml(texto: string): string {
+  const cfg = carregarConfigProjeto();
   const escapado = escapeXml(texto);
+  const pausaFrase = cfg.voz.pausaFraseMs;
+  const pausaVirgula = cfg.voz.pausaVirgulaMs;
   return escapado
-    .replace(/([.!?…])\s+/g, '$1<break time="550ms"/> ')
-    .replace(/([,;:])\s+/g, '$1<break time="250ms"/> ');
+    .replace(/([.!?…])\s+/g, '$1<break time="' + pausaFrase + 'ms"/> ')
+    .replace(/([,;:])\s+/g, '$1<break time="' + pausaVirgula + 'ms"/> ');
 }
 
-/** Tom sereno: suave e relaxado — sem voz grave */
 function obterProsodiaSerena(voz: VozNeural): { rate: string; pitch: string; volume: string } {
-  if (voz.lang === 'pt-PT') {
-    return voz.genero === 'feminina'
-      ? { rate: '-15%', pitch: '+3%', volume: 'soft' }
-      : { rate: '-14%', pitch: '+1%', volume: 'soft' };
-  }
+  const cfg = carregarConfigProjeto();
+  const bloco = voz.lang === 'pt-PT' ? cfg.voz.pt : cfg.voz.en;
 
-  return voz.genero === 'feminina'
-    ? { rate: '-12%', pitch: '+2%', volume: 'soft' }
-    : { rate: '-11%', pitch: '0%', volume: 'soft' };
+  if (voz.genero === 'feminina') {
+    return { rate: bloco.femininaRate, pitch: bloco.femininaPitch, volume: bloco.volume };
+  }
+  return { rate: bloco.masculinaRate, pitch: bloco.masculinaPitch, volume: bloco.volume };
+}
+
+export function obterPreferenciaVozConfig(): PreferenciaVoz {
+  return carregarConfigProjeto().voz.preferencia;
 }
 
 export function escolherVozAleatoria(
-  preferencia: 'feminina' | 'masculina' | 'aleatoria' = 'aleatoria',
+  preferencia: PreferenciaVoz = 'aleatoria',
 ): VozNeural {
   const vozes = obterVozesAzure();
   if (preferencia === 'feminina') {
@@ -140,10 +144,11 @@ function gerarNarracaoHelia(texto: string, destino: string): Promise<void> {
 export async function gerarNarracao(
   texto: string,
   destinoRelativo = './public/narracao.mp3',
-  preferenciaVoz: 'feminina' | 'masculina' | 'aleatoria' = 'aleatoria',
+  preferenciaVoz?: PreferenciaVoz,
 ): Promise<void> {
   const destino = path.resolve(destinoRelativo);
-  const vozEscolhida = escolherVozAleatoria(preferenciaVoz);
+  const pref = preferenciaVoz ?? obterPreferenciaVozConfig();
+  const vozEscolhida = escolherVozAleatoria(pref);
 
   console.log(
     '🗣️ Voz: ' +
@@ -180,7 +185,7 @@ export async function gerarNarracao(
 export async function gerarNarracaoPtPt(
   texto: string,
   destinoRelativo = './public/narracao.mp3',
-  preferenciaVoz: 'feminina' | 'masculina' | 'aleatoria' = 'aleatoria',
+  preferenciaVoz?: PreferenciaVoz,
 ): Promise<void> {
   return gerarNarracao(texto, destinoRelativo, preferenciaVoz);
 }
