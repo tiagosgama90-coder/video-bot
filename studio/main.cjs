@@ -8,6 +8,43 @@ const CONFIG_PATH = path.join(ROOT, 'config', 'sidusastro.json');
 const MUSICAS_DIR = path.join(ROOT, 'config', 'musicas');
 const OUTPUT_DIR = path.join(ROOT, 'output');
 
+const PRESET_MUSICAS_ZEN = [
+  { nome: 'Worldbeat tribal', fonte: 'https://assets.mixkit.co/music/21/21.mp3' },
+  { nome: 'Ethnic zen', fonte: 'https://assets.mixkit.co/music/37/37.mp3' },
+  { nome: 'Soft worldbeat', fonte: 'https://assets.mixkit.co/music/45/45.mp3' },
+  { nome: 'Tribal ambient', fonte: 'https://assets.mixkit.co/music/178/178.mp3' },
+  { nome: 'World rhythm', fonte: 'https://assets.mixkit.co/music/233/233.mp3' },
+  { nome: 'Ethnic pads', fonte: 'https://assets.mixkit.co/music/1084/1084.mp3' },
+  { nome: 'Mystic meditation', fonte: 'https://assets.mixkit.co/music/114/114.mp3' },
+  { nome: 'Enigma atmosphere', fonte: 'https://assets.mixkit.co/music/138/138.mp3' },
+  { nome: 'Spiritual mystery', fonte: 'https://assets.mixkit.co/music/139/139.mp3' },
+  { nome: 'Deep zen pads', fonte: 'https://assets.mixkit.co/music/141/141.mp3' },
+  { nome: 'Ethereal chant', fonte: 'https://assets.mixkit.co/music/325/325.mp3' },
+  { nome: 'Mystic world', fonte: 'https://assets.mixkit.co/music/538/538.mp3' },
+  { nome: 'Ambient mystery', fonte: 'https://assets.mixkit.co/music/578/578.mp3' },
+  { nome: 'New age calm', fonte: 'https://assets.mixkit.co/music/324/324.mp3' },
+  { nome: 'Zen ambient', fonte: 'https://assets.mixkit.co/music/441/441.mp3' },
+  { nome: 'Peaceful pads', fonte: 'https://assets.mixkit.co/music/442/442.mp3' },
+];
+
+const PRESET_MUSICAS_ACUSTICAS = [
+  { nome: 'Relaxing acoustic', fonte: 'https://assets.mixkit.co/music/522/522.mp3' },
+  { nome: 'Orchestral calm', fonte: 'https://assets.mixkit.co/music/100/100.mp3' },
+  { nome: 'Acoustic guitar zen', fonte: 'https://assets.mixkit.co/music/617/617.mp3' },
+  { nome: 'Flute meditation', fonte: 'https://assets.mixkit.co/music/24/24.mp3' },
+  { nome: 'Peaceful flute', fonte: 'https://assets.mixkit.co/music/23/23.mp3' },
+  { nome: 'Soft flute ambient', fonte: 'https://assets.mixkit.co/music/39/39.mp3' },
+  { nome: 'Acoustic strings', fonte: 'https://assets.mixkit.co/music/493/493.mp3' },
+  { nome: 'Native flute', fonte: 'https://assets.mixkit.co/music/15/15.mp3' },
+  { nome: 'Zen flute', fonte: 'https://assets.mixkit.co/music/19/19.mp3' },
+  { nome: 'Spiritual pads', fonte: 'https://assets.mixkit.co/music/525/525.mp3' },
+  { nome: 'Acoustic folk calm', fonte: 'https://assets.mixkit.co/music/13/13.mp3' },
+  { nome: 'Meditation harp', fonte: 'https://assets.mixkit.co/music/16/16.mp3' },
+  { nome: 'Orchestral meditation', fonte: 'https://assets.mixkit.co/music/114/114.mp3' },
+  { nome: 'Flute world', fonte: 'https://assets.mixkit.co/music/1106/1106.mp3' },
+  { nome: 'Calm acoustic', fonte: 'https://assets.mixkit.co/music/52/52.mp3' },
+];
+
 let mainWindow = null;
 let processoAtivo = null;
 
@@ -56,6 +93,28 @@ function listarVideos() {
       modificado: fs.statSync(path.join(OUTPUT_DIR, f)).mtime.toISOString(),
     }))
     .sort((a, b) => (a.modificado < b.modificado ? 1 : -1));
+}
+
+function executarGit(args) {
+  return new Promise((resolve, reject) => {
+    const child = spawn('git', args, { cwd: ROOT, shell: false });
+    let saida = '';
+    let erro = '';
+    child.stdout.on('data', (d) => {
+      saida += d.toString();
+    });
+    child.stderr.on('data', (d) => {
+      erro += d.toString();
+    });
+    child.on('close', (code) => {
+      const texto = (saida + erro).trim();
+      if (code === 0) {
+        resolve(texto);
+      } else {
+        reject(new Error(texto || 'git terminou com código ' + code));
+      }
+    });
+  });
 }
 
 function executarComando(comando, args, envExtra = {}) {
@@ -111,6 +170,45 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+ipcMain.handle('get-music-presets', () => ({
+  zen: PRESET_MUSICAS_ZEN,
+  acusticas: PRESET_MUSICAS_ACUSTICAS,
+}));
+
+ipcMain.handle('open-music', (_e, fonte) => {
+  if (!fonte) return;
+  if (fonte.startsWith('http://') || fonte.startsWith('https://')) {
+    shell.openExternal(fonte);
+    return;
+  }
+  const caminho = path.isAbsolute(fonte) ? fonte : path.join(ROOT, fonte);
+  shell.openPath(caminho);
+});
+
+ipcMain.handle('git-info', async () => {
+  try {
+    const branch = await executarGit(['branch', '--show-current']);
+    const status = await executarGit(['status', '--porcelain']);
+    const remote = await executarGit(['remote', 'get-url', 'origin']).catch(() => '');
+    return { ok: true, branch: branch.trim(), status, remote: remote.trim() };
+  } catch (e) {
+    return { ok: false, erro: String(e.message || e) };
+  }
+});
+
+ipcMain.handle('git-commit-push', async (_e, mensagem) => {
+  const msg = (mensagem || '').trim() || 'Atualizar config SidusAstro via Sidus Studio';
+  await executarGit(['add', 'config/sidusastro.json', 'config/musicas']);
+  const status = await executarGit(['status', '--porcelain']);
+  if (!status.trim()) {
+    return { ok: true, aviso: 'Nada para enviar — já está tudo guardado no Git.' };
+  }
+  await executarGit(['commit', '-m', msg]);
+  const branch = (await executarGit(['branch', '--show-current'])).trim();
+  await executarGit(['push', '-u', 'origin', branch]);
+  return { ok: true, branch, mensagem: msg };
 });
 
 ipcMain.handle('get-paths', () => ({
