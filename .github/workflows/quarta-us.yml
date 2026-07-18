@@ -76,7 +76,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: video-vip-divulgacao-us
-          path: output/vip-divulgacao-quarta-us.mp4
+          name: video-quarta-us
+          path: output/*-quarta*.mp4
           retention-days: 7
           if-no-files-found: ignore

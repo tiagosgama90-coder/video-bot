@@ -33,10 +33,13 @@ exigirTexto('./gerar-video-segunda.ts', 'SLOT_MUSICA.MOTIVACIONAL_SEGUNDA', 'Seg
 exigirTexto('./src/lib/conteudo-especial.ts', 'SLOT_ESPECIAL_LISBOA', 'Slot especial Lisboa');
 
 exigirFicheiro('./gerar-video-quarta.ts');
-exigirTexto('./gerar-video-quarta.ts', 'obterConteudoVipDivulgacao', 'Quarta: conteúdo VIP divulgação');
+exigirTexto('./gerar-video-quarta.ts', 'obterConteudoQuarta', 'Quarta: alternância afiliados/VIP');
+exigirTexto('./gerar-video-quarta.ts', 'obterVarianteQuarta', 'Quarta: variante por semana');
 exigirTexto('./gerar-video-quarta.ts', 'fundoZenAstrologia: true', 'Quarta: fundo zen');
 exigirTexto('./gerar-video-quarta.ts', 'SLOT_MUSICA.VIP_DIVULGACAO_QUARTA', 'Quarta: slot música');
-exigirTexto('./src/lib/conteudo-especial.ts', "export const TITULO_VIP_DIVULGACAO = 'VIP POR DIVULGAÇÃO'", 'VIP: título');
+exigirTexto('./src/lib/conteudo-especial.ts', "export const TITULO_VIP_DIVULGACAO = 'O TEU VIP VITALÍCIO'", 'VIP: título marketing');
+exigirTexto('./src/lib/conteudo-especial.ts', 'obterConteudoAfiliados', 'Quarta: conteúdo afiliados');
+exigirFicheiro('./src/lib/quarta-alternada.ts');
 
 exigirFicheiro('./gerar-video-quinta.ts');
 exigirTexto('./gerar-video-quinta.ts', 'escolherFraseMotivacional', 'Quinta: frase motivacional');
