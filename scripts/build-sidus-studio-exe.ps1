@@ -17,12 +17,17 @@ npm install pkg@5.8.1 --no-save
 
 Write-Host "A compilar (pode demorar 1-2 min)..." -ForegroundColor White
 npx pkg studio/launcher.cjs `
-  --targets node20-win-x64 `
+  --targets node18-win-x64 `
   --output dist-studio/SidusStudio.exe `
   --assets studio/index.html `
   --assets studio/styles.css `
   --assets studio/renderer.js `
   --assets studio/api-client.js
+
+if (-not (Test-Path "dist-studio/SidusStudio.exe")) {
+    Write-Host "Falha na compilacao pkg." -ForegroundColor Red
+    exit 1
+}
 
 Copy-Item -Force dist-studio/SidusStudio.exe (Join-Path $raiz "SidusStudio.exe")
 Write-Host ""
