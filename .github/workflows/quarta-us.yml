@@ -1,4 +1,4 @@
-name: Vídeo Quarta-feira US (Afiliados)
+name: Vídeo Quarta-feira US (VIP por Divulgação)
 
 # Disparo manual ou cron-job.org às quartas (fuso EST).
 # Publica só no TikTok @sidusastro_en em inglês.
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  gerar-afiliados-us:
+  gerar-vip-divulgacao-us:
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -60,7 +60,7 @@ jobs:
         env:
           FIREBASE_ADMIN_JSON: ${{ secrets.FIREBASE_ADMIN_JSON }}
 
-      - name: Gerar vídeo afiliados US
+      - name: Gerar vídeo VIP por divulgação US
         run: npx ts-node gerar-video-quarta.ts
         env:
           CI: true
@@ -76,7 +76,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: video-afiliados-us
-          path: output/afiliados-quarta-us.mp4
+          name: video-vip-divulgacao-us
+          path: output/vip-divulgacao-quarta-us.mp4
           retention-days: 7
           if-no-files-found: ignore

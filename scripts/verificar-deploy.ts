@@ -29,17 +29,18 @@ exigirTexto('./src/lib/horoscopoSite.ts', 'pequenos passos', 'Filtro texto place
 
 exigirFicheiro('./gerar-video-segunda.ts');
 exigirTexto('./gerar-video-segunda.ts', 'escolherFraseMotivacional', 'Segunda: frase motivacional');
-exigirTexto('./gerar-video-segunda.ts', 'obterSlotEspecial', 'Segunda: slot especial');
+exigirTexto('./gerar-video-segunda.ts', 'SLOT_MUSICA.MOTIVACIONAL_SEGUNDA', 'Segunda: slot música');
 exigirTexto('./src/lib/conteudo-especial.ts', 'SLOT_ESPECIAL_LISBOA', 'Slot especial Lisboa');
 
 exigirFicheiro('./gerar-video-quarta.ts');
-exigirTexto('./gerar-video-quarta.ts', 'obterConteudoAfiliados', 'Quarta: conteúdo afiliados');
+exigirTexto('./gerar-video-quarta.ts', 'obterConteudoVipDivulgacao', 'Quarta: conteúdo VIP divulgação');
 exigirTexto('./gerar-video-quarta.ts', 'fundoZenAstrologia: true', 'Quarta: fundo zen');
-exigirTexto('./src/lib/conteudo-especial.ts', "export const TITULO_AFILIADOS = 'SIDUSASTRO'", 'Afiliados: SIDUSASTRO');
+exigirTexto('./gerar-video-quarta.ts', 'SLOT_MUSICA.VIP_DIVULGACAO_QUARTA', 'Quarta: slot música');
+exigirTexto('./src/lib/conteudo-especial.ts', "export const TITULO_VIP_DIVULGACAO = 'VIP POR DIVULGAÇÃO'", 'VIP: título');
 
 exigirFicheiro('./gerar-video-quinta.ts');
 exigirTexto('./gerar-video-quinta.ts', 'escolherFraseMotivacional', 'Quinta: frase motivacional');
-exigirTexto('./gerar-video-quinta.ts', 'obterSlotEspecial', 'Quinta: slot especial');
+exigirTexto('./gerar-video-quinta.ts', 'SLOT_MUSICA.MOTIVACIONAL_QUINTA', 'Quinta: slot música');
 exigirTexto('./gerar-video-quinta.ts', "escolherFraseMotivacional(data, 'quinta')", 'Quinta: variante frase');
 
 exigirFicheiro('./.github/workflows/diario.yml');
