@@ -1,0 +1,46 @@
+══════════════════════════════════════════════════════════
+  SIDUS STUDIO — COMO ABRIR NO WINDOWS (sem comandos)
+══════════════════════════════════════════════════════════
+
+OPÇÃO 1 — Duplo-clique (mais simples)
+────────────────────────────────────
+1. Abre a pasta do projeto no Explorador:
+   C:\Users\PC\sidusastro-video-bot
+
+2. Duplo-clique em:
+   Abrir Sidus Studio.bat
+   (ou SidusStudio.bat)
+
+3. Abre o Chrome/Edge sozinho. NÃO feches a janela preta
+   enquanto usas a app.
+
+
+OPÇÃO 2 — Executável .exe (sem Node no PATH)
+────────────────────────────────────────────
+1. Vai a:
+   https://github.com/tiagosgama90-coder/sidusastro-video-bot/actions
+
+2. Clica no workflow "Build SidusStudio.exe" (último run verde)
+
+3. Em "Artifacts" descarrega: SidusStudio-Windows
+
+4. Extrai SidusStudio.exe para a pasta:
+   C:\Users\PC\sidusastro-video-bot
+
+5. Duplo-clique em SidusStudio.exe
+
+
+OPÇÃO 3 — Atualizar ficheiros (git pull)
+────────────────────────────────────────
+Se não tens os ficheiros .bat novos:
+- GitHub Desktop: Fetch → Pull
+- Ou na pasta do projeto, botão direito → Git Bash Here → git pull
+
+
+NOTAS
+─────
+• O .exe e o .bat têm de ficar DENTRO da pasta sidusastro-video-bot
+• Precisas de Node.js instalado (https://nodejs.org) — exceto se usares só o .exe
+• Para músicas Enigma: tab Música → Preset Zen Enigma → Guardar
+
+══════════════════════════════════════════════════════════
