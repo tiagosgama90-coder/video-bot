@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { POOL_MUSICAS_ZEN_ASTRO, filtrarEntradasZen } from './pool-musicas-zen';
 
 export type PreferenciaVoz = 'feminina' | 'masculina' | 'aleatoria';
 
@@ -44,25 +45,8 @@ export interface ConfigProjeto {
   };
 }
 
-/** Enigma / ERA / worldbeat / zen — Mixkit (sem gregoriano nem canto de igreja) */
-export const PRESET_MUSICAS_ZEN: EntradaMusica[] = [
-  { nome: 'Worldbeat tribal', fonte: 'https://assets.mixkit.co/music/21/21.mp3' },
-  { nome: 'Ethnic zen', fonte: 'https://assets.mixkit.co/music/37/37.mp3' },
-  { nome: 'Soft worldbeat', fonte: 'https://assets.mixkit.co/music/45/45.mp3' },
-  { nome: 'Tribal ambient', fonte: 'https://assets.mixkit.co/music/178/178.mp3' },
-  { nome: 'World rhythm', fonte: 'https://assets.mixkit.co/music/233/233.mp3' },
-  { nome: 'Ethnic pads', fonte: 'https://assets.mixkit.co/music/1084/1084.mp3' },
-  { nome: 'Mystic meditation', fonte: 'https://assets.mixkit.co/music/114/114.mp3' },
-  { nome: 'Enigma atmosphere', fonte: 'https://assets.mixkit.co/music/138/138.mp3' },
-  { nome: 'Spiritual mystery', fonte: 'https://assets.mixkit.co/music/139/139.mp3' },
-  { nome: 'Deep zen pads', fonte: 'https://assets.mixkit.co/music/141/141.mp3' },
-  { nome: 'Ethereal chant', fonte: 'https://assets.mixkit.co/music/325/325.mp3' },
-  { nome: 'Mystic world', fonte: 'https://assets.mixkit.co/music/538/538.mp3' },
-  { nome: 'Ambient mystery', fonte: 'https://assets.mixkit.co/music/578/578.mp3' },
-  { nome: 'New age calm', fonte: 'https://assets.mixkit.co/music/324/324.mp3' },
-  { nome: 'Zen ambient', fonte: 'https://assets.mixkit.co/music/441/441.mp3' },
-  { nome: 'Peaceful pads', fonte: 'https://assets.mixkit.co/music/442/442.mp3' },
-];
+/** Enigma / worldbeat / zen / flauta — pool curado (ver pool-musicas-zen.ts) */
+export const PRESET_MUSICAS_ZEN: EntradaMusica[] = POOL_MUSICAS_ZEN_ASTRO;
 
 /** Acústico / flauta / orquestral — alternativa menos eletrónica */
 export const PRESET_MUSICAS_ACUSTICAS: EntradaMusica[] = [
@@ -189,9 +173,13 @@ export function guardarConfigProjeto(config: ConfigProjeto): void {
   fs.writeFileSync(ficheiro, JSON.stringify(config, null, 2), 'utf8');
 }
 
-export function obterFontesMusica(config?: ConfigProjeto): string[] {
+export function obterEntradasMusica(config?: ConfigProjeto): EntradaMusica[] {
   const cfg = config ?? carregarConfigProjeto();
-  return cfg.musica.entradas.map((e) => e.fonte).filter(Boolean);
+  return filtrarEntradasZen(cfg.musica.entradas);
+}
+
+export function obterFontesMusica(config?: ConfigProjeto): string[] {
+  return obterEntradasMusica(config).map((e) => e.fonte).filter(Boolean);
 }
 
 export function resolverFonteMusica(fonte: string): string {
