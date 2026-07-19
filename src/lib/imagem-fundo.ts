@@ -29,86 +29,50 @@ const MODIFICADORES_ZEN = [
   'wide angle serene stars soft bokeh depth',
 ];
 
-const TEMAS_MISTICOS = [
-  'zen meditation room zodiac wheel astrology symbols candles purple gold',
-  'ancient astrology chart horoscope symbols celestial map stars',
-  'cosmic nebula galaxy zodiac constellations meditation zen atmosphere',
-  'temple of stars esoteric astrology wheel zen peaceful night',
-  'astrology observatory zodiac gold symbols cosmic energy zen',
-  'esoteric sanctuary zodiac mandala candles astrology spiritual',
-  'crystal cave zodiac glyphs glowing amethyst zen meditation',
-  'moon phases astrology chart candles zen sanctuary peaceful',
-  'northern lights aurora zodiac constellation snow peaceful',
-  'japanese zen garden zodiac stone lantern moon astrology',
-  'celestial goddess zodiac belt stars flowing robes cosmic',
-];
-
-function montarPromptZenAstrologia(): string {
-  const cfg = carregarConfigProjeto().imagem;
-  const tema = escolher(cfg.temas.length ? cfg.temas : TEMAS_ZEN_ASTROLOGIA);
-  const modificador = escolher(cfg.modificadores.length ? cfg.modificadores : MODIFICADORES_ZEN);
-  const paleta = escolher(cfg.paletas.length ? cfg.paletas : ['deep indigo and gold']);
-
-  return (
-    tema +
-    ', ' +
-    modificador +
-    ', color palette ' +
-    paleta +
-    (cfg.sufixoPrompt || ', astrology horoscope theme, vertical portrait 9:16, no text, no watermark, calm masterpiece')
-  );
-}
-
-const MODIFICADORES_VISUAIS = [
-  'cinematic lighting volumetric fog unique composition',
-  'soft watercolor dreamlike pastel unique art style',
-  'hyper detailed digital painting dramatic shadows',
-  'minimalist zen aesthetic clean lines golden hour',
-  'dark moody purple and gold palette mystical',
-  'ethereal glow particles floating magical realism',
-  'oil painting texture rich colors renaissance style',
-  'neon cyber mysticism holographic zodiac symbols',
-  'film grain vintage astrology poster unique layout',
-  'wide angle epic scale stars bokeh depth of field',
-];
-
 const PALETAS = [
   'deep indigo and gold',
-  'emerald green and silver',
-  'crimson and midnight blue',
   'lavender and rose gold',
-  'teal and copper',
-  'black and celestial white',
+  'midnight blue and silver',
+  'soft purple and celestial white',
 ];
+
+const SUFIXO_NEGATIVO =
+  ', astrology horoscope zodiac theme, vertical portrait 9:16, no text, no watermark, no cars, no vehicles, no people, no modern city, calm spiritual masterpiece';
 
 /** JPEG mínimo 1x1 (roxo escuro) — fallback local se todas as URLs falharem */
 const JPEG_MINIMO_BASE64 =
   '/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wAALCAABAAEBAREA/8QAJgABAAAAAAAAAAAAAAAAAAAAAxABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQAAPwCf/9k=';
 
+const PROMPTS_FALLBACK_ASTROLOGIA = [
+  'peaceful zen astrology zodiac horoscope night sky stars calm purple gold meditation',
+  'zen horoscope wheel moon phases calm spiritual astrology chart',
+  'cosmic nebula zodiac constellations meditation serene purple indigo gold',
+  'astrology birth chart celestial map candles soft glow zen sanctuary',
+  'mandala zodiac wheel soft bokeh stars meditation calm horoscope art',
+];
+
+function montarUrlPollinations(prompt: string, seed: number): string {
+  return (
+    'https://image.pollinations.ai/prompt/' +
+    encodeURIComponent(prompt) +
+    '?width=1080&height=1920&nologo=true&seed=' +
+    seed +
+    '&model=flux'
+  );
+}
+
+function urlsPollinationsAstrologia(seed: number): string[] {
+  return PROMPTS_FALLBACK_ASTROLOGIA.map((prompt, i) =>
+    montarUrlPollinations(prompt, seed + i * 17),
+  );
+}
+
 function urlsFallbackZen(seed: number): string[] {
-  const prompt =
-    'peaceful zen astrology zodiac horoscope night sky stars calm purple gold meditation';
-  return [
-    'https://image.pollinations.ai/prompt/' +
-      encodeURIComponent(prompt) +
-      '?width=1080&height=1920&nologo=true&seed=' +
-      (seed + 2) +
-      '&model=flux',
-    'https://image.pollinations.ai/prompt/' +
-      encodeURIComponent('zen horoscope wheel moon phases calm spiritual') +
-      '?width=1080&height=1920&nologo=true&seed=' +
-      (seed + 3) +
-      '&model=flux',
-    'https://picsum.photos/seed/sidus-zen-' + seed + '/1080/1920',
-  ];
+  return urlsPollinationsAstrologia(seed + 2);
 }
 
 function urlsFallback(seed: number): string[] {
-  return [
-    'https://picsum.photos/seed/sidusastro-' + seed + '/1080/1920',
-    'https://image.pollinations.ai/prompt/dark%20purple%20cosmic%20nebula%20stars?width=1080&height=1920&nologo=true&seed=' +
-      (seed + 1),
-  ];
+  return urlsPollinationsAstrologia(seed + 1);
 }
 
 function escolher<T>(lista: T[]): T {
@@ -126,10 +90,26 @@ function gerarSeedUnico(signo: string, data: string): number {
   return hash % 9_999_999;
 }
 
+function montarPromptZenAstrologia(): string {
+  const cfg = carregarConfigProjeto().imagem;
+  const tema = escolher(cfg.temas.length ? cfg.temas : TEMAS_ZEN_ASTROLOGIA);
+  const modificador = escolher(cfg.modificadores.length ? cfg.modificadores : MODIFICADORES_ZEN);
+  const paleta = escolher(cfg.paletas.length ? cfg.paletas : PALETAS);
+
+  return (
+    tema +
+    ', ' +
+    modificador +
+    ', color palette ' +
+    paleta +
+    (cfg.sufixoPrompt || SUFIXO_NEGATIVO)
+  );
+}
+
 function montarPrompt(signo: SignoZodiaco): string {
   const cfg = carregarConfigProjeto().imagem;
-  const temas = cfg.temas.length ? cfg.temas : TEMAS_MISTICOS;
-  const mods = cfg.modificadores.length ? cfg.modificadores : MODIFICADORES_VISUAIS;
+  const temas = cfg.temas.length ? cfg.temas : TEMAS_ZEN_ASTROLOGIA;
+  const mods = cfg.modificadores.length ? cfg.modificadores : MODIFICADORES_ZEN;
   const pals = cfg.paletas.length ? cfg.paletas : PALETAS;
   const tema = escolher(temas);
   const modificador = escolher(mods);
@@ -144,17 +124,7 @@ function montarPrompt(signo: SignoZodiaco): string {
     paleta +
     ', zodiac sign ' +
     nomeSigno +
-    ', vertical portrait 9:16, no text, no watermark, unique masterpiece'
-  );
-}
-
-function montarUrlPollinations(prompt: string, seed: number): string {
-  return (
-    'https://image.pollinations.ai/prompt/' +
-    encodeURIComponent(prompt) +
-    '?width=1080&height=1920&nologo=true&seed=' +
-    seed +
-    '&model=flux'
+    (cfg.sufixoPrompt || SUFIXO_NEGATIVO)
   );
 }
 
@@ -177,7 +147,7 @@ function escreverJpegMinimo(destino: string): void {
   fs.writeFileSync(destino, Buffer.from(JPEG_MINIMO_BASE64, 'base64'));
 }
 
-/** Imagem IA única por execução — tema, estilo, paleta e seed nunca repetidos de forma previsível */
+/** Imagem IA única por execução — sempre zen + astrologia (sem fotos aleatórias) */
 export async function obterImagemFundo(signo: SignoZodiaco, data: string): Promise<string> {
   if (!fs.existsSync('./public')) {
     fs.mkdirSync('./public', { recursive: true });
