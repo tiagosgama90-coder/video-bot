@@ -103,7 +103,7 @@ function reservarSlotDoDia(data: string): number {
 
 /**
  * Escolhe índice no pool: rotação diária + slot único por vídeo.
- * Com 26 faixas e 3 vídeos/dia, os 3 slots usam sempre músicas diferentes.
+ * Com ~38 faixas e 3 vídeos/dia, os 3 slots usam sempre músicas diferentes.
  */
 export function escolherIndiceMusica(
   poolSize: number,
