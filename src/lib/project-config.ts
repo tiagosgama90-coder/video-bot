@@ -44,34 +44,24 @@ export interface ConfigProjeto {
   };
 }
 
-/** Enigma / ERA / worldbeat / zen — Jamendo (CC), gregoriano, pads etéreos, worldbeat */
+/** Enigma / ERA / worldbeat / zen — Mixkit (sem gregoriano nem canto de igreja) */
 export const PRESET_MUSICAS_ZEN: EntradaMusica[] = [
-  { nome: 'Gregorian Chant — Matti Paalanen', fonte: 'https://prod-1.storage.jamendo.com/download/track/1209641/mp32/' },
-  { nome: 'Ut queant laxis (Gregorian) — Dussum', fonte: 'https://prod-1.storage.jamendo.com/download/track/1920874/mp32/' },
-  { nome: 'The Lost Chant of Gregorian Faith — Danyax', fonte: 'https://prod-1.storage.jamendo.com/download/track/479725/mp32/' },
-  { nome: 'Chant a Sutra — DJ Gami.K', fonte: 'https://prod-1.storage.jamendo.com/download/track/1632054/mp32/' },
-  { nome: 'Root Chakra Chant — Macroform', fonte: 'https://prod-1.storage.jamendo.com/download/track/1250839/mp32/' },
-  { nome: 'Ethnic Indian Meditation — Parler', fonte: 'https://prod-1.storage.jamendo.com/download/track/1941101/mp32/' },
-  { nome: 'Himalayas — Stefan Kartenberg', fonte: 'https://prod-1.storage.jamendo.com/download/track/1849314/mp32/' },
-  { nome: 'Mystic Vortex — StimiBeats', fonte: 'https://prod-1.storage.jamendo.com/download/track/2043658/mp32/' },
-  { nome: 'Celtic Drone Ambient — Rune X', fonte: 'https://prod-1.storage.jamendo.com/download/track/1470844/mp32/' },
-  { nome: 'ZEN Trip Hop Remix — DJ Gami.K', fonte: 'https://prod-1.storage.jamendo.com/download/track/1242774/mp32/' },
-  { nome: 'Baikal zen — Factory Of Echo', fonte: 'https://prod-1.storage.jamendo.com/download/track/1992751/mp32/' },
-  { nome: 'StaRiverSun — KraftiM', fonte: 'https://prod-1.storage.jamendo.com/download/track/118257/mp32/' },
-  { nome: 'Relaxing Ambient Meditation — Aliaksei Yukhnevich', fonte: 'https://prod-1.storage.jamendo.com/download/track/1890501/mp32/' },
-  { nome: 'Zen Harmonies — Siarhei Korbut', fonte: 'https://prod-1.storage.jamendo.com/download/track/2133476/mp32/' },
-  { nome: 'Zen Garden Awakening — TuneBox', fonte: 'https://prod-1.storage.jamendo.com/download/track/2255570/mp32/' },
-  { nome: 'Harmonie Zen 432Hz — Kosmoze', fonte: 'https://prod-1.storage.jamendo.com/download/track/1232067/mp32/' },
-  { nome: 'Mystical Light — Aufklarung', fonte: 'https://prod-1.storage.jamendo.com/download/track/1121762/mp32/' },
-  { nome: 'Meditation Ambient — Osipov Vladimir', fonte: 'https://prod-1.storage.jamendo.com/download/track/1998223/mp32/' },
-  { nome: 'Summer Relax Ambient — AudioInfinity', fonte: 'https://prod-1.storage.jamendo.com/download/track/1680720/mp32/' },
-  { nome: 'Relaxing Ambient — MuswayStudio', fonte: 'https://prod-1.storage.jamendo.com/download/track/1641738/mp32/' },
-  { nome: 'Zen — Mazelo Nostra', fonte: 'https://prod-1.storage.jamendo.com/download/track/1740769/mp32/' },
-  { nome: 'To hover (meditation ambient) — Roman Batiuk', fonte: 'https://prod-1.storage.jamendo.com/download/track/1406578/mp32/' },
-  { nome: 'Zen Dream Music Box — Oursvince', fonte: 'https://prod-1.storage.jamendo.com/download/track/1099221/mp32/' },
-  { nome: 'Confused relaxing ambient — Ostenvegr', fonte: 'https://prod-1.storage.jamendo.com/download/track/704397/mp32/' },
-  { nome: 'Relaxing Ambient Presentation — penguinmusic', fonte: 'https://prod-1.storage.jamendo.com/download/track/1969331/mp32/' },
-  { nome: 'Ambient Meditation — Aliaksei Yukhnevich', fonte: 'https://prod-1.storage.jamendo.com/download/track/1890385/mp32/' },
+  { nome: 'Worldbeat tribal', fonte: 'https://assets.mixkit.co/music/21/21.mp3' },
+  { nome: 'Ethnic zen', fonte: 'https://assets.mixkit.co/music/37/37.mp3' },
+  { nome: 'Soft worldbeat', fonte: 'https://assets.mixkit.co/music/45/45.mp3' },
+  { nome: 'Tribal ambient', fonte: 'https://assets.mixkit.co/music/178/178.mp3' },
+  { nome: 'World rhythm', fonte: 'https://assets.mixkit.co/music/233/233.mp3' },
+  { nome: 'Ethnic pads', fonte: 'https://assets.mixkit.co/music/1084/1084.mp3' },
+  { nome: 'Mystic meditation', fonte: 'https://assets.mixkit.co/music/114/114.mp3' },
+  { nome: 'Enigma atmosphere', fonte: 'https://assets.mixkit.co/music/138/138.mp3' },
+  { nome: 'Spiritual mystery', fonte: 'https://assets.mixkit.co/music/139/139.mp3' },
+  { nome: 'Deep zen pads', fonte: 'https://assets.mixkit.co/music/141/141.mp3' },
+  { nome: 'Ethereal chant', fonte: 'https://assets.mixkit.co/music/325/325.mp3' },
+  { nome: 'Mystic world', fonte: 'https://assets.mixkit.co/music/538/538.mp3' },
+  { nome: 'Ambient mystery', fonte: 'https://assets.mixkit.co/music/578/578.mp3' },
+  { nome: 'New age calm', fonte: 'https://assets.mixkit.co/music/324/324.mp3' },
+  { nome: 'Zen ambient', fonte: 'https://assets.mixkit.co/music/441/441.mp3' },
+  { nome: 'Peaceful pads', fonte: 'https://assets.mixkit.co/music/442/442.mp3' },
 ];
 
 /** Acústico / flauta / orquestral — alternativa menos eletrónica */
@@ -149,7 +139,7 @@ export const CONFIG_PADRAO: ConfigProjeto = {
       'soft purple and celestial white',
     ],
     sufixoPrompt:
-      ', astrology horoscope theme, vertical portrait 9:16, no text, no watermark, calm masterpiece',
+      ', astrology horoscope zodiac theme, vertical portrait 9:16, no text, no watermark, no cars, no vehicles, no people, no modern city, calm spiritual masterpiece',
   },
 };
 
