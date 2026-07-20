@@ -60,6 +60,7 @@ exigirTexto('./src/lib/conteudo-especial.ts', 'HASHTAGS_VIP_PT_TIKTOK', 'VIP: ha
 exigirFicheiro('./gerar-video-quinta.ts');
 exigirTexto('./gerar-video-quinta.ts', 'escolherFraseMotivacional', 'Quinta: frase motivacional');
 exigirTexto('./gerar-video-quinta.ts', 'SLOT_MUSICA.MOTIVACIONAL_QUINTA', 'Quinta: slot música');
+exigirTexto('./gerar-video-quinta.ts', 'fundoZenAstrologia: true', 'Quinta: fundo zen');
 exigirTexto('./gerar-video-quinta.ts', "escolherFraseMotivacional(data, 'quinta')", 'Quinta: variante frase');
 
 exigirFicheiro('./src/lib/imagem-fundo.ts');
