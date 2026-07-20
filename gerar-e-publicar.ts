@@ -17,7 +17,7 @@ import {
 } from './src/lib/signos';
 import { VIDEOS_HOROSCOPO_POR_DIA, HOROSCOPOS_EM_DIA_AFILIADOS } from './src/lib/publicacao-alcance';
 import { ehDiaAfiliados } from './src/lib/dia-semana';
-import { afiliadosManhaJaGerado, gerarAfiliadosManha } from './src/lib/afiliados-dia';
+import { afiliadosDiaJaGerado, gerarAfiliadosDia } from './src/lib/afiliados-dia';
 import { obterVolumeMusica } from './src/lib/project-config';
 import { gerarNarracao, obterPreferenciaVozConfig } from './src/lib/voz';
 import { inicializarFirebaseSeNecessario } from './src/lib/inicializar-app';
@@ -149,26 +149,24 @@ async function executarRoboSidusAstro(): Promise<void> {
   console.log('🌌 SidusAstro Video Bot — automação diária iniciada [' + mercado + ']');
   console.log('📅 Data: ' + data);
   if (diaAfiliados) {
-    console.log('💸 Dia de afiliados — 1 vídeo afiliados @09:00 + 2 horóscopos');
+    console.log('💸 Dia de afiliados — 1 afiliado (fila livre) + 2 horóscopos');
   }
 
   garantirPasta('./public');
   garantirPasta('./output');
 
-  let offsetSlotHorario = 0;
   if (diaAfiliados) {
-    if (!afiliadosManhaJaGerado()) {
+    if (!afiliadosDiaJaGerado()) {
       try {
-        await gerarAfiliadosManha(data);
+        await gerarAfiliadosDia(data);
       } catch (erro) {
-        console.error('\n❌ ERRO no vídeo afiliados de manhã:');
+        console.error('\n❌ ERRO no vídeo afiliados:');
         console.error(erro);
         throw erro;
       }
     } else {
-      console.log('✅ Afiliados de manhã já gerados — a continuar com horóscopos.');
+      console.log('✅ Afiliados já gerados — a continuar com horóscopos.');
     }
-    offsetSlotHorario = 1;
   }
 
   const signosJaGerados = obterSignosJaGerados();
@@ -192,10 +190,10 @@ async function executarRoboSidusAstro(): Promise<void> {
   );
 
   let erros = 0;
-  let sucessos = diaAfiliados && afiliadosManhaJaGerado() ? 1 : 0;
+  let sucessos = diaAfiliados && afiliadosDiaJaGerado() ? 1 : 0;
   for (let i = 0; i < signosDoDia.length; i++) {
     try {
-      await processarSigno(signosDoDia[i], data, offsetSlotHorario + signosJaGerados.length + i);
+      await processarSigno(signosDoDia[i], data, signosJaGerados.length + i);
       sucessos++;
     } catch (erro) {
       erros++;

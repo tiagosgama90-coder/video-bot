@@ -20,10 +20,10 @@ if (process.env.GITHUB_SHA) {
 
 exigirFicheiro('./gerar-e-publicar.ts');
 exigirFicheiro('./src/lib/afiliados-dia.ts');
-exigirTexto('./src/lib/afiliados-dia.ts', 'SLOT_AFILIADOS_MANHA', 'Afiliados: slot manhã 09:00');
+exigirTexto('./src/lib/afiliados-dia.ts', 'fila Buffer (hora livre)', 'Afiliados: sem horário fixo');
 exigirTexto('./src/lib/dia-semana.ts', 'DIAS_AFILIADOS', 'Afiliados: terças e sábados');
 exigirTexto('./gerar-e-publicar.ts', 'extrairAteSegundoPontoFinal', 'Horóscopo: 2 frases IA');
-exigirTexto('./gerar-e-publicar.ts', 'gerarAfiliadosManha', 'Diário: afiliados ter/sáb @09:00');
+exigirTexto('./gerar-e-publicar.ts', 'gerarAfiliadosDia', 'Diário: afiliados ter/sáb');
 exigirTexto('./gerar-e-publicar.ts', 'HOROSCOPOS_EM_DIA_AFILIADOS', 'Diário: 2 horóscopos em dia afiliados');
 exigirTexto('./gerar-e-publicar.ts', 'escolherFechoNarracao', 'Horóscopo: frase final');
 exigirTexto('./gerar-e-publicar.ts', 'fechoEcra', 'Horóscopo: fecho no ecrã');

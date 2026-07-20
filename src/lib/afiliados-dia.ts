@@ -5,27 +5,26 @@ import { obterConteudoAfiliados } from './conteudo-especial';
 import { ehDiaAfiliados, nomeDiasAfiliados } from './dia-semana';
 import { isLocaleUS, sufixoIdVideoEspecial } from './locale';
 import { SLOT_MUSICA } from './musicas';
-import { SLOT_AFILIADOS_MANHA } from './publicacao-alcance';
 
-const ID_BASE = 'afiliados-manha';
+const ID_BASE = 'afiliados-diario';
 
-export function idAfiliadosManha(): string {
+export function idAfiliadosDia(): string {
   return sufixoIdVideoEspecial(ID_BASE);
 }
 
-export function afiliadosManhaJaGerado(): boolean {
-  return fs.existsSync(path.resolve('./output/' + idAfiliadosManha() + '.mp4'));
+export function afiliadosDiaJaGerado(): boolean {
+  return fs.existsSync(path.resolve('./output/' + idAfiliadosDia() + '.mp4'));
 }
 
-/** Vídeo afiliados no slot 09:00 — terças e sábados (PT e US). */
-export async function gerarAfiliadosManha(data: string): Promise<void> {
+/** Vídeo afiliados — terças e sábados; publicação na fila Buffer (hora livre). */
+export async function gerarAfiliadosDia(data: string): Promise<void> {
   if (!ehDiaAfiliados()) {
     console.log('⏭️ Hoje não é dia de afiliados (' + nomeDiasAfiliados() + ') — a saltar.');
     return;
   }
 
-  if (afiliadosManhaJaGerado()) {
-    console.log('✅ Vídeo afiliados de manhã já gerado hoje — a saltar.');
+  if (afiliadosDiaJaGerado()) {
+    console.log('✅ Vídeo afiliados já gerado hoje — a saltar.');
     return;
   }
 
@@ -33,8 +32,8 @@ export async function gerarAfiliadosManha(data: string): Promise<void> {
   const mercado = isLocaleUS() ? 'US (@sidusastro_en)' : 'PT';
 
   console.log('\n══════════════════════════════════════');
-  console.log('💸 SidusAstro — Afiliados de manhã [' + mercado + ']');
-  console.log('📅 Data: ' + data + ' · Slot: ' + SLOT_AFILIADOS_MANHA);
+  console.log('💸 SidusAstro — Afiliados [' + mercado + ']');
+  console.log('📅 Data: ' + data + ' · Publicação: fila Buffer (hora livre)');
   console.log('🏷️ Título: ' + conteudo.titulo);
   console.log('🎙️ Narração:\n' + conteudo.textoNarracao);
   console.log('══════════════════════════════════════\n');
@@ -49,7 +48,6 @@ export async function gerarAfiliadosManha(data: string): Promise<void> {
     data,
     generoVoz: 'feminina',
     tipoMusica: 'zen',
-    slotHorario: SLOT_AFILIADOS_MANHA,
-    slotMusica: SLOT_MUSICA.AFILIADOS_MANHA,
+    slotMusica: SLOT_MUSICA.AFILIADOS_DIA,
   });
 }

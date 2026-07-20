@@ -29,8 +29,8 @@ export const SLOT_MUSICA = {
   VIP_DIVULGACAO_DOMINGO: 9,
   /** Quinta-feira motivacional */
   MOTIVACIONAL_QUINTA: 5,
-  /** Terça e sábado — afiliados de manhã */
-  AFILIADOS_MANHA: 10,
+  /** Terça e sábado — afiliados (hora livre na fila Buffer) */
+  AFILIADOS_DIA: 10,
 } as const;
 
 /** Pool único: horóscopo diário, motivacional, VIP — PT-PT e en-US */
