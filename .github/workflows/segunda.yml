@@ -1,6 +1,6 @@
 name: Vídeo Segunda-feira (Motivacional)
 
-# Disparo via cron-job.org às 07:15 Lisboa às segundas (scripts/configurar-cron-externo.sh).
+# Substituído por vip-divulgacao.yml (VIP às segundas). Mantido só para disparo manual legacy.
 on:
   workflow_dispatch:
 

@@ -17,13 +17,15 @@ jobs:
   disparar-pt:
     runs-on: ubuntu-latest
     steps:
-      - name: Disparar especial PT (se hoje for seg/qua/qui em Lisboa)
+      - name: Disparar especial PT (VIP seg/qua/sex/dom ou quinta motivacional)
         uses: actions/github-script@v7
         with:
           script: |
             const mapa = {
-              Monday: 'segunda.yml',
-              Wednesday: 'quarta.yml',
+              Monday: 'vip-divulgacao.yml',
+              Wednesday: 'vip-divulgacao.yml',
+              Friday: 'vip-divulgacao.yml',
+              Sunday: 'vip-divulgacao.yml',
               Thursday: 'quinta.yml',
             };
             const dia = new Date().toLocaleDateString('en-US', {
@@ -46,13 +48,15 @@ jobs:
   disparar-us:
     runs-on: ubuntu-latest
     steps:
-      - name: Disparar especial US (se hoje for seg/qua/qui em New York)
+      - name: Disparar especial US (VIP seg/qua/sex/dom ou quinta motivacional)
         uses: actions/github-script@v7
         with:
           script: |
             const mapa = {
-              Monday: 'segunda-us.yml',
-              Wednesday: 'quarta-us.yml',
+              Monday: 'vip-divulgacao-us.yml',
+              Wednesday: 'vip-divulgacao-us.yml',
+              Friday: 'vip-divulgacao-us.yml',
+              Sunday: 'vip-divulgacao-us.yml',
               Thursday: 'quinta-us.yml',
             };
             const dia = new Date().toLocaleDateString('en-US', {

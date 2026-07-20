@@ -43,3 +43,41 @@ export function exigirDiaSemana(diaEsperado: number, nomeDia: string): void {
     process.exit(0);
   }
 }
+
+/** 0=dom, 1=seg, 3=qua, 5=sex — VIP divulgação */
+export const DIAS_VIP_DIVULGACAO = [0, 1, 3, 5] as const;
+
+export function nomeDiasVipDivulgacao(): string {
+  return 'domingos, segundas, quartas e sextas';
+}
+
+/** 2=ter, 6=sáb — afiliados substituem o 1.º horóscopo (09:00) */
+export const DIAS_AFILIADOS = [2, 6] as const;
+
+export function ehDiaAfiliados(data: Date = new Date()): boolean {
+  const hoje = obterDiaSemanaPublicacao(data);
+  return DIAS_AFILIADOS.includes(hoje as (typeof DIAS_AFILIADOS)[number]);
+}
+
+export function nomeDiasAfiliados(): string {
+  return 'terças e sábados';
+}
+
+export function exigirDiasVipDivulgacao(): void {
+  if (process.env.IGNORAR_DIA_SEMANA === '1' || process.env.CI !== 'true') {
+    return;
+  }
+
+  const hoje = obterDiaSemanaPublicacao();
+  if (!DIAS_VIP_DIVULGACAO.includes(hoje as (typeof DIAS_VIP_DIVULGACAO)[number])) {
+    const nomeHoje = NOMES_DIA[hoje] ?? String(hoje);
+    console.log(
+      '⏭️ Hoje é ' +
+        nomeHoje +
+        ' — VIP divulgação só corre ' +
+        nomeDiasVipDivulgacao() +
+        '. Nada a fazer.',
+    );
+    process.exit(0);
+  }
+}

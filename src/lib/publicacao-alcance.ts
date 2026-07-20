@@ -21,6 +21,9 @@
 /** Horóscopos diários por execução — PT e US */
 export const VIDEOS_HOROSCOPO_POR_DIA = 3;
 
+/** Terças e sábados: 1 afiliado (fila Buffer, hora livre) + 2 horóscopos agendados */
+export const HOROSCOPOS_EM_DIA_AFILIADOS = 2;
+
 /** Horas mínimas recomendadas entre publicações no mesmo canal */
 export const INTERVALO_MINIMO_HORAS_ENTRE_POSTS = 3;
 
