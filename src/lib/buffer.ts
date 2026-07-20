@@ -4,6 +4,7 @@ import { getStorage } from 'firebase-admin/storage';
 import { inicializarFirebase } from './inicializar-app';
 import { obterDueAtSlot, resolverDueAtFuturo, rotuloHorarioAgenda } from './buffer-agenda';
 import { isLocaleUS, subpastaVideosFirebase } from './locale';
+import { sanitizarTextoPublico } from './texto-publico';
 
 interface BufferChannel {
   id: string;
@@ -370,7 +371,7 @@ export async function publicarEmTodosOsCanais(
   );
 
   for (const canal of canais) {
-    const legenda = obterLegenda(canal.service);
+    const legenda = sanitizarTextoPublico(obterLegenda(canal.service));
     console.log('📱 A enfileirar em ' + canal.service + ' (' + canal.name + ')...');
     console.log('📋 Legenda [' + canal.service + ']:\n' + legenda);
     const postId = await publicarVideoNoCanal(canal, legenda, videoUrl, {

@@ -22,6 +22,7 @@ import { obterVolumeMusica } from './src/lib/project-config';
 import { gerarNarracao, obterPreferenciaVozConfig } from './src/lib/voz';
 import { inicializarFirebaseSeNecessario } from './src/lib/inicializar-app';
 import { isLocaleUS, sufixoVideoDiario, urlSiteMarca } from './src/lib/locale';
+import { sanitizarTextoPublico } from './src/lib/texto-publico';
 dotenv.config();
 
 inicializarFirebaseSeNecessario({ obrigatorio: process.env.SKIP_PUBLICAR !== '1' });
@@ -91,7 +92,7 @@ async function processarSigno(
   console.log('══════════════════════════════════════\n');
 
   const previsao = await obterTextoHoroscopo(signo, data);
-  const previsaoVideo = extrairAteSegundoPontoFinal(previsao);
+  const previsaoVideo = sanitizarTextoPublico(extrairAteSegundoPontoFinal(previsao));
   console.log('📝 Texto completo: "' + previsao.slice(0, 150) + '..."');
   console.log('✂️ Vídeo (1.ª + 2.ª frase por ponto final): "' + previsaoVideo + '"');
 
@@ -102,8 +103,8 @@ async function processarSigno(
   const musicaFundoArquivo = await prepararMusicaParaVideo(signo, data, slotMusica);
 
   const fechoNarracao = escolherFechoNarracao();
-  const fechoEcra = fechoNarracao.replace(/^\.\s+/, '');
-  // Narração só com a previsão — fecho aparece no ecrã (retenção + vídeo mais curto)
+  const fechoEcra = sanitizarTextoPublico(fechoNarracao.replace(/^\.\s+/, ''));
+  // Narração só com a previsão - fecho aparece no ecrã (retenção + vídeo mais curto)
   console.log('🎙️ Narração: "' + previsaoVideo + '"');
   await gerarNarracao(previsaoVideo, './public/narracao.mp3', obterPreferenciaVozConfig());
 
@@ -116,7 +117,7 @@ async function processarSigno(
   const props: PropsVideo = {
     signo: obterNomeSigno(signo),
     previsao: previsaoVideo,
-    hookTexto: legendas.hook,
+    hookTexto: sanitizarTextoPublico(legendas.hook),
     fechoTexto: fechoEcra,
     imagemFundoUrl,
     musicaFundoArquivo,

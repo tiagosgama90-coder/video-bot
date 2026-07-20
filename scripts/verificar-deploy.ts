@@ -19,6 +19,11 @@ if (process.env.GITHUB_SHA) {
 }
 
 exigirFicheiro('./gerar-e-publicar.ts');
+exigirFicheiro('./src/lib/texto-publico.ts');
+exigirTexto('./src/lib/texto-publico.ts', 'sanitizarTextoPublico', 'Texto público: banir traço tipográfico');
+exigirTexto('./src/lib/conteudo-especial.ts', 'Ok, isto é real', 'VIP: legendas humanizadas PT');
+exigirTexto('./src/lib/conteudo-especial.ts', 'Okay this is real', 'VIP: legendas humanizadas EN');
+exigirTexto('./src/lib/legenda.ts', "nome + ' - horóscopo de hoje", 'Diário: hooks sem traço tipográfico');
 exigirFicheiro('./src/lib/afiliados-dia.ts');
 exigirTexto('./src/lib/afiliados-dia.ts', 'fila Buffer (hora livre)', 'Afiliados: sem horário fixo');
 exigirTexto('./src/lib/dia-semana.ts', 'DIAS_AFILIADOS', 'Afiliados: terças e sábados');

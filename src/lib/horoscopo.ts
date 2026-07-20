@@ -44,7 +44,11 @@ function normalizar(texto: string): string {
  * Exemplo: "Frase um. Frase dois. Frase três." → "Frase um. Frase dois."
  */
 export function extrairAteSegundoPontoFinal(texto: string): string {
-  const limpo = texto.trim();
+  const limpo = texto
+    .replace(/\u2014/g, '-')
+    .replace(/\u2013/g, '-')
+    .replace(/\u2212/g, '-')
+    .trim();
   if (!limpo) {
     return limpo;
   }

@@ -15,6 +15,7 @@ import {
 import { prepararMusicaEspecial } from './musicas';
 import { calcularSegmentosProgressivos } from './texto-progressivo';
 import { obterVolumeMusica } from './project-config';
+import { sanitizarTextoPublico } from './texto-publico';
 import { gerarNarracao } from './voz';
 import type { SignoZodiaco } from './signos';
 
@@ -81,13 +82,15 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
   );
 
   console.log('🎙️ Narração especial (' + opcoes.generoVoz + ') [' + (isLocaleUS() ? 'en-US' : 'pt-PT') + ']');
-  await gerarNarracao(opcoes.textoNarracao, './public/narracao.mp3', opcoes.generoVoz);
+  const textoNarracao = sanitizarTextoPublico(opcoes.textoNarracao);
+  await gerarNarracao(textoNarracao, './public/narracao.mp3', opcoes.generoVoz);
 
   const maxSegundos = opcoes.segmentosEcra?.length ? 35 : 25;
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3', maxSegundos);
 
-  const segmentosProgressivos = opcoes.segmentosEcra?.length
-    ? calcularSegmentosProgressivos(opcoes.segmentosEcra, duracaoFrames)
+  const segmentosLimpos = opcoes.segmentosEcra?.map(sanitizarTextoPublico);
+  const segmentosProgressivos = segmentosLimpos?.length
+    ? calcularSegmentosProgressivos(segmentosLimpos, duracaoFrames)
     : undefined;
 
   if (segmentosProgressivos) {
@@ -97,14 +100,15 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
     });
   }
 
-  const textoEcra = opcoes.textoEcra.includes('.')
-    ? opcoes.textoEcra.length > 280
-      ? opcoes.textoEcra.slice(0, 277).trim() + '...'
-      : opcoes.textoEcra
-    : opcoes.textoEcra;
+  const textoEcraBruto = sanitizarTextoPublico(opcoes.textoEcra);
+  const textoEcra = textoEcraBruto.includes('.')
+    ? textoEcraBruto.length > 280
+      ? textoEcraBruto.slice(0, 277).trim() + '...'
+      : textoEcraBruto
+    : textoEcraBruto;
 
   const props: PropsVideoEspecial = {
-    signo: opcoes.titulo,
+    signo: sanitizarTextoPublico(opcoes.titulo),
     previsao: segmentosProgressivos ? '' : textoEcra,
     fechoTexto: '',
     imagemFundoUrl,
@@ -133,7 +137,9 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
       caminhoOutput,
       opcoes.data,
       (service) =>
-        service.toLowerCase() === 'instagram' ? opcoes.legendas.instagram : opcoes.legendas.tiktok,
+        sanitizarTextoPublico(
+          service.toLowerCase() === 'instagram' ? opcoes.legendas.instagram : opcoes.legendas.tiktok,
+        ),
       {
         subpasta: subpastaVideosEspeciaisFirebase(),
         dueAtCustom,
