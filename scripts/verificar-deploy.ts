@@ -48,12 +48,25 @@ exigirTexto('./gerar-video-quinta.ts', 'escolherFraseMotivacional', 'Quinta: fra
 exigirTexto('./gerar-video-quinta.ts', 'SLOT_MUSICA.MOTIVACIONAL_QUINTA', 'Quinta: slot música');
 exigirTexto('./gerar-video-quinta.ts', "escolherFraseMotivacional(data, 'quinta')", 'Quinta: variante frase');
 
+exigirFicheiro('./src/lib/imagem-fundo.ts');
+exigirTexto('./src/lib/imagem-fundo.ts', 'PROMPTS_FALLBACK_ASTROLOGIA', 'Imagem: fallback só astrologia (sem picsum)');
+
 exigirFicheiro('./.github/workflows/diario.yml');
 exigirTexto('./.github/workflows/diario.yml', 'workflow_dispatch', 'Diário: disparo externo');
-const diarioWorkflow = fs.readFileSync('./.github/workflows/diario.yml', 'utf8');
-if (/^\s*schedule:\s*$/m.test(diarioWorkflow) || diarioWorkflow.includes("cron: '")) {
-  throw new Error('diario.yml: remover cron GitHub — usar cron-job.org (scripts/configurar-cron-externo.sh)');
-}
+exigirTexto('./.github/workflows/diario.yml', 'evitar-duplicado-schedule', 'Diário PT: backup schedule com anti-duplicado');
+exigirTexto('./.github/workflows/diario.yml', "cron: '15 6 * * *'", 'Diário PT: cron backup verão Lisboa');
+
+exigirFicheiro('./.github/workflows/diario-us.yml');
+exigirTexto('./.github/workflows/diario-us.yml', 'workflow_dispatch', 'Diário US: disparo externo');
+exigirTexto('./.github/workflows/diario-us.yml', 'evitar-duplicado-schedule', 'Diário US: backup schedule com anti-duplicado');
+
+exigirFicheiro('./.github/workflows/monitor-crons.yml');
+exigirTexto('./.github/workflows/monitor-crons.yml', 'verificar-pt', 'Monitor: recuperação PT');
+exigirTexto('./.github/workflows/monitor-crons.yml', 'verificar-us', 'Monitor: recuperação US');
+
+exigirFicheiro('./src/lib/pool-musicas-zen.ts');
+exigirTexto('./src/lib/pool-musicas-zen.ts', 'filtrarEntradasZen', 'Música: filtro anti-gregoriano');
+exigirTexto('./src/lib/pool-musicas-zen.ts', 'POOL_MUSICAS_ZEN_ASTRO', 'Música: pool zen/Enigma curado');
 exigirFicheiro('./.github/workflows/segunda.yml');
 exigirTexto('./.github/workflows/segunda.yml', 'workflow_dispatch', 'Segunda: disparo externo');
 const segundaWorkflow = fs.readFileSync('./.github/workflows/segunda.yml', 'utf8');
