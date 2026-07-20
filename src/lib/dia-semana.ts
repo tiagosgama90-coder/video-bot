@@ -51,6 +51,18 @@ export function nomeDiasVipDivulgacao(): string {
   return 'domingos, segundas, quartas e sextas';
 }
 
+/** 2=ter, 6=sáb — afiliados substituem o 1.º horóscopo (09:00) */
+export const DIAS_AFILIADOS = [2, 6] as const;
+
+export function ehDiaAfiliados(data: Date = new Date()): boolean {
+  const hoje = obterDiaSemanaPublicacao(data);
+  return DIAS_AFILIADOS.includes(hoje as (typeof DIAS_AFILIADOS)[number]);
+}
+
+export function nomeDiasAfiliados(): string {
+  return 'terças e sábados';
+}
+
 export function exigirDiasVipDivulgacao(): void {
   if (process.env.IGNORAR_DIA_SEMANA === '1' || process.env.CI !== 'true') {
     return;

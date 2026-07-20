@@ -2,7 +2,7 @@ name: Horóscopo Diário SidusAstro
 
 # Primário: cron-job.org às 07:15 Europe/Lisbon (scripts/configurar-cron-externo.sh).
 # Backup: schedule GitHub abaixo + monitor-crons.yml dispara recuperação se ambos falharem.
-# Slots Buffer: 09:00/13:30/19:00 Lisboa — 3 vídeos/dia.
+# Slots Buffer: 09:00/13:30/19:00 Lisboa — 3 vídeos/dia (ter/sáb: afiliados @09:00 + 2 horóscopos).
 on:
   workflow_dispatch:
   schedule:

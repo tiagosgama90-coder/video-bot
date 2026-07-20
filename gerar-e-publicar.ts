@@ -15,7 +15,9 @@ import {
   SIGNOS_ZODIACO,
   type SignoZodiaco,
 } from './src/lib/signos';
-import { VIDEOS_HOROSCOPO_POR_DIA } from './src/lib/publicacao-alcance';
+import { VIDEOS_HOROSCOPO_POR_DIA, HOROSCOPOS_EM_DIA_AFILIADOS } from './src/lib/publicacao-alcance';
+import { ehDiaAfiliados } from './src/lib/dia-semana';
+import { afiliadosManhaJaGerado, gerarAfiliadosManha } from './src/lib/afiliados-dia';
 import { obterVolumeMusica } from './src/lib/project-config';
 import { gerarNarracao, obterPreferenciaVozConfig } from './src/lib/voz';
 import { inicializarFirebaseSeNecessario } from './src/lib/inicializar-app';
@@ -143,17 +145,38 @@ async function processarSigno(
 async function executarRoboSidusAstro(): Promise<void> {
   const data = obterDataPublicacao();
   const mercado = isLocaleUS() ? 'US (@sidusastro_en)' : 'PT (Instagram + TikTok)';
+  const diaAfiliados = ehDiaAfiliados();
   console.log('🌌 SidusAstro Video Bot — automação diária iniciada [' + mercado + ']');
   console.log('📅 Data: ' + data);
+  if (diaAfiliados) {
+    console.log('💸 Dia de afiliados — 1 vídeo afiliados @09:00 + 2 horóscopos');
+  }
 
   garantirPasta('./public');
   garantirPasta('./output');
 
+  let offsetSlotHorario = 0;
+  if (diaAfiliados) {
+    if (!afiliadosManhaJaGerado()) {
+      try {
+        await gerarAfiliadosManha(data);
+      } catch (erro) {
+        console.error('\n❌ ERRO no vídeo afiliados de manhã:');
+        console.error(erro);
+        throw erro;
+      }
+    } else {
+      console.log('✅ Afiliados de manhã já gerados — a continuar com horóscopos.');
+    }
+    offsetSlotHorario = 1;
+  }
+
   const signosJaGerados = obterSignosJaGerados();
+  const maxHoroscopos = diaAfiliados ? HOROSCOPOS_EM_DIA_AFILIADOS : VIDEOS_HOROSCOPO_POR_DIA;
   
-  // 3 vídeos/dia — sweet spot algoritmo TikTok (test pool 200–500 views/vídeo)
+  // 3 vídeos/dia (ou 2 horóscopos + afiliados) — sweet spot algoritmo TikTok
   let signosDoDia = escolherSignosParaExecucao(data, signosJaGerados);
-  signosDoDia = signosDoDia.slice(0, VIDEOS_HOROSCOPO_POR_DIA);
+  signosDoDia = signosDoDia.slice(0, maxHoroscopos);
 
   if (process.env.TESTE_LOCAL === '1') {
     console.log('🧪 Modo teste local: 1 signo aleatório por execução');
@@ -169,10 +192,10 @@ async function executarRoboSidusAstro(): Promise<void> {
   );
 
   let erros = 0;
-  let sucessos = 0;
+  let sucessos = diaAfiliados && afiliadosManhaJaGerado() ? 1 : 0;
   for (let i = 0; i < signosDoDia.length; i++) {
     try {
-      await processarSigno(signosDoDia[i], data, signosJaGerados.length + i);
+      await processarSigno(signosDoDia[i], data, offsetSlotHorario + signosJaGerados.length + i);
       sucessos++;
     } catch (erro) {
       erros++;
@@ -182,7 +205,11 @@ async function executarRoboSidusAstro(): Promise<void> {
   }
 
   if (sucessos === 0) {
-    throw new Error('Nenhum vídeo foi gerado/publicado — todos os signos falharam.');
+    throw new Error(
+      diaAfiliados
+        ? 'Nenhum vídeo foi gerado/publicado — afiliados e horóscopos falharam.'
+        : 'Nenhum vídeo foi gerado/publicado — todos os signos falharam.',
+    );
   }
 
   if (erros > 0) {

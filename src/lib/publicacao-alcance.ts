@@ -21,6 +21,12 @@
 /** Horóscopos diários por execução — PT e US */
 export const VIDEOS_HOROSCOPO_POR_DIA = 3;
 
+/** Terças e sábados: 1 afiliado @09:00 + 2 horóscopos (13:30, 19:00) */
+export const HOROSCOPOS_EM_DIA_AFILIADOS = 2;
+
+/** Slot da manhã para vídeo afiliados (substitui 1.º horóscopo) */
+export const SLOT_AFILIADOS_MANHA = '09:00';
+
 /** Horas mínimas recomendadas entre publicações no mesmo canal */
 export const INTERVALO_MINIMO_HORAS_ENTRE_POSTS = 3;
 
