@@ -23,6 +23,10 @@ export const SLOT_MUSICA = {
   MOTIVACIONAL_SEGUNDA: 3,
   /** Quarta-feira VIP por divulgação */
   VIP_DIVULGACAO_QUARTA: 4,
+  /** Sexta-feira VIP por divulgação */
+  VIP_DIVULGACAO_SEXTA: 8,
+  /** Domingo VIP por divulgação */
+  VIP_DIVULGACAO_DOMINGO: 9,
   /** Quinta-feira motivacional */
   MOTIVACIONAL_QUINTA: 5,
 } as const;

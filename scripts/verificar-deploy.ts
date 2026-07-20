@@ -27,6 +27,15 @@ exigirFicheiro('./src/lib/horoscopoSite.ts');
 exigirTexto('./src/lib/horoscopoSite.ts', 'apiTextoValidoParaHoroscopo', 'Pack IA Firestore');
 exigirTexto('./src/lib/horoscopoSite.ts', 'pequenos passos', 'Filtro texto placeholder IA');
 
+exigirFicheiro('./gerar-video-vip-divulgacao.ts');
+exigirTexto('./gerar-video-vip-divulgacao.ts', 'exigirDiasVipDivulgacao', 'VIP: dias seg/qua/sex/dom');
+exigirTexto('./gerar-video-vip-divulgacao.ts', 'obterConteudoVipDivulgacao', 'VIP: conteúdo divulgação');
+
+exigirFicheiro('./.github/workflows/vip-divulgacao.yml');
+exigirTexto('./.github/workflows/vip-divulgacao.yml', 'gerar-video-vip-divulgacao.ts', 'Workflow VIP PT');
+exigirFicheiro('./.github/workflows/vip-divulgacao-us.yml');
+exigirTexto('./.github/workflows/vip-divulgacao-us.yml', 'gerar-video-vip-divulgacao.ts', 'Workflow VIP US');
+
 exigirFicheiro('./gerar-video-segunda.ts');
 exigirTexto('./gerar-video-segunda.ts', 'escolherFraseMotivacional', 'Segunda: frase motivacional');
 exigirTexto('./gerar-video-segunda.ts', 'SLOT_MUSICA.MOTIVACIONAL_SEGUNDA', 'Segunda: slot música');

@@ -1,6 +1,6 @@
 name: Vídeo Quarta-feira (VIP por Divulgação)
 
-# Disparo via cron-job.org às 07:15 Lisboa às quartas (scripts/configurar-cron-externo.sh).
+# Substituído por vip-divulgacao.yml (VIP todas as quartas). Mantido só para disparo manual legacy.
 on:
   workflow_dispatch:
 

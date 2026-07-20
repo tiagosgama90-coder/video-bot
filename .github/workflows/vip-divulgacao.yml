@@ -1,11 +1,55 @@
-name: Vídeo Segunda-feira (Motivacional)
+name: VIP por Divulgação (PT)
 
-# Substituído por vip-divulgacao.yml (VIP às segundas). Mantido só para disparo manual legacy.
+# Segundas, quartas, sextas e domingos — 07:15 Lisboa → publicação Buffer 14:00.
+# Primário: cron-job.org (scripts/configurar-cron-vip.sh).
+# Backup: schedule GitHub abaixo.
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '15 6 * * 0'  # domingo ~07:15 Lisboa (WEST)
+    - cron: '15 6 * * 1'  # segunda
+    - cron: '15 6 * * 3'  # quarta
+    - cron: '15 6 * * 5'  # sexta
+    - cron: '15 7 * * 0'  # domingo (WET)
+    - cron: '15 7 * * 1'
+    - cron: '15 7 * * 3'
+    - cron: '15 7 * * 5'
+
+permissions:
+  actions: read
+  contents: read
 
 jobs:
-  gerar-motivacional:
+  evitar-duplicado-schedule:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    outputs:
+      continuar: ${{ steps.decide.outputs.continuar }}
+    steps:
+      - name: Saltar backup se VIP PT já correu hoje
+        id: decide
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const hoje = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Lisbon' });
+            const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'vip-divulgacao.yml',
+              status: 'success',
+              per_page: 20,
+            });
+            const correu = runs.some((r) =>
+              new Date(r.created_at).toLocaleDateString('en-CA', { timeZone: 'Europe/Lisbon' }) === hoje,
+            );
+            core.setOutput('continuar', correu ? 'false' : 'true');
+            if (correu) {
+              core.info('VIP PT já correu hoje (' + hoje + ' Lisboa) — backup schedule ignorado.');
+            }
+
+  gerar-vip-pt:
+    needs: evitar-duplicado-schedule
+    if: always() && (github.event_name != 'schedule' || needs.evitar-duplicado-schedule.outputs.continuar == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -70,8 +114,8 @@ jobs:
           AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
           AZURE_SPEECH_REGION: northeurope
 
-      - name: Gerar vídeo motivacional
-        run: npx ts-node gerar-video-segunda.ts
+      - name: Gerar e publicar vídeo VIP por divulgação
+        run: npx ts-node gerar-video-vip-divulgacao.ts
         env:
           CI: true
           BUFFER_ACCESS_TOKEN: ${{ secrets.BUFFER_ACCESS_TOKEN }}
@@ -86,7 +130,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: video-motivacional
-          path: output/motivacao-segunda.mp4
+          name: video-vip-divulgacao-pt
+          path: output/vip-divulgacao.mp4
           retention-days: 7
           if-no-files-found: ignore
