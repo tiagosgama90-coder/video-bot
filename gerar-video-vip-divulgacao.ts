@@ -1,7 +1,8 @@
 import dotenv from 'dotenv';
 import { gerarVideoEspecial } from './src/lib/gerar-video-especial';
 import { obterConteudoVipDivulgacao, obterSlotEspecial } from './src/lib/conteudo-especial';
-import { exigirDiasVipDivulgacao, nomeDiasVipDivulgacao, obterDiaSemanaPublicacao } from './src/lib/dia-semana';
+import { exigirDiasVipDivulgacao, DIA_AFILIADOS_QUARTA, nomeDiasVipDivulgacao, obterDiaSemanaPublicacao } from './src/lib/dia-semana';
+import { executarAfiliadosQuarta } from './src/lib/executar-afiliados-quarta';
 import { isLocaleUS, sufixoIdVideoEspecial } from './src/lib/locale';
 import { SLOT_MUSICA } from './src/lib/musicas';
 import { obterDataPublicacao } from './src/lib/signos';
@@ -28,6 +29,14 @@ function obterSlotMusicaVip(data: string): number {
 }
 
 async function executar(): Promise<void> {
+  if (obterDiaSemanaPublicacao() === DIA_AFILIADOS_QUARTA) {
+    console.log(
+      '📅 Quarta-feira: o cron VIP gera automaticamente o vídeo de afiliados (não precisas de mudar o cron-job.org).',
+    );
+    await executarAfiliadosQuarta(false);
+    return;
+  }
+
   exigirDiasVipDivulgacao();
 
   const data = obterDataPublicacao();

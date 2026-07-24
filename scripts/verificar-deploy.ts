@@ -50,7 +50,7 @@ exigirTexto('./src/lib/horoscopoSite.ts', 'apiTextoValidoParaHoroscopo', 'Pack I
 exigirTexto('./src/lib/horoscopoSite.ts', 'pequenos passos', 'Filtro texto placeholder IA');
 
 exigirFicheiro('./gerar-video-vip-divulgacao.ts');
-exigirTexto('./gerar-video-vip-divulgacao.ts', 'exigirDiasVipDivulgacao', 'VIP: dias seg/sex/dom');
+exigirTexto('./gerar-video-vip-divulgacao.ts', 'executarAfiliadosQuarta', 'VIP: quartas redireccionam para afiliados');
 exigirTexto('./gerar-video-vip-divulgacao.ts', 'obterConteudoVipDivulgacao', 'VIP: conteúdo divulgação');
 
 exigirFicheiro('./.github/workflows/vip-divulgacao.yml');
@@ -68,11 +68,11 @@ exigirTexto('./src/lib/ganchos-afiliados.ts', 'escolherGanchoAfiliados', 'Afilia
 exigirTexto('./src/lib/afiliados-dia.ts', 'hookTexto', 'Afiliados ter/sáb: gancho inteligente');
 
 exigirFicheiro('./gerar-video-quarta.ts');
-exigirTexto('./gerar-video-quarta.ts', 'obterConteudoQuarta', 'Quarta: afiliados');
-exigirTexto('./gerar-video-quarta.ts', 'afiliados-quarta', 'Quarta: id afiliados');
-exigirTexto('./gerar-video-quarta.ts', 'hookTexto', 'Quarta: gancho inteligente');
-exigirTexto('./gerar-video-quarta.ts', 'fundoZenAstrologia: true', 'Quarta: fundo zen');
-exigirTexto('./gerar-video-quarta.ts', 'SLOT_MUSICA.AFILIADOS_QUARTA', 'Quarta: slot música');
+exigirTexto('./gerar-video-quarta.ts', 'executarAfiliadosQuarta', 'Quarta: afiliados');
+exigirFicheiro('./src/lib/executar-afiliados-quarta.ts');
+exigirTexto('./src/lib/executar-afiliados-quarta.ts', 'hookTexto', 'Quarta: gancho inteligente');
+exigirTexto('./src/lib/executar-afiliados-quarta.ts', 'afiliados-quarta', 'Quarta: id afiliados');
+exigirTexto('./gerar-video-quarta.ts', 'executarAfiliadosQuarta', 'Quarta: entrypoint');
 exigirTexto('./src/lib/dia-semana.ts', 'DIA_AFILIADOS_QUARTA', 'Quarta: dia afiliados');
 exigirTexto('./src/lib/dia-semana.ts', 'domingos, segundas e sextas', 'VIP: sem quartas');
 exigirTexto('./src/lib/conteudo-especial.ts', "export const TITULO_VIP_DIVULGACAO = 'O TEU VIP VITALÍCIO'", 'VIP: título marketing');
