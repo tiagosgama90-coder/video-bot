@@ -25,9 +25,9 @@ exigirTexto('./src/lib/conteudo-especial.ts', 'Ok, isto é real', 'VIP: legendas
 exigirTexto('./src/lib/conteudo-especial.ts', 'Okay this is real', 'VIP: legendas humanizadas EN');
 exigirFicheiro('./src/lib/ganchos-diario.ts');
 exigirTexto('./src/lib/ganchos-diario.ts', 'escolherGanchoDiario', 'Diário: ganchos emocionais');
-exigirTexto('./src/lib/ganchos-diario.ts', 'GANCHOS_RELACIONAMENTO_PT', 'Diário: ganchos relacionamento/traição');
-exigirTexto('./src/lib/ganchos-diario.ts', 'traição nem sempre é física', 'Diário: gancho traição PT');
-exigirTexto('./src/lib/ganchos-diario.ts', 'betrayal is not always physical', 'Diário: gancho traição EN');
+exigirTexto('./src/lib/ganchos-diario.ts', 'GANCHOS_HOROSCOPO_PT', 'Diário: ganchos horóscopo/astrologia');
+exigirTexto('./src/lib/ganchos-diario.ts', 'GANCHOS_RELACIONAMENTO_PT', 'Diário: ganchos amor (mix)');
+exigirTexto('./src/lib/ganchos-diario.ts', 'ganchoDaPrevisao', 'Diário: gancho da previsão real');
 exigirTexto('./config/sidusastro.json', 'estiloAzureMasculina', 'Voz: estilo masculino místico');
 exigirTexto('./config/sidusastro.json', 'estiloAzureFeminina', 'Voz: estilo feminino zen');
 exigirTexto('./config/sidusastro.json', 'en-US-DavisNeural', 'Voz EN: Davis sombria');

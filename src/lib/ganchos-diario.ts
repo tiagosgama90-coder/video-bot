@@ -5,81 +5,46 @@ import { obterNomeSigno, type SignoZodiaco } from './signos';
 import { sanitizarTextoPublico } from './texto-publico';
 
 type GanchoFn = (n: string) => string;
+type CategoriaGancho = 'horoscopo' | 'emocional' | 'relacionamento';
 
-/** Peso dos ganchos de amor/relacionamento (alto engagement em redes) */
-const PESO_GANCHO_RELACIONAMENTO = 72;
-
-/**
- * Ganchos amor, relacionamento, traição, distância emocional.
- * Sugestivos (astros/intuição) — sem acusar ninguém directamente.
- */
-const GANCHOS_RELACIONAMENTO_PT: GanchoFn[] = [
-  (n) => n + ', algo no teu relacionamento não cheira bem e tu já sentes',
-  (n) => 'Se és ' + n + ', o silêncio do parceiro hoje não é coincidência',
-  (n) => n + ': a traição nem sempre é física - às vezes é emocional',
-  (n) => 'A tua intuição sobre o amor está certa, ' + n + ' - não ignores',
-  (n) => n + ', ele ou ela esconde mais do que o telemóvel de cabeça para baixo',
-  (n) => 'Quem é ' + n + ' e sentiu um arrepio no peito por causa do parceiro, lê isto',
-  (n) => n + ': distância, frieza ou traição? Os astros apontam para uma resposta',
-  (n) => 'Não confrontes ainda, ' + n + ' - primeiro percebe o que os astros dizem',
-  (n) => n + ', alguém que amas pode estar a mentir sem dizer uma palavra',
-  (n) => 'Se és ' + n + ' e o parceiro mudou de repente, isto explica',
-  (n) => n + ': o coração já sabia antes de tu teres coragem de admitir',
-  (n) => 'Traição, ex a voltar ou amor verdadeiro? ' + n + ', o teu mapa responde',
-  (n) => n + ', desconfia quando o carinho vem com culpa misturada',
-  (n) => 'Para ' + n + ': o que evitas perguntar ao parceiro está nos astros',
-  (n) => n + ', há segredos no teu relacionamento que a Lua revela hoje',
-  (n) => 'Se és ' + n + ', não leves isto para a cama sem perceber o amor primeiro',
-  (n) => n + ': ciúmes, distância ou traição emocional - qual é o teu caso',
-  (n) => 'O parceiro afastou-se, ' + n + '? Isto não é só mau humor',
-  (n) => n + ', alguém perto de ti joga com os teus sentimentos',
-  (n) => 'Mensagens apagadas, histórias que não batem certo - ' + n + ', lê até ao fim',
-  (n) => n + ': o universo avisa quando o amor está em perigo',
-  (n) => 'Se és ' + n + ' e sentes que estás a perder o parceiro, respira e lê',
-  (n) => n + ', a energia dele ou dela mudou - e não é o horóscopo genérico que explica',
-  (n) => 'Amor ou ilusão, ' + n + '? Hoje os astros obrigam-te a ver a verdade',
-  (n) => n + ': traição, reconciliação ou fim? O teu signo tem a chave',
-  (n) => 'Quem ama de verdade não te deixa nesta dúvida, ' + n,
-  (n) => n + ', o que o parceiro não diz pesa mais do que o que diz',
-  (n) => 'Se és ' + n + ' e andas a analisar cada gesto dele, isto é para ti',
-  (n) => n + ': cuidado com quem te faz sentir louco por desconfiar',
-  (n) => 'O teu relacionamento pode mudar hoje, ' + n + ' - para bem ou para mal',
+/** Horóscopo / astrologia / energia do dia — núcleo do conteúdo */
+const GANCHOS_HOROSCOPO_PT: GanchoFn[] = [
+  (n) => n + ', o teu horóscopo de hoje não é o que estás à espera',
+  (n) => 'Se és ' + n + ', os astros têm uma mensagem só para ti hoje',
+  (n) => n + ': a Lua e os planetas alinham-se a teu favor hoje',
+  (n) => 'Horóscopo do dia para ' + n + ' - lê antes de saíres de casa',
+  (n) => n + ', a energia cósmica de hoje bate certo com o que sentes',
+  (n) => 'O teu signo ' + n + ' está em destaque nos astros hoje',
+  (n) => n + ': o mapa astral revela o que este dia te reserva',
+  (n) => 'Previsão diária ' + n + ' - isto muda o teu dia',
+  (n) => n + ', Mercúrio e a Lua falam contigo hoje',
+  (n) => 'Se és ' + n + ', o universo deixou-te o horóscopo mais directo',
+  (n) => n + ': o que os planetas dizem sobre o teu dia',
+  (n) => 'Astrologia do dia para ' + n + ' - não é genérico',
+  (n) => n + ', os astros pedem-te atenção nas próximas horas',
+  (n) => 'Hoje é dia de ' + n + ' brilhar - mas lê isto primeiro',
+  (n) => n + ': a previsão que a maioria ignora e tu não devias',
 ];
 
-const GANCHOS_RELACIONAMENTO_EN: GanchoFn[] = [
-  (n) => n + ', something in your relationship feels off and you already know it',
-  (n) => "If you're a " + n + ", your partner's silence today is not random",
-  (n) => n + ': betrayal is not always physical - sometimes it is emotional',
-  (n) => 'Your intuition about love is right, ' + n + ' - do not ignore it',
-  (n) => n + ', they are hiding more than just their phone screen',
-  (n) => "If you're " + n + ' and felt a gut punch about your partner, read this',
-  (n) => n + ': distance, coldness or betrayal? The stars point to an answer',
-  (n) => 'Do not confront yet, ' + n + ' - first understand what the stars say',
-  (n) => n + ', someone you love may be lying without saying a word',
-  (n) => "If you're " + n + ' and your partner changed overnight, this explains it',
-  (n) => n + ': your heart knew before you had the courage to admit it',
-  (n) => 'Betrayal, ex coming back or true love? ' + n + ', your chart answers',
-  (n) => n + ', watch when affection comes mixed with guilt',
-  (n) => 'For ' + n + ': what you avoid asking your partner is in the stars',
-  (n) => n + ', there are secrets in your relationship the Moon reveals today',
-  (n) => "If you're " + n + ', do not go to bed without understanding love first',
-  (n) => n + ': jealousy, distance or emotional cheating - which is your case',
-  (n) => 'Your partner pulled away, ' + n + '? This is not just a bad mood',
-  (n) => n + ', someone close is playing with your feelings',
-  (n) => 'Deleted texts, stories that do not add up - ' + n + ', read until the end',
-  (n) => n + ': the universe warns when love is in danger',
-  (n) => "If you're " + n + ' and feel you are losing your partner, breathe and read',
-  (n) => n + ", their energy shifted - and a generic horoscope won't explain it",
-  (n) => 'Love or illusion, ' + n + '? Today the stars force you to see truth',
-  (n) => n + ': betrayal, reconciliation or ending? Your sign holds the key',
-  (n) => 'Who truly loves you does not leave you in this doubt, ' + n,
-  (n) => n + ', what your partner does not say weighs more than what they say',
-  (n) => "If you're " + n + ' and overthink every move they make, this is for you',
-  (n) => n + ': beware of whoever makes you feel crazy for trusting your gut',
-  (n) => 'Your relationship may shift today, ' + n + ' - for better or worse',
+const GANCHOS_HOROSCOPO_EN: GanchoFn[] = [
+  (n) => n + ", today's horoscope is not what you expect",
+  (n) => "If you're a " + n + ', the stars have a message just for you today',
+  (n) => n + ': the Moon and planets align in your favor today',
+  (n) => "Daily horoscope for " + n + ' - read before you leave home',
+  (n) => n + ", today's cosmic energy matches what you feel",
+  (n) => 'Your sign ' + n + ' is highlighted in the stars today',
+  (n) => n + ': your birth chart reveals what this day holds',
+  (n) => 'Daily forecast ' + n + ' - this can shift your day',
+  (n) => n + ', Mercury and the Moon speak to you today',
+  (n) => "If you're " + n + ', the universe left you a direct horoscope',
+  (n) => n + ': what the planets say about your day',
+  (n) => "Today's astrology for " + n + ' - not generic',
+  (n) => n + ', the stars ask for your attention in the next hours',
+  (n) => "Today is " + n + "'s day to shine - but read this first",
+  (n) => n + ': the forecast most people ignore and you should not',
 ];
 
-/** Ganchos emocionais/psicológicos gerais — complementam os de relacionamento */
+/** Emocional / psicológico — sem fugir ao tema do dia */
 const GANCHOS_EMOCIONAIS_PT: GanchoFn[] = [
   (n) => n + ', o teu coração já sabia disto antes do horóscopo',
   (n) => 'Se és ' + n + ', não ignores o que sentes hoje por dentro',
@@ -90,12 +55,12 @@ const GANCHOS_EMOCIONAIS_PT: GanchoFn[] = [
   (n) => n + ', alguém precisava de te dizer isto hoje',
   (n) => 'Se és ' + n + ' e andas confuso, lê até ao fim',
   (n) => n + ': o teu dia pode mudar depois disto',
-  (n) => 'Guarda isto, ' + n + ' - vais precisar mais tarde',
   (n) => 'Isto não é horóscopo genérico, ' + n + ' - é o teu dia',
   (n) => n + ': o que evitas sentir hoje está nos astros',
   (n) => 'A tua intuição estava certa, ' + n,
   (n) => n + ', és mais sensível hoje do que pensas',
   (n) => 'Mensagem directa para ' + n + ' - não para os outros signos',
+  (n) => n + ': 30 segundos que podem aliviar o teu dia',
 ];
 
 const GANCHOS_EMOCIONAIS_EN: GanchoFn[] = [
@@ -108,13 +73,59 @@ const GANCHOS_EMOCIONAIS_EN: GanchoFn[] = [
   (n) => n + ', someone needed to tell you this today',
   (n) => "If you're " + n + ' and feeling lost, stay until the end',
   (n) => n + ': your day might shift after this',
-  (n) => 'Save this, ' + n + ' - you will need it later',
   (n) => "This isn't a generic horoscope, " + n + ' - it is your day',
   (n) => n + ': what you avoid feeling today is in the stars',
   (n) => 'Your intuition was right, ' + n,
   (n) => n + ", you're more sensitive today than you think",
   (n) => 'Direct message for ' + n + ' - not the other signs',
+  (n) => n + ': 30 seconds that might ease your day',
 ];
+
+/**
+ * Amor / relacionamento — parte do mix, não dominante.
+ * Mistura atração, compatibilidade, distância e intuição (não só traição).
+ */
+const GANCHOS_RELACIONAMENTO_PT: GanchoFn[] = [
+  (n) => n + ', o amor no teu horóscopo de hoje merece atenção',
+  (n) => 'Se és ' + n + ', a energia do parceiro muda com os astros hoje',
+  (n) => n + ': compatibilidade, distância ou reencontro? O teu signo responde',
+  (n) => 'A tua intuição sobre o amor está certa, ' + n + ' - os astros confirmam',
+  (n) => n + ', há algo no teu relacionamento que o mapa astral explica',
+  (n) => 'Quem é ' + n + ' e sente o coração acelerado hoje, lê isto',
+  (n) => n + ': o que Vénus diz sobre o teu amor hoje',
+  (n) => 'Amor ou dúvida, ' + n + '? O horóscopo de hoje esclarece',
+  (n) => n + ', alguém que amas precisa de ouvir o que os astros dizem',
+  (n) => 'Se és ' + n + ' e o parceiro está distante, isto não é acaso',
+  (n) => n + ': o coração e os astros falam a mesma língua hoje',
+  (n) => 'Relacionamento em foco para ' + n + ' - previsão do dia',
+  (n) => n + ', cuidado com o que o silêncio dele ou dela esconde hoje',
+  (n) => 'Para ' + n + ': o que evitas sentir no amor está no horóscopo',
+  (n) => n + ', a Lua revela segredos do teu coração hoje',
+];
+
+const GANCHOS_RELACIONAMENTO_EN: GanchoFn[] = [
+  (n) => n + ', love in your horoscope today deserves attention',
+  (n) => "If you're a " + n + ", your partner's energy shifts with the stars today",
+  (n) => n + ': compatibility, distance or reunion? Your sign answers',
+  (n) => 'Your intuition about love is right, ' + n + ' - the stars confirm',
+  (n) => n + ', something in your relationship the birth chart explains',
+  (n) => "If you're " + n + ' and your heart races today, read this',
+  (n) => n + ': what Venus says about your love today',
+  (n) => 'Love or doubt, ' + n + "? today's horoscope clarifies",
+  (n) => n + ', someone you love needs to hear what the stars say',
+  (n) => "If you're " + n + ' and your partner feels distant, this is not random',
+  (n) => n + ': heart and stars speak the same language today',
+  (n) => 'Relationship in focus for ' + n + ' - daily forecast',
+  (n) => n + ', watch what their silence might hide today',
+  (n) => 'For ' + n + ': what you avoid feeling in love is in the horoscope',
+  (n) => n + ', the Moon reveals secrets of your heart today',
+];
+
+const PESOS_CATEGORIA: Record<CategoriaGancho, number> = {
+  horoscopo: 45,
+  emocional: 35,
+  relacionamento: 20,
+};
 
 function hashGancho(seed: string): number {
   let hash = 0;
@@ -131,33 +142,71 @@ function escolherIndiceGancho(signo: SignoZodiaco, data: string, total: number):
   return hashGancho('gancho-' + signo + '-' + data) % total;
 }
 
-function escolherPoolGancho(
-  signo: SignoZodiaco,
-  data: string,
-): { ganchos: GanchoFn[]; sufixoSeed: string } {
-  const rel = isLocaleUS() ? GANCHOS_RELACIONAMENTO_EN : GANCHOS_RELACIONAMENTO_PT;
-  const emo = isLocaleUS() ? GANCHOS_EMOCIONAIS_EN : GANCHOS_EMOCIONAIS_PT;
-  const usarRelacionamento =
-    escolherIndiceGancho(signo, data + '-pool', 100) < PESO_GANCHO_RELACIONAMENTO;
+function escolherCategoria(signo: SignoZodiaco, data: string): CategoriaGancho {
+  const roll = escolherIndiceGancho(signo, data + '-cat', 100);
+  if (roll < PESOS_CATEGORIA.horoscopo) {
+    return 'horoscopo';
+  }
+  if (roll < PESOS_CATEGORIA.horoscopo + PESOS_CATEGORIA.emocional) {
+    return 'emocional';
+  }
+  return 'relacionamento';
+}
 
-  return usarRelacionamento
-    ? { ganchos: rel, sufixoSeed: 'rel' }
-    : { ganchos: emo, sufixoSeed: 'emo' };
+function poolPorCategoria(categoria: CategoriaGancho): GanchoFn[] {
+  const pt = {
+    horoscopo: GANCHOS_HOROSCOPO_PT,
+    emocional: GANCHOS_EMOCIONAIS_PT,
+    relacionamento: GANCHOS_RELACIONAMENTO_PT,
+  };
+  const en = {
+    horoscopo: GANCHOS_HOROSCOPO_EN,
+    emocional: GANCHOS_EMOCIONAIS_EN,
+    relacionamento: GANCHOS_RELACIONAMENTO_EN,
+  };
+  return isLocaleUS() ? en[categoria] : pt[categoria];
+}
+
+/** Gancho derivado da 1.ª frase da previsão do dia — liga gancho ao horóscopo real */
+function ganchoDaPrevisao(nomeSigno: string, previsao: string): string | null {
+  const limpa = sanitizarTextoPublico(previsao);
+  const primeira = limpa.split(/[.!?]/)[0]?.trim();
+  if (!primeira || primeira.length < 14 || primeira.length > 78) {
+    return null;
+  }
+  if (/^(hoje|today|os astros|the stars|para ti|for you)/i.test(primeira)) {
+    return null;
+  }
+  const frase =
+    primeira.charAt(0).toLowerCase() === primeira.charAt(0)
+      ? primeira
+      : primeira.charAt(0).toLowerCase() + primeira.slice(1);
+  return sanitizarTextoPublico(nomeSigno + ', ' + frase);
 }
 
 /**
- * Gancho narrado + overlay — prioridade amor/relacionamento/traição (72%).
- * Emocional, psicológico, appeal to emotion.
+ * Gancho narrado + overlay.
+ * Mix: 45% horóscopo/astrologia, 35% emocional, 20% amor/relacionamento.
+ * 12% chance de gancho derivado da previsão real do dia.
  */
 export function escolherGanchoDiario(
   signo: SignoZodiaco,
   previsao: string,
   data?: string,
 ): string {
-  void previsao;
   const nomeSigno = obterNomeSigno(signo);
   const dataRef = data ?? new Date().toISOString().slice(0, 10);
-  const { ganchos, sufixoSeed } = escolherPoolGancho(signo, dataRef);
-  const indice = escolherIndiceGancho(signo, dataRef + '-' + sufixoSeed, ganchos.length);
+
+  const usarPrevisao = escolherIndiceGancho(signo, dataRef + '-prev', 100) < 12;
+  if (usarPrevisao) {
+    const daPrevisao = ganchoDaPrevisao(nomeSigno, previsao);
+    if (daPrevisao) {
+      return daPrevisao;
+    }
+  }
+
+  const categoria = escolherCategoria(signo, dataRef);
+  const ganchos = poolPorCategoria(categoria);
+  const indice = escolherIndiceGancho(signo, dataRef + '-' + categoria, ganchos.length);
   return sanitizarTextoPublico(ganchos[indice](nomeSigno));
 }
