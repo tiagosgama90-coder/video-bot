@@ -71,8 +71,9 @@ exigirTexto('./gerar-video-quinta.ts', 'escolherFraseMotivacional', 'Quinta: fra
 exigirTexto('./gerar-video-quinta.ts', 'SLOT_MUSICA.MOTIVACIONAL_QUINTA', 'Quinta: slot música');
 exigirTexto('./gerar-video-quinta.ts', "escolherFraseMotivacional(data, 'quinta')", 'Quinta: variante frase');
 
-exigirFicheiro('./src/lib/imagem-fundo.ts');
-exigirTexto('./src/lib/imagem-fundo.ts', 'PROMPTS_FALLBACK_ASTROLOGIA', 'Imagem: fallback só astrologia (sem picsum)');
+exigirTexto('./config/sidusastro.json', '"femininaRate": "+8%"', 'Voz: prosódia animada PT');
+exigirTexto('./config/sidusastro.json', 'en-US-JennyNeural', 'Voz: Jenny Neural EN');
+exigirTexto('./src/lib/voz.ts', 'mstts:express-as', 'Voz: estilo Azure expressivo');
 
 exigirFicheiro('./.github/workflows/diario.yml');
 exigirTexto('./.github/workflows/diario.yml', 'workflow_dispatch', 'Diário: disparo externo');

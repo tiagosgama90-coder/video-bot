@@ -4,7 +4,7 @@ import path from 'path';
 import axios from 'axios';
 import say from 'say';
 import { isLocaleUS } from './locale';
-import { carregarConfigProjeto, type PreferenciaVoz } from './project-config';
+import { carregarConfigProjeto, type PreferenciaVoz, type ProsodiaLocale } from './project-config';
 
 interface VozNeural {
   id: string;
@@ -20,7 +20,7 @@ const VOZ_HELIA: VozNeural = {
   lang: 'pt-PT',
 };
 
-const VELOCIDADE_HELIA = 0.8;
+const VELOCIDADE_HELIA = 1.05;
 
 function obterVozesAzure(): VozNeural[] {
   const cfg = carregarConfigProjeto();
@@ -50,19 +50,71 @@ function prepararTextoSsml(texto: string): string {
   const escapado = escapeXml(texto);
   const pausaFrase = cfg.voz.pausaFraseMs;
   const pausaVirgula = cfg.voz.pausaVirgulaMs;
-  return escapado
+
+  const comPausas = escapado
     .replace(/([.!?…])\s+/g, '$1<break time="' + pausaFrase + 'ms"/> ')
     .replace(/([,;:])\s+/g, '$1<break time="' + pausaVirgula + 'ms"/> ');
+
+  const primeiraFrase = comPausas.match(/^[^<]+/);
+  if (!primeiraFrase) {
+    return comPausas;
+  }
+
+  const resto = comPausas.slice(primeiraFrase[0].length);
+  return (
+    '<emphasis level="moderate">' +
+    primeiraFrase[0].trim() +
+    '</emphasis>' +
+    resto
+  );
 }
 
-function obterProsodiaSerena(voz: VozNeural): { rate: string; pitch: string; volume: string } {
+function obterBlocoVoz(voz: VozNeural): ProsodiaLocale {
   const cfg = carregarConfigProjeto();
-  const bloco = voz.lang === 'pt-PT' ? cfg.voz.pt : cfg.voz.en;
+  return voz.lang === 'pt-PT' ? cfg.voz.pt : cfg.voz.en;
+}
+
+function obterProsodiaExpressiva(voz: VozNeural): { rate: string; pitch: string; volume: string } {
+  const bloco = obterBlocoVoz(voz);
 
   if (voz.genero === 'feminina') {
     return { rate: bloco.femininaRate, pitch: bloco.femininaPitch, volume: bloco.volume };
   }
   return { rate: bloco.masculinaRate, pitch: bloco.masculinaPitch, volume: bloco.volume };
+}
+
+function montarCorpoSsml(texto: string, voz: VozNeural): string {
+  const bloco = obterBlocoVoz(voz);
+  const prosodia = obterProsodiaExpressiva(voz);
+  const conteudo = prepararTextoSsml(texto);
+
+  const prosody =
+    "<prosody rate='" +
+    prosodia.rate +
+    "' pitch='" +
+    prosodia.pitch +
+    "' volume='" +
+    prosodia.volume +
+    "'>" +
+    conteudo +
+    '</prosody>';
+
+  const estilo = bloco.estiloAzure?.trim();
+  const grau = bloco.grauEstilo ?? 1.15;
+
+  if (estilo) {
+    return (
+      "<mstts:express-as style='" +
+      escapeXml(estilo) +
+      "' styledegree='" +
+      grau +
+      "'>" +
+      prosody +
+      '</mstts:express-as>'
+    );
+  }
+
+  return prosody;
 }
 
 export function obterPreferenciaVozConfig(): PreferenciaVoz {
@@ -94,24 +146,16 @@ async function gerarNarracaoAzure(
     throw new Error('Azure Speech não configurado');
   }
 
-  const prosodia = obterProsodiaSerena(voz);
-
   const ssml =
-    "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='" +
+    "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' " +
+    "xmlns:mstts='https://www.w3.org/2001/m10/synthesis' xml:lang='" +
     voz.lang +
     "'>" +
     "<voice name='" +
     voz.id +
     "'>" +
-    "<prosody rate='" +
-    prosodia.rate +
-    "' pitch='" +
-    prosodia.pitch +
-    "' volume='" +
-    prosodia.volume +
-    "'>" +
-    prepararTextoSsml(texto) +
-    '</prosody></voice></speak>';
+    montarCorpoSsml(texto, voz) +
+    '</voice></speak>';
 
   const endpoint =
     'https://' + speechRegion + '.tts.speech.microsoft.com/cognitiveservices/v1';
@@ -149,13 +193,19 @@ export async function gerarNarracao(
   const destino = path.resolve(destinoRelativo);
   const pref = preferenciaVoz ?? obterPreferenciaVozConfig();
   const vozEscolhida = escolherVozAleatoria(pref);
+  const bloco = obterBlocoVoz(vozEscolhida);
+  const prosodia = obterProsodiaExpressiva(vozEscolhida);
 
   console.log(
     '🗣️ Voz: ' +
       vozEscolhida.id +
       ' (' +
       vozEscolhida.genero +
-      ', Azure Neural)',
+      ', Azure Neural' +
+      (bloco.estiloAzure ? ', estilo ' + bloco.estiloAzure : '') +
+      ', rate ' +
+      prosodia.rate +
+      ')',
   );
 
   try {

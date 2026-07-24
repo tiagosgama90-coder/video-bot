@@ -7,11 +7,17 @@ export type PreferenciaVoz = 'feminina' | 'masculina' | 'aleatoria';
 export interface ProsodiaLocale {
   feminina: string;
   masculina: string;
+  femininaId: string;
+  masculinaId: string;
   femininaRate: string;
   femininaPitch: string;
   masculinaRate: string;
   masculinaPitch: string;
   volume: string;
+  /** Estilo Azure Neural (ex.: friendly, cheerful) — vazio = só prosódia */
+  estiloAzure?: string;
+  /** Intensidade do estilo (1.0 = normal, até ~2.0) */
+  grauEstilo?: number;
 }
 
 export interface EntradaMusica {
@@ -25,8 +31,8 @@ export interface ConfigProjeto {
   projeto: string;
   voz: {
     preferencia: PreferenciaVoz;
-    pt: ProsodiaLocale & { femininaId: string; masculinaId: string };
-    en: ProsodiaLocale & { femininaId: string; masculinaId: string };
+    pt: ProsodiaLocale;
+    en: ProsodiaLocale;
     pausaFraseMs: number;
     pausaVirgulaMs: number;
   };
@@ -76,25 +82,29 @@ export const CONFIG_PADRAO: ConfigProjeto = {
       masculinaId: 'pt-PT-DuarteNeural',
       feminina: 'pt-PT-RaquelNeural',
       masculina: 'pt-PT-DuarteNeural',
-      femininaRate: '-15%',
-      femininaPitch: '+3%',
-      masculinaRate: '-14%',
-      masculinaPitch: '+1%',
-      volume: 'soft',
+      femininaRate: '+8%',
+      femininaPitch: '+10%',
+      masculinaRate: '+6%',
+      masculinaPitch: '+7%',
+      volume: 'medium',
+      estiloAzure: '',
+      grauEstilo: 1.15,
     },
     en: {
-      femininaId: 'en-US-AriaNeural',
-      masculinaId: 'en-US-RogerNeural',
-      feminina: 'en-US-AriaNeural',
-      masculina: 'en-US-RogerNeural',
-      femininaRate: '-12%',
-      femininaPitch: '+2%',
-      masculinaRate: '-11%',
-      masculinaPitch: '0%',
-      volume: 'soft',
+      femininaId: 'en-US-JennyNeural',
+      masculinaId: 'en-US-GuyNeural',
+      feminina: 'en-US-JennyNeural',
+      masculina: 'en-US-GuyNeural',
+      femininaRate: '+7%',
+      femininaPitch: '+8%',
+      masculinaRate: '+5%',
+      masculinaPitch: '+5%',
+      volume: 'medium',
+      estiloAzure: 'friendly',
+      grauEstilo: 1.25,
     },
-    pausaFraseMs: 550,
-    pausaVirgulaMs: 250,
+    pausaFraseMs: 380,
+    pausaVirgulaMs: 170,
   },
   musica: {
     volume: 0.22,
