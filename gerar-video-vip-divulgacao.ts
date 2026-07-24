@@ -18,14 +18,12 @@ function obterSlotMusicaVip(data: string): number {
   switch (dia) {
     case 1:
       return SLOT_MUSICA.MOTIVACIONAL_SEGUNDA;
-    case 3:
-      return SLOT_MUSICA.VIP_DIVULGACAO_QUARTA;
     case 5:
       return SLOT_MUSICA.VIP_DIVULGACAO_SEXTA;
     case 0:
       return SLOT_MUSICA.VIP_DIVULGACAO_DOMINGO;
     default:
-      return SLOT_MUSICA.VIP_DIVULGACAO_QUARTA;
+      return SLOT_MUSICA.VIP_DIVULGACAO_SEXTA;
   }
 }
 

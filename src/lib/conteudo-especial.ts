@@ -20,8 +20,8 @@ import {
   HASHTAGS_VIP_PT_INSTAGRAM,
   HASHTAGS_VIP_PT_TIKTOK,
 } from './legendas-marketing';
+import { escolherGanchoAfiliados } from './ganchos-afiliados';
 import { isLocaleUS } from './locale';
-import { obterVarianteQuarta, type VarianteQuarta } from './quarta-alternada';
 import { sanitizarTextoPublico } from './texto-publico';
 
 export const TITULO_VIP_DIVULGACAO = 'O TEU VIP VITALÍCIO';
@@ -95,6 +95,30 @@ export const TEXTO_AFILIADOS_FALADO =
 
 export const TEXTO_AFILIADOS_FALADO_EN =
   'SidusAstro, Mystic Portal. Get your birth chart or join our team and earn fifty percent commission on every sale. Link below.';
+
+const SEGMENTOS_AFILIADOS_ECRA_PT = [
+  '50% de comissão por cada venda no SidusAstro',
+  'Registo grátis · link teu · partilhas onde quiseres',
+  'sidusastro.com — link na bio 👇',
+];
+
+const SEGMENTOS_AFILIADOS_FALADO_PT = [
+  'No SidusAstro ganhas cinquenta por cento de comissão por cada venda.',
+  'Registo grátis, link exclusivo teu, partilhas onde quiseres.',
+  'Acede em sidusastro.com — o link está na bio.',
+];
+
+const SEGMENTOS_AFILIADOS_ECRA_EN = [
+  '50% commission on every SidusAstro sale',
+  'Free sign-up · your link · share anywhere',
+  'sidusastro.com — link in bio 👇',
+];
+
+const SEGMENTOS_AFILIADOS_FALADO_EN = [
+  'At SidusAstro you earn fifty percent commission on every sale.',
+  'Free sign-up, your exclusive link, share anywhere you want.',
+  'Go to sidusastro.com — the link is in the bio.',
+];
 
 export const LEGENDA_AFILIADOS_TIKTOK =
   'Se gostas de astrologia e queres ganhar com isso, isto é para ti 💸\n\n' +
@@ -288,28 +312,47 @@ export function obterLegendasMotivacional(): { tiktok: string; instagram: string
   };
 }
 
-export function obterConteudoAfiliados(): {
+export function obterConteudoAfiliados(
+  data: string,
+  contexto: string = 'afiliados',
+): {
   titulo: string;
+  hookTexto: string;
   textoEcra: string;
   textoNarracao: string;
-  segmentosEcra?: string[];
+  segmentosEcra: string[];
   legendas: { tiktok: string; instagram: string };
 } {
+  const gancho = escolherGanchoAfiliados(data, contexto);
+
   if (isLocaleUS()) {
+    const segmentosEcra = SEGMENTOS_AFILIADOS_ECRA_EN.map(sanitizarTextoPublico);
+    const textoNarracao = sanitizarTextoPublico(
+      gancho + '. ' + SEGMENTOS_AFILIADOS_FALADO_EN.join(' '),
+    );
     return {
       titulo: TITULO_AFILIADOS_EN,
-      textoEcra: sanitizarTextoPublico(TEXTO_AFILIADOS_ECRA_EN),
-      textoNarracao: sanitizarTextoPublico(TEXTO_AFILIADOS_FALADO_EN),
+      hookTexto: gancho,
+      textoEcra: segmentosEcra[0],
+      textoNarracao,
+      segmentosEcra,
       legendas: {
         tiktok: sanitizarTextoPublico(LEGENDA_AFILIADOS_TIKTOK_EN),
         instagram: sanitizarTextoPublico(LEGENDA_AFILIADOS_INSTAGRAM_EN),
       },
     };
   }
+
+  const segmentosEcra = SEGMENTOS_AFILIADOS_ECRA_PT.map(sanitizarTextoPublico);
+  const textoNarracao = sanitizarTextoPublico(
+    gancho + '. ' + SEGMENTOS_AFILIADOS_FALADO_PT.join(' '),
+  );
   return {
     titulo: TITULO_AFILIADOS,
-    textoEcra: sanitizarTextoPublico(TEXTO_AFILIADOS_ECRA),
-    textoNarracao: sanitizarTextoPublico(TEXTO_AFILIADOS_FALADO),
+    hookTexto: gancho,
+    textoEcra: segmentosEcra[0],
+    textoNarracao,
+    segmentosEcra,
     legendas: {
       tiktok: sanitizarTextoPublico(LEGENDA_AFILIADOS_TIKTOK),
       instagram: sanitizarTextoPublico(LEGENDA_AFILIADOS_INSTAGRAM),
@@ -350,20 +393,16 @@ export function obterConteudoVipDivulgacao(): {
 
 export interface ConteudoQuarta {
   titulo: string;
+  hookTexto: string;
   textoEcra: string;
   textoNarracao: string;
-  segmentosEcra?: string[];
+  segmentosEcra: string[];
   legendas: { tiktok: string; instagram: string };
 }
 
-export function obterConteudoQuarta(data: string): {
-  variante: VarianteQuarta;
-  conteudo: ConteudoQuarta;
-} {
-  const variante = obterVarianteQuarta(data);
-  const conteudo =
-    variante === 'vip' ? obterConteudoVipDivulgacao() : obterConteudoAfiliados();
-  return { variante, conteudo };
+/** Quarta-feira — sempre afiliados às 14:00 */
+export function obterConteudoQuarta(data: string): { conteudo: ConteudoQuarta } {
+  return { conteudo: obterConteudoAfiliados(data, 'quarta') };
 }
 
 export const LEGENDA_MOTIVACIONAL_TIKTOK =
@@ -384,7 +423,7 @@ export const LEGENDA_MOTIVACIONAL_INSTAGRAM =
   CTA_MOTIVACIONAL_PT + '\n\n' +
   HASHTAGS_MOTIVACIONAL_PT_INSTAGRAM;
 
-/** Slot extra (14:00 fuso local) para vídeos especiais seg/qua — não interfere nos 3 horóscopos */
+/** Slot extra (14:00 fuso local) para VIP seg/sex/dom e afiliados quarta */
 export const SLOT_ESPECIAL_LISBOA = '14:00';
 export const SLOT_ESPECIAL_EST = '14:00';
 

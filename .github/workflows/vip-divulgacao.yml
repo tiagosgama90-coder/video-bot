@@ -1,6 +1,6 @@
 name: VIP por Divulgação (PT)
 
-# Segundas, quartas, sextas e domingos — 07:15 Lisboa → publicação Buffer 14:00.
+# Segundas, sextas e domingos — 07:15 Lisboa → publicação Buffer 14:00.
 # Primário: cron-job.org (scripts/configurar-cron-vip.sh).
 # Backup: schedule GitHub abaixo.
 on:
@@ -8,11 +8,9 @@ on:
   schedule:
     - cron: '15 6 * * 0'  # domingo ~07:15 Lisboa (WEST)
     - cron: '15 6 * * 1'  # segunda
-    - cron: '15 6 * * 3'  # quarta
     - cron: '15 6 * * 5'  # sexta
     - cron: '15 7 * * 0'  # domingo (WET)
     - cron: '15 7 * * 1'
-    - cron: '15 7 * * 3'
     - cron: '15 7 * * 5'
 
 permissions:

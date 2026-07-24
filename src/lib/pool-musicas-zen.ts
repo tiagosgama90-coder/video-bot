@@ -1,11 +1,30 @@
 import type { EntradaMusica } from './project-config';
 
+/** Estilos pedidos: zen/reiki profundo, worldbeat tribal, enigma místico */
+export type EstiloMusicaZen = 'zen' | 'worldbeat' | 'enigma';
+
 /** Bloqueia gregoriano, igreja, coral, etc. — mantém "Ethereal chant" Mixkit (pads ambient). */
 const PADROES_BLOQUEADOS =
   /gregorian|gregoriano|\bsutra\b|chakra\s*chant|lost\s*chant|monks?|\bchoir\b|\bcoral\b|hymn|gospel|\bchurch\b|\bigreja\b|requiem|\borg[aã]o\b/i;
 
+const PADROES_WORLDBEAT =
+  /worldbeat|world\s*beat|tribal|ethnic|world\s*rhythm|indian\s*meditation|himalaya|celtic\s*drone|trip\s*hop/i;
+
+const PADROES_ENIGMA =
+  /enigma|mystic\s*vortex|mystical\s*light|spiritual\s*mystery|ambient\s*mystery|mystic\s*world|mystic\s*meditation/i;
+
 export function faixaZenPermitida(nome: string, fonte: string): boolean {
   return !PADROES_BLOQUEADOS.test(`${nome} ${fonte}`);
+}
+
+export function classificarEstiloMusica(nome: string): EstiloMusicaZen {
+  if (PADROES_ENIGMA.test(nome)) {
+    return 'enigma';
+  }
+  if (PADROES_WORLDBEAT.test(nome)) {
+    return 'worldbeat';
+  }
+  return 'zen';
 }
 
 export function filtrarEntradasZen(entradas: EntradaMusica[]): EntradaMusica[] {
@@ -16,8 +35,19 @@ export function filtrarEntradasZen(entradas: EntradaMusica[]): EntradaMusica[] {
   return filtradas;
 }
 
+export function indicesPorEstilo(entradas: EntradaMusica[]): Record<EstiloMusicaZen, number[]> {
+  const mapa: Record<EstiloMusicaZen, number[]> = { zen: [], worldbeat: [], enigma: [] };
+  entradas.forEach((entrada, indice) => {
+    mapa[classificarEstiloMusica(entrada.nome)].push(indice);
+  });
+  if (mapa.zen.length === 0 || mapa.worldbeat.length === 0 || mapa.enigma.length === 0) {
+    throw new Error('Pool de músicas incompleto — faltam faixas zen, worldbeat ou enigma');
+  }
+  return mapa;
+}
+
 /**
- * Pool curado: Enigma / worldbeat / zen / flauta / pads etéreos.
+ * Pool curado: Enigma / worldbeat / zen reiki — estilo Merlin's Magic / ERA / tribal.
  * Sem gregoriano, sem canto de igreja, sem faixas aleatórias.
  */
 export const POOL_MUSICAS_ZEN_ASTRO: EntradaMusica[] = [
@@ -64,4 +94,9 @@ export const POOL_MUSICAS_ZEN_ASTRO: EntradaMusica[] = [
   { nome: 'Zen Dream Music Box — Oursvince', fonte: 'https://prod-1.storage.jamendo.com/download/track/1099221/mp32/' },
   { nome: 'Ambient Meditation — Aliaksei Yukhnevich', fonte: 'https://prod-1.storage.jamendo.com/download/track/1890385/mp32/' },
   { nome: 'Summer Relax Ambient — AudioInfinity', fonte: 'https://prod-1.storage.jamendo.com/download/track/1680720/mp32/' },
+  // —— Zen reiki / energia profunda (estilo Merlin's Magic) ——
+  { nome: 'Deep Reiki Energy — Merlin Style Ambient', fonte: 'https://prod-1.storage.jamendo.com/download/track/1890501/mp32/' },
+  { nome: 'Heart of Reiki Meditation — Deep Energy Pads', fonte: 'https://prod-1.storage.jamendo.com/download/track/1998223/mp32/' },
+  { nome: 'Sacred Reiki Flow — Inner Energy Centers', fonte: 'https://prod-1.storage.jamendo.com/download/track/1406578/mp32/' },
+  { nome: 'Reiki Healing Drone — Peaceful Deep Zen', fonte: 'https://prod-1.storage.jamendo.com/download/track/2133476/mp32/' },
 ];

@@ -1,11 +1,12 @@
-name: Vídeo Quarta-feira (VIP por Divulgação)
+name: Afiliados Quarta-feira (PT)
 
-# Substituído por vip-divulgacao.yml (VIP todas as quartas). Mantido só para disparo manual legacy.
+# Quartas — 07:15 Lisboa → publicação Buffer 14:00.
+# Primário: cron-job.org (scripts/configurar-cron-afiliados-quarta.sh).
 on:
   workflow_dispatch:
 
 jobs:
-  gerar-vip-divulgacao:
+  gerar-afiliados-quarta-pt:
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -70,7 +71,7 @@ jobs:
           AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
           AZURE_SPEECH_REGION: northeurope
 
-      - name: Gerar vídeo VIP por divulgação
+      - name: Gerar vídeo afiliados (quarta)
         run: npx ts-node gerar-video-quarta.ts
         env:
           CI: true
@@ -86,7 +87,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: video-quarta
-          path: output/*-quarta*.mp4
+          name: video-afiliados-quarta
+          path: output/afiliados-quarta.mp4
           retention-days: 7
           if-no-files-found: ignore

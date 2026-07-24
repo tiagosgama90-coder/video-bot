@@ -23,7 +23,9 @@ import type { SignoZodiaco } from './signos';
 interface PropsVideoEspecial {
   signo: string;
   previsao: string;
+  hookTexto?: string;
   fechoTexto: string;
+  frameInicioPrevisao?: number;
   fundoVideoTema?: TemaFundoMistico;
   fundoVideoSeed?: number;
   imagemFundoUrl?: string;
@@ -45,6 +47,7 @@ export interface OpcoesVideoEspecial {
   tipoMusica?: 'zen' | 'mistico' | 'viral';
   slotHorario?: string;
   segmentosEcra?: string[];
+  hookTexto?: string;
   fundoZenAstrologia?: boolean;
   /** Slot de rotação musical (ver SLOT_MUSICA em musicas.ts) */
   slotMusica?: number;
@@ -65,6 +68,19 @@ function renderizarVideoEspecial(id: string): void {
 
   console.log('🚀 A renderizar: ' + outputPath);
   execSync(comando, { stdio: 'inherit', cwd: process.cwd() });
+}
+
+function calcularFrameInicioAposGancho(
+  gancho: string,
+  narracao: string,
+  duracaoFrames: number,
+): number {
+  const palavrasGancho = gancho.trim().split(/\s+/).filter(Boolean).length;
+  const palavrasTotal = narracao.trim().split(/\s+/).filter(Boolean).length;
+  if (palavrasTotal === 0) {
+    return 12;
+  }
+  return Math.max(12, Math.round(duracaoFrames * (palavrasGancho / palavrasTotal)));
 }
 
 export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<void> {
@@ -103,9 +119,18 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3', maxSegundos);
 
   const segmentosLimpos = opcoes.segmentosEcra?.map(sanitizarTextoPublico);
+  const hookTexto = opcoes.hookTexto ? sanitizarTextoPublico(opcoes.hookTexto) : undefined;
+  const frameInicioCorpo = hookTexto
+    ? calcularFrameInicioAposGancho(hookTexto, textoNarracao, duracaoFrames)
+    : 12;
   const segmentosProgressivos = segmentosLimpos?.length
-    ? calcularSegmentosProgressivos(segmentosLimpos, duracaoFrames)
+    ? calcularSegmentosProgressivos(segmentosLimpos, duracaoFrames, frameInicioCorpo)
     : undefined;
+
+  if (hookTexto) {
+    console.log('🪝 Gancho afiliados: "' + hookTexto.slice(0, 60) + '..."');
+    console.log('📺 Corpo no ecrã a partir do frame ' + frameInicioCorpo);
+  }
 
   if (segmentosProgressivos) {
     console.log('📝 Texto progressivo no ecrã (' + segmentosProgressivos.length + ' segmentos):');
@@ -124,7 +149,9 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
   const props: PropsVideoEspecial = {
     signo: sanitizarTextoPublico(opcoes.titulo),
     previsao: segmentosProgressivos ? '' : textoEcra,
+    hookTexto,
     fechoTexto: '',
+    frameInicioPrevisao: hookTexto ? frameInicioCorpo : undefined,
     fundoVideoTema,
     fundoVideoSeed,
     imagemFundoUrl,

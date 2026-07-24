@@ -23,7 +23,7 @@ jobs:
           script: |
             const mapa = {
               Monday: 'vip-divulgacao.yml',
-              Wednesday: 'vip-divulgacao.yml',
+              Wednesday: 'quarta.yml',
               Friday: 'vip-divulgacao.yml',
               Sunday: 'vip-divulgacao.yml',
               Thursday: 'quinta.yml',

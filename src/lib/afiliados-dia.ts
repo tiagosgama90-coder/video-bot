@@ -28,13 +28,14 @@ export async function gerarAfiliadosDia(data: string): Promise<void> {
     return;
   }
 
-  const conteudo = obterConteudoAfiliados();
+  const conteudo = obterConteudoAfiliados(data, 'ter-sab');
   const mercado = isLocaleUS() ? 'US (@sidusastro_en)' : 'PT';
 
   console.log('\n══════════════════════════════════════');
   console.log('💸 SidusAstro — Afiliados [' + mercado + ']');
   console.log('📅 Data: ' + data + ' · Publicação: fila Buffer (hora livre)');
   console.log('🏷️ Título: ' + conteudo.titulo);
+  console.log('🪝 Gancho: "' + conteudo.hookTexto + '"');
   console.log('🎙️ Narração:\n' + conteudo.textoNarracao);
   console.log('══════════════════════════════════════\n');
 
@@ -43,6 +44,8 @@ export async function gerarAfiliadosDia(data: string): Promise<void> {
     titulo: conteudo.titulo,
     textoEcra: conteudo.textoEcra,
     textoNarracao: conteudo.textoNarracao,
+    hookTexto: conteudo.hookTexto,
+    segmentosEcra: conteudo.segmentosEcra,
     fundoZenAstrologia: true,
     legendas: conteudo.legendas,
     data,
