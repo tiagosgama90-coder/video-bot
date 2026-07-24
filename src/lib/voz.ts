@@ -83,10 +83,24 @@ function obterProsodiaExpressiva(voz: VozNeural): { rate: string; pitch: string;
   return { rate: bloco.masculinaRate, pitch: bloco.masculinaPitch, volume: bloco.volume };
 }
 
+function obterEstiloAzure(voz: VozNeural, bloco: ProsodiaLocale): { estilo: string; grau: number } {
+  if (voz.genero === 'feminina') {
+    const estilo =
+      bloco.estiloAzureFeminina?.trim() || bloco.estiloAzure?.trim() || '';
+    const grau = bloco.grauEstiloFeminina ?? bloco.grauEstilo ?? 1.1;
+    return { estilo, grau };
+  }
+  const estilo =
+    bloco.estiloAzureMasculina?.trim() || bloco.estiloAzure?.trim() || '';
+  const grau = bloco.grauEstiloMasculina ?? bloco.grauEstilo ?? 1.2;
+  return { estilo, grau };
+}
+
 function montarCorpoSsml(texto: string, voz: VozNeural): string {
   const bloco = obterBlocoVoz(voz);
   const prosodia = obterProsodiaExpressiva(voz);
   const conteudo = prepararTextoSsml(texto);
+  const { estilo, grau } = obterEstiloAzure(voz, bloco);
 
   const prosody =
     "<prosody rate='" +
@@ -98,9 +112,6 @@ function montarCorpoSsml(texto: string, voz: VozNeural): string {
     "'>" +
     conteudo +
     '</prosody>';
-
-  const estilo = bloco.estiloAzure?.trim();
-  const grau = bloco.grauEstilo ?? 1.15;
 
   if (estilo) {
     return (
@@ -195,6 +206,7 @@ export async function gerarNarracao(
   const vozEscolhida = escolherVozAleatoria(pref);
   const bloco = obterBlocoVoz(vozEscolhida);
   const prosodia = obterProsodiaExpressiva(vozEscolhida);
+  const { estilo } = obterEstiloAzure(vozEscolhida, bloco);
 
   console.log(
     '🗣️ Voz: ' +
@@ -202,9 +214,11 @@ export async function gerarNarracao(
       ' (' +
       vozEscolhida.genero +
       ', Azure Neural' +
-      (bloco.estiloAzure ? ', estilo ' + bloco.estiloAzure : '') +
+      (estilo ? ', estilo ' + estilo : ', prosódia natural') +
       ', rate ' +
       prosodia.rate +
+      ', pitch ' +
+      prosodia.pitch +
       ')',
   );
 

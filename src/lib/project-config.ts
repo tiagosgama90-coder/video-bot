@@ -14,9 +14,15 @@ export interface ProsodiaLocale {
   masculinaRate: string;
   masculinaPitch: string;
   volume: string;
-  /** Estilo Azure Neural (ex.: friendly, cheerful) — vazio = só prosódia */
+  /** Estilo Azure voz feminina (ex.: cheerful, empathetic) */
+  estiloAzureFeminina?: string;
+  /** Estilo Azure voz masculina (ex.: calm, whispering) */
+  estiloAzureMasculina?: string;
+  grauEstiloFeminina?: number;
+  grauEstiloMasculina?: number;
+  /** @deprecated usar estiloAzureFeminina / estiloAzureMasculina */
   estiloAzure?: string;
-  /** Intensidade do estilo (1.0 = normal, até ~2.0) */
+  /** @deprecated usar grauEstiloFeminina / grauEstiloMasculina */
   grauEstilo?: number;
 }
 
@@ -82,26 +88,30 @@ export const CONFIG_PADRAO: ConfigProjeto = {
       masculinaId: 'pt-PT-DuarteNeural',
       feminina: 'pt-PT-RaquelNeural',
       masculina: 'pt-PT-DuarteNeural',
-      femininaRate: '+8%',
-      femininaPitch: '+10%',
-      masculinaRate: '+6%',
-      masculinaPitch: '+7%',
+      femininaRate: '+4%',
+      femininaPitch: '+14%',
+      masculinaRate: '-2%',
+      masculinaPitch: '-12%',
       volume: 'medium',
-      estiloAzure: '',
-      grauEstilo: 1.15,
+      estiloAzureFeminina: '',
+      estiloAzureMasculina: '',
+      grauEstiloFeminina: 1.1,
+      grauEstiloMasculina: 1.2,
     },
     en: {
       femininaId: 'en-US-JennyNeural',
-      masculinaId: 'en-US-GuyNeural',
+      masculinaId: 'en-US-DavisNeural',
       feminina: 'en-US-JennyNeural',
-      masculina: 'en-US-GuyNeural',
-      femininaRate: '+7%',
-      femininaPitch: '+8%',
-      masculinaRate: '+5%',
-      masculinaPitch: '+5%',
+      masculina: 'en-US-DavisNeural',
+      femininaRate: '+5%',
+      femininaPitch: '+12%',
+      masculinaRate: '-4%',
+      masculinaPitch: '-10%',
       volume: 'medium',
-      estiloAzure: 'friendly',
-      grauEstilo: 1.25,
+      estiloAzureFeminina: 'cheerful',
+      estiloAzureMasculina: 'calm',
+      grauEstiloFeminina: 1.15,
+      grauEstiloMasculina: 1.45,
     },
     pausaFraseMs: 380,
     pausaVirgulaMs: 170,
