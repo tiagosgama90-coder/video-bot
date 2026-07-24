@@ -53,10 +53,10 @@ export const HASHTAGS_AFILIADOS_EN_INSTAGRAM =
   '#sidehustle #affiliatemarketing #sidusastro #makemoneyonline #reels #workfromhome';
 
 export const CTA_DIARIO_PT =
-  '🔮 Mapa astral GRÁTIS → sidusastro.com/login';
+  '🔮 O que falta ver está GRÁTIS em sidusastro.com/login - mapa astral completo';
 
 export const CTA_DIARIO_EN =
-  '🔮 FREE birth chart → sidusastro.com/en/login';
+  '🔮 What you still need is FREE at sidusastro.com/en/login - full birth chart';
 
 export const CTA_MOTIVACIONAL_PT =
   '✨ Mapa astral + tarot GRÁTIS → sidusastro.com';

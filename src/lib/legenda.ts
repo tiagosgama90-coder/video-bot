@@ -14,15 +14,29 @@ import { obterNomeSigno, type SignoZodiaco } from './signos';
 import { sanitizarTextoPublico } from './texto-publico';
 
 export const FINAL_CLOSINGS = [
-  'Mapa astral grátis → sidusastro.com',
-  'Vê o teu mapa → sidusastro.com',
-  'Detalhes do teu dia → sidusastro.com',
+  'Ninguém te mostra isto nas apps grátis - mapa astral completo em sidusastro.com',
+  'O que o teu signo esconde está em sidusastro.com - vê antes que tires isto do feed',
+  'Parece mentira, mas o teu mapa astral grátis está em sidusastro.com',
+  'Eu não devia dizer-te isto, mas o resto da previsão está em sidusastro.com',
+  'O segredo que falta no vídeo está no teu mapa em sidusastro.com',
+  'Não pares aqui - descobre tudo no mapa astral grátis em sidusastro.com',
+  'O que vais ler a seguir no site muda tudo - sidusastro.com',
+  'Mapa astral grátis em sidusastro.com - o que lá está não está nas apps',
+  'A verdade completa do teu dia está em sidusastro.com',
+  'Última peça do puzzle: mapa astral grátis em sidusastro.com',
 ] as const;
 
 export const FINAL_CLOSINGS_EN = [
-  'Free birth chart → sidusastro.com/en',
-  'Your full chart → sidusastro.com/en',
-  'More today → sidusastro.com/en',
+  'Nobody shows you this in free apps - full birth chart at sidusastro.com/en',
+  'What your sign hides is at sidusastro.com/en - see it before you scroll away',
+  'Sounds crazy, but your free birth chart is at sidusastro.com/en',
+  "I shouldn't tell you this, but the rest is at sidusastro.com/en",
+  'The missing piece of this video is on your chart at sidusastro.com/en',
+  "Don't stop here - discover everything free at sidusastro.com/en",
+  'What you read next on the site changes everything - sidusastro.com/en',
+  'Free birth chart at sidusastro.com/en - not in the apps',
+  'The full truth of your day is at sidusastro.com/en',
+  'Last piece of the puzzle: free chart at sidusastro.com/en',
 ] as const;
 
 function normalizarHashtag(texto: string): string {
@@ -42,8 +56,8 @@ function gerarCorpoLegenda(previsao: string, hook: string): string {
   const limpa = sanitizarTextoPublico(previsao);
   const resumo = limpa.length > 95 ? limpa.slice(0, 92).trim() + '...' : limpa;
   const linhaCta = isLocaleUS()
-    ? 'Free birth chart in bio link'
-    : 'Mapa astral grátis no link da bio';
+    ? 'The full chart is free - link in bio (sidusastro.com/en)'
+    : 'Mapa astral completo grátis - link na bio (sidusastro.com)';
   return sanitizarTextoPublico(hook + '\n\n' + resumo + '\n\n' + linhaCta);
 }
 

@@ -10,6 +10,7 @@ import {
 import { EfeitosUniverso } from './components/EfeitosUniverso';
 import { FundoVideoMistico } from './components/FundoVideoMistico';
 import { MarcaSidusAstro } from './components/OverlaysSidus';
+import { PALETA_SIDUS } from './lib/paleta-visual';
 import type { HoroscopoProps } from './types/horoscopo';
 
 export type { HoroscopoProps } from './types/horoscopo';
@@ -68,7 +69,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
     : 0;
 
   return (
-    <AbsoluteFill style={{ backgroundColor: '#09070f', fontFamily: 'system-ui, sans-serif' }}>
+    <AbsoluteFill style={{ backgroundColor: PALETA_SIDUS.fundo, fontFamily: 'system-ui, sans-serif' }}>
       <FundoVideoMistico tema={fundoVideoTema} seed={fundoVideoSeed} />
 
       <EfeitosUniverso />
@@ -88,16 +89,16 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
         >
           <div
             style={{
-              backgroundColor: 'rgba(20, 12, 40, 0.88)',
-              border: '2px solid rgba(243, 204, 99, 0.85)',
+              backgroundColor: PALETA_SIDUS.marcaMedia,
+              border: `3px solid ${PALETA_SIDUS.destaqueBorda}`,
               borderRadius: 24,
               padding: '22px 28px',
-              color: '#ffffff',
-              fontSize: hookTexto.length > 45 ? 34 : 40,
+              color: PALETA_SIDUS.textoCorpo,
+              fontSize: hookTexto.length > 55 ? 32 : hookTexto.length > 45 ? 34 : 40,
               fontWeight: 900,
               textAlign: 'center',
               lineHeight: 1.2,
-              boxShadow: '0 12px 40px rgba(0,0,0,0.55)',
+              boxShadow: `0 12px 40px rgba(0,0,0,0.55), 0 0 24px ${PALETA_SIDUS.destaqueSombra}`,
               textShadow: '0 2px 12px rgba(0,0,0,0.65)',
               maxWidth: 980,
             }}
@@ -135,11 +136,11 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
         {/* 2. TITULO DO SIGNO (a meio do vídeo) */}
         <div
           style={{
-            color: '#f3cc63',
+            color: PALETA_SIDUS.destaque,
             fontSize: 80,
             fontWeight: 900,
             letterSpacing: 2,
-            textShadow: '0 0 25px rgba(243,204,99,0.5)',
+            textShadow: `0 0 25px ${PALETA_SIDUS.destaqueSombra}`,
             marginBottom: 20,
           }}
         >
@@ -151,12 +152,12 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
           {modoProgressivo ? (
             <div
               style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.07)',
+                backgroundColor: PALETA_SIDUS.marca,
                 backdropFilter: 'blur(15px)',
                 borderRadius: 30,
                 padding: '34px 30px',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                border: `1px solid ${PALETA_SIDUS.marcaBorda}`,
+                boxShadow: '0 10px 30px rgba(0,0,0,0.35)',
                 minHeight: 280,
                 display: 'flex',
                 flexDirection: 'column',
@@ -170,7 +171,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
                   <div
                     key={seg.frameInicio}
                     style={{
-                      color: '#ffffff',
+                      color: PALETA_SIDUS.textoCorpo,
                       fontSize: activo ? 26 : 22,
                       fontWeight: activo ? 600 : 400,
                       lineHeight: 1.45,
@@ -182,7 +183,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
                     {temLink ? (
                       <>
                         {seg.texto.split('sidusastro.com')[0]}
-                        <span style={{ color: '#f3cc63', fontWeight: 800 }}>sidusastro.com</span>
+                        <span style={{ color: PALETA_SIDUS.destaque, fontWeight: 800 }}>sidusastro.com</span>
                         {seg.texto.split('sidusastro.com')[1] ?? ''}
                       </>
                     ) : (
@@ -195,18 +196,18 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
           ) : (
           <div
             style={{
-              backgroundColor: ecraLink ? 'rgba(20, 12, 40, 0.75)' : 'rgba(255, 255, 255, 0.07)',
+              backgroundColor: ecraLink ? PALETA_SIDUS.marcaMedia : PALETA_SIDUS.marca,
               backdropFilter: 'blur(15px)',
               borderRadius: 30,
               padding: ecraLink ? '40px 36px' : '34px 30px',
-              color: ecraLink ? '#f3cc63' : '#ffffff',
+              color: ecraLink ? PALETA_SIDUS.destaque : PALETA_SIDUS.textoCorpo,
               fontSize: ecraLink ? 52 : previsao.length > 120 ? 22 : 28,
               fontWeight: ecraLink ? 800 : 400,
               lineHeight: 1.45,
               textAlign: 'center',
               border: ecraLink
-                ? '2px solid rgba(243, 204, 99, 0.65)'
-                : '1px solid rgba(255, 255, 255, 0.15)',
+                ? `2px solid ${PALETA_SIDUS.destaqueBorda}`
+                : `1px solid ${PALETA_SIDUS.marcaBorda}`,
               boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
               maxHeight: 520,
               overflow: 'hidden',
@@ -235,16 +236,16 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
           >
             <div
               style={{
-                backgroundColor: 'rgba(20, 12, 40, 0.88)',
-                border: '2px solid rgba(243, 204, 99, 0.75)',
+                backgroundColor: PALETA_SIDUS.marcaMedia,
+                border: `3px solid ${PALETA_SIDUS.destaqueForte}`,
                 borderRadius: 22,
                 padding: '24px 30px',
-                color: '#ffffff',
-                fontSize: 34,
+                color: PALETA_SIDUS.destaqueForte,
+                fontSize: fechoTexto.length > 70 ? 28 : 32,
                 fontWeight: 900,
                 textAlign: 'center',
                 lineHeight: 1.25,
-                boxShadow: '0 12px 40px rgba(0,0,0,0.55)',
+                boxShadow: `0 12px 40px rgba(0,0,0,0.55), 0 0 32px ${PALETA_SIDUS.destaqueSombra}`,
                 textShadow: '0 2px 12px rgba(0,0,0,0.65)',
                 maxWidth: 980,
               }}
