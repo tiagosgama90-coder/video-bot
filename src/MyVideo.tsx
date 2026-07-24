@@ -15,6 +15,13 @@ import type { HoroscopoProps } from './types/horoscopo';
 
 export type { HoroscopoProps } from './types/horoscopo';
 
+function resolverSrcImagem(url: string): string {
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  return staticFile(url);
+}
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- asset estático em public/
 const logoSidus = require('../public/logo-sidus.png') as string;
 
@@ -27,6 +34,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   frameInicioFecho,
   fundoVideoTema,
   fundoVideoSeed,
+  imagemFundoUrl,
   musicaFundoArquivo,
   segmentosEcra,
   siteMarca,
@@ -68,9 +76,21 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
       })
     : 0;
 
+  const kenBurns = 1 + (frame / fps) * 0.012;
+  const usaImagemZen = Boolean(imagemFundoUrl);
+
   return (
     <AbsoluteFill style={{ backgroundColor: PALETA_SIDUS.fundo, fontFamily: 'system-ui, sans-serif' }}>
-      <FundoVideoMistico tema={fundoVideoTema} seed={fundoVideoSeed} />
+      {usaImagemZen ? (
+        <AbsoluteFill style={{ transform: `scale(${kenBurns})`, opacity: 0.42 }}>
+          <Img
+            src={resolverSrcImagem(imagemFundoUrl!)}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        </AbsoluteFill>
+      ) : (
+        <FundoVideoMistico tema={fundoVideoTema ?? 'zen_escuro'} seed={fundoVideoSeed ?? 0} />
+      )}
 
       <EfeitosUniverso />
 

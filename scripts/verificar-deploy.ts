@@ -75,7 +75,9 @@ exigirTexto('./src/lib/legenda.ts', 'legendas-marketing', 'Diário: hashtags mar
 exigirTexto('./src/lib/conteudo-especial.ts', 'HASHTAGS_VIP_PT_TIKTOK', 'VIP: hashtags PT');
 
 exigirFicheiro('./gerar-video-quinta.ts');
-exigirTexto('./gerar-video-quinta.ts', 'escolherFraseMotivacional', 'Quinta: frase motivacional');
+exigirTexto('./gerar-video-quinta.ts', 'fundoZenAstrologia: true', 'Quinta motivacional: imagem zen');
+exigirTexto('./gerar-video-segunda.ts', 'fundoZenAstrologia: true', 'Segunda motivacional: imagem zen');
+exigirTexto('./src/lib/gerar-video-especial.ts', 'obterImagemFundoZenAstrologia', 'Especiais: imagem zen quando fundoZenAstrologia');
 exigirTexto('./gerar-video-quinta.ts', 'SLOT_MUSICA.MOTIVACIONAL_QUINTA', 'Quinta: slot música');
 exigirTexto('./gerar-video-quinta.ts', "escolherFraseMotivacional(data, 'quinta')", 'Quinta: variante frase');
 

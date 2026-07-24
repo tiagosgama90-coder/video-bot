@@ -5,6 +5,7 @@ import { publicarEmTodosOsCanais } from './buffer';
 import { horaFusoParaISO, resolverDueAtFuturo } from './buffer-agenda';
 import { calcularDuracaoFrames } from './duracao-video';
 import { escolherFundoVideo, type TemaFundoMistico } from './fundo-video';
+import { obterImagemFundoZenAstrologia } from './imagem-fundo';
 import {
   isLocaleUS,
   obterFusoPublicacao,
@@ -23,8 +24,9 @@ interface PropsVideoEspecial {
   signo: string;
   previsao: string;
   fechoTexto: string;
-  fundoVideoTema: TemaFundoMistico;
-  fundoVideoSeed: number;
+  fundoVideoTema?: TemaFundoMistico;
+  fundoVideoSeed?: number;
+  imagemFundoUrl?: string;
   musicaFundoArquivo: string;
   duracaoFrames: number;
   siteMarca?: string;
@@ -72,9 +74,20 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
   const idPublicacao = sufixoIdVideoEspecial(opcoes.id);
   const signoChave = 'caranguejo' as SignoZodiaco;
 
-  const chaveFundo = opcoes.fundoZenAstrologia ? idPublicacao : signoChave;
-  const { tema: fundoVideoTema, seed: fundoVideoSeed } = escolherFundoVideo(chaveFundo, opcoes.data);
-  console.log('🎬 Fundo animado especial: ' + fundoVideoTema + ' (seed ' + fundoVideoSeed + ')');
+  let fundoVideoTema: TemaFundoMistico | undefined;
+  let fundoVideoSeed: number | undefined;
+  let imagemFundoUrl: string | undefined;
+
+  if (opcoes.fundoZenAstrologia) {
+    imagemFundoUrl = await obterImagemFundoZenAstrologia(idPublicacao, opcoes.data);
+    console.log('🎨 Fundo imagem zen/astrologia: ' + imagemFundoUrl);
+  } else {
+    const chaveFundo = signoChave;
+    const fundo = escolherFundoVideo(chaveFundo, opcoes.data);
+    fundoVideoTema = fundo.tema;
+    fundoVideoSeed = fundo.seed;
+    console.log('🎬 Fundo animado especial: ' + fundoVideoTema + ' (seed ' + fundoVideoSeed + ')');
+  }
   const musicaFundoArquivo = await prepararMusicaEspecial(
     idPublicacao,
     opcoes.data,
@@ -114,6 +127,7 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
     fechoTexto: '',
     fundoVideoTema,
     fundoVideoSeed,
+    imagemFundoUrl,
     musicaFundoArquivo,
     duracaoFrames,
     siteMarca: urlSiteMarca(),

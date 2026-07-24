@@ -40,6 +40,7 @@ async function executar(): Promise<void> {
     tipoMusica: 'zen',
     slotHorario: obterSlotEspecial(),
     slotMusica: SLOT_MUSICA.MOTIVACIONAL_SEGUNDA,
+    fundoZenAstrologia: true,
   });
 
   console.log(
