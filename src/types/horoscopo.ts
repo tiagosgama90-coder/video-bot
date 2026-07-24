@@ -1,3 +1,5 @@
+import type { TemaFundoMistico } from '../lib/fundo-video';
+
 export interface HoroscopoProps {
   signo: string;
   previsao: string;
@@ -5,7 +7,10 @@ export interface HoroscopoProps {
   hookTexto?: string;
   /** Frase final (texto) — aparece no fim no lugar da previsão */
   fechoTexto: string;
-  imagemFundoUrl: string;
+  /** Tema do fundo animado (nebulosa, zodíaco, aurora, lua, etc.) */
+  fundoVideoTema: TemaFundoMistico;
+  /** Seed determinístico — varia partículas e cores dentro do tema */
+  fundoVideoSeed: number;
   /** Nome do ficheiro em public/ — ex.: musica-peixes.mp3 */
   musicaFundoArquivo: string;
   /** Duração calculada a partir do áudio — evita cortar a narração */

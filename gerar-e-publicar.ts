@@ -5,7 +5,8 @@ import dotenv from 'dotenv';
 import { publicarEmTodosOsCanais } from './src/lib/buffer';
 import { obterTextoHoroscopo, extrairAteSegundoPontoFinal } from './src/lib/horoscopo';
 import { escolherFechoNarracao, gerarLegendas } from './src/lib/legenda';
-import { obterImagemFundo } from './src/lib/imagem-fundo';
+import { escolherFundoVideo } from './src/lib/fundo-video';
+import type { TemaFundoMistico } from './src/lib/fundo-video';
 import { calcularDuracaoFrames } from './src/lib/duracao-video';
 import { prepararMusicaParaVideo, SLOT_MUSICA } from './src/lib/musicas';
 import {
@@ -38,7 +39,8 @@ interface PropsVideo {
   previsao: string;
   hookTexto: string;
   fechoTexto: string;
-  imagemFundoUrl: string;
+  fundoVideoTema: TemaFundoMistico;
+  fundoVideoSeed: number;
   musicaFundoArquivo: string;
   duracaoFrames: number;
   siteMarca: string;
@@ -96,7 +98,8 @@ async function processarSigno(
   console.log('📝 Texto completo: "' + previsao.slice(0, 150) + '..."');
   console.log('✂️ Vídeo (1.ª + 2.ª frase por ponto final): "' + previsaoVideo + '"');
 
-  const imagemFundoUrl = await obterImagemFundo(signo, data);
+  const { tema: fundoVideoTema, seed: fundoVideoSeed } = escolherFundoVideo(signo, data);
+  console.log('🎬 Fundo animado: ' + fundoVideoTema + ' (seed ' + fundoVideoSeed + ')');
   const slotMusica =
     SLOTS_MUSICA_HOROSCOPO[indiceSlot] ??
     SLOTS_MUSICA_HOROSCOPO[indiceSlot % SLOTS_MUSICA_HOROSCOPO.length];
@@ -119,7 +122,8 @@ async function processarSigno(
     previsao: previsaoVideo,
     hookTexto: sanitizarTextoPublico(legendas.hook),
     fechoTexto: fechoEcra,
-    imagemFundoUrl,
+    fundoVideoTema,
+    fundoVideoSeed,
     musicaFundoArquivo,
     duracaoFrames,
     siteMarca: urlSiteMarca(),

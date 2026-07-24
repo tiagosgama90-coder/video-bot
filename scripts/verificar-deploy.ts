@@ -71,8 +71,10 @@ exigirTexto('./gerar-video-quinta.ts', 'escolherFraseMotivacional', 'Quinta: fra
 exigirTexto('./gerar-video-quinta.ts', 'SLOT_MUSICA.MOTIVACIONAL_QUINTA', 'Quinta: slot música');
 exigirTexto('./gerar-video-quinta.ts', "escolherFraseMotivacional(data, 'quinta')", 'Quinta: variante frase');
 
-exigirFicheiro('./src/lib/imagem-fundo.ts');
-exigirTexto('./src/lib/imagem-fundo.ts', 'PROMPTS_FALLBACK_ASTROLOGIA', 'Imagem: fallback só astrologia (sem picsum)');
+exigirFicheiro('./src/lib/fundo-video.ts');
+exigirTexto('./src/lib/fundo-video.ts', 'escolherFundoVideo', 'Vídeo: fundo animado místico');
+exigirTexto('./src/components/FundoVideoMistico.tsx', 'FundoVideoMistico', 'Vídeo: componente fundo em movimento');
+exigirTexto('./gerar-e-publicar.ts', 'escolherFundoVideo', 'Diário: fundo vídeo animado');
 
 exigirFicheiro('./.github/workflows/diario.yml');
 exigirTexto('./.github/workflows/diario.yml', 'workflow_dispatch', 'Diário: disparo externo');

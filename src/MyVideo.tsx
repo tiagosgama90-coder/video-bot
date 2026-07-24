@@ -8,17 +8,11 @@ import {
   useVideoConfig,
 } from 'remotion';
 import { EfeitosUniverso } from './components/EfeitosUniverso';
+import { FundoVideoMistico } from './components/FundoVideoMistico';
 import { MarcaSidusAstro } from './components/OverlaysSidus';
 import type { HoroscopoProps } from './types/horoscopo';
 
 export type { HoroscopoProps } from './types/horoscopo';
-
-function resolverSrcImagem(url: string): string {
-  if (url.startsWith('http://') || url.startsWith('https://')) {
-    return url;
-  }
-  return staticFile(url);
-}
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- asset estático em public/
 const logoSidus = require('../public/logo-sidus.png') as string;
@@ -28,7 +22,8 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   previsao,
   hookTexto,
   fechoTexto,
-  imagemFundoUrl,
+  fundoVideoTema,
+  fundoVideoSeed,
   musicaFundoArquivo,
   segmentosEcra,
   siteMarca,
@@ -36,7 +31,6 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
 }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
-  const scale = 1 + (frame / fps) * 0.015;
   const inicioFecho = fechoTexto
     ? durationInFrames - Math.round(fps * 4.8)
     : durationInFrames + 1;
@@ -68,12 +62,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
 
   return (
     <AbsoluteFill style={{ backgroundColor: '#09070f', fontFamily: 'system-ui, sans-serif' }}>
-      <AbsoluteFill style={{ transform: `scale(${scale})`, opacity: 0.35 }}>
-        <Img
-          src={resolverSrcImagem(imagemFundoUrl)}
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-        />
-      </AbsoluteFill>
+      <FundoVideoMistico tema={fundoVideoTema} seed={fundoVideoSeed} />
 
       <EfeitosUniverso />
 
