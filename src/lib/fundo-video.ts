@@ -1,13 +1,20 @@
 import crypto from 'crypto';
 
-/** Temas de fundo animado — cada um com movimento próprio (nebulosa, zodíaco, aurora, etc.) */
+/**
+ * Temas de fundo animado — gótico, zen, místico, celta, astrologia, velas, tarot.
+ * Sem pessoas; paleta dark; movimento contínuo.
+ */
 export const TEMAS_FUNDO_MISTICO = [
+  'velas',
+  'mesa_tarot',
+  'mapa_astral',
+  'horoscopo',
+  'gotico',
+  'celta',
+  'zen_escuro',
+  'oraculo',
   'nebula',
-  'constelacoes',
-  'zodiaco',
-  'aurora',
   'lua',
-  'cosmos',
 ] as const;
 
 export type TemaFundoMistico = (typeof TEMAS_FUNDO_MISTICO)[number];
@@ -24,7 +31,7 @@ function hashChave(chave: string): number {
 
 /** Escolhe um tema animado único por signo + data — vídeo diferente a cada publicação */
 export function escolherFundoVideo(signo: string, data: string): ConfigFundoVideo {
-  const hash = hashChave(`${data}|${signo}|fundo-video`);
+  const hash = hashChave(`${data}|${signo}|fundo-video-v2`);
   const tema = TEMAS_FUNDO_MISTICO[hash % TEMAS_FUNDO_MISTICO.length];
   const seed = hash % 9_999_999;
   return { tema, seed };

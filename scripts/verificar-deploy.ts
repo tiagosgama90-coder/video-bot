@@ -72,8 +72,8 @@ exigirTexto('./gerar-video-quinta.ts', 'SLOT_MUSICA.MOTIVACIONAL_QUINTA', 'Quint
 exigirTexto('./gerar-video-quinta.ts', "escolherFraseMotivacional(data, 'quinta')", 'Quinta: variante frase');
 
 exigirFicheiro('./src/lib/fundo-video.ts');
-exigirTexto('./src/lib/fundo-video.ts', 'escolherFundoVideo', 'Vídeo: fundo animado místico');
-exigirTexto('./src/components/FundoVideoMistico.tsx', 'FundoVideoMistico', 'Vídeo: componente fundo em movimento');
+exigirTexto('./src/lib/fundo-video.ts', 'mesa_tarot', 'Vídeo: tema mesa tarot');
+exigirTexto('./src/components/FundoVideoMistico.tsx', 'TemaVelas', 'Vídeo: velas animadas');
 exigirTexto('./gerar-e-publicar.ts', 'escolherFundoVideo', 'Diário: fundo vídeo animado');
 
 exigirFicheiro('./.github/workflows/diario.yml');

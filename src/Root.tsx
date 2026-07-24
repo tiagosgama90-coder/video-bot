@@ -5,7 +5,7 @@ const defaultProps: HoroscopoProps = {
   signo: 'Escorpiao',
   previsao: 'Os astros estão a alinhar-se a seu favor hoje no SidusAstro.',
   fechoTexto: 'Vê o teu mapa completo em sidusastro.com.',
-  fundoVideoTema: 'nebula',
+  fundoVideoTema: 'mesa_tarot',
   fundoVideoSeed: 42,
   musicaFundoArquivo: 'musica-peixes.mp3',
   duracaoFrames: 600,
