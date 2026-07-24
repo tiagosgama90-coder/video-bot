@@ -1,6 +1,6 @@
 /**
  * Texto visto pelo público (legendas Buffer + overlay no vídeo).
- * Proibido traço tipográfico "—" — parece IA. Usar sempre hífen simples "-".
+ * Proibido traço tipográfico longo (em dash). Usar sempre hífen simples "-".
  */
 export function sanitizarTextoPublico(texto: string): string {
   return String(texto || '')

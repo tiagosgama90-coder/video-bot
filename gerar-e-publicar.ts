@@ -110,7 +110,7 @@ async function processarSigno(
 
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3');
 
-  const legendas = gerarLegendas(signo, previsaoVideo);
+  const legendas = gerarLegendas(signo, previsaoVideo, data);
   console.log('📋 Legenda TikTok:\n' + legendas.tiktok);
   console.log('📋 Legenda Instagram:\n' + legendas.instagram);
 
