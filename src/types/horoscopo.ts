@@ -1,7 +1,9 @@
+import type { TemaFundoMistico } from '../lib/fundo-video';
+
 export interface HoroscopoProps {
   signo: string;
   previsao: string;
-  /** Gancho nos primeiros 3s do vídeo — alinhado com a legenda */
+  /** Gancho narrado + overlay — alinhado com a legenda */
   hookTexto?: string;
   /** Frase final (texto) — aparece no fim no lugar da previsão */
   fechoTexto: string;
@@ -9,7 +11,10 @@ export interface HoroscopoProps {
   frameInicioPrevisao?: number;
   /** Frame em que o fecho aparece (sincronizado com a narração) */
   frameInicioFecho?: number;
-  imagemFundoUrl: string;
+  /** Tema do fundo animado (velas, tarot, zodíaco, etc.) */
+  fundoVideoTema: TemaFundoMistico;
+  /** Seed determinístico — varia partículas e cores dentro do tema */
+  fundoVideoSeed: number;
   /** Nome do ficheiro em public/ — ex.: musica-peixes.mp3 */
   musicaFundoArquivo: string;
   /** Duração calculada a partir do áudio — evita cortar a narração */

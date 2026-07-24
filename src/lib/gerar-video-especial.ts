@@ -4,7 +4,7 @@ import { execSync } from 'child_process';
 import { publicarEmTodosOsCanais } from './buffer';
 import { horaFusoParaISO, resolverDueAtFuturo } from './buffer-agenda';
 import { calcularDuracaoFrames } from './duracao-video';
-import { obterImagemFundo, obterImagemFundoZenAstrologia } from './imagem-fundo';
+import { escolherFundoVideo, type TemaFundoMistico } from './fundo-video';
 import {
   isLocaleUS,
   obterFusoPublicacao,
@@ -23,7 +23,8 @@ interface PropsVideoEspecial {
   signo: string;
   previsao: string;
   fechoTexto: string;
-  imagemFundoUrl: string;
+  fundoVideoTema: TemaFundoMistico;
+  fundoVideoSeed: number;
   musicaFundoArquivo: string;
   duracaoFrames: number;
   siteMarca?: string;
@@ -71,9 +72,9 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
   const idPublicacao = sufixoIdVideoEspecial(opcoes.id);
   const signoChave = 'caranguejo' as SignoZodiaco;
 
-  const imagemFundoUrl = opcoes.fundoZenAstrologia
-    ? await obterImagemFundoZenAstrologia(idPublicacao, opcoes.data)
-    : await obterImagemFundo(signoChave, opcoes.data);
+  const chaveFundo = opcoes.fundoZenAstrologia ? idPublicacao : signoChave;
+  const { tema: fundoVideoTema, seed: fundoVideoSeed } = escolherFundoVideo(chaveFundo, opcoes.data);
+  console.log('🎬 Fundo animado especial: ' + fundoVideoTema + ' (seed ' + fundoVideoSeed + ')');
   const musicaFundoArquivo = await prepararMusicaEspecial(
     idPublicacao,
     opcoes.data,
@@ -111,7 +112,8 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
     signo: sanitizarTextoPublico(opcoes.titulo),
     previsao: segmentosProgressivos ? '' : textoEcra,
     fechoTexto: '',
-    imagemFundoUrl,
+    fundoVideoTema,
+    fundoVideoSeed,
     musicaFundoArquivo,
     duracaoFrames,
     siteMarca: urlSiteMarca(),

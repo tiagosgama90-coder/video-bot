@@ -79,6 +79,10 @@ exigirTexto('./gerar-video-quinta.ts', "escolherFraseMotivacional(data, 'quinta'
 
 exigirTexto('./config/sidusastro.json', '"femininaRate": "+4%"', 'Voz: prosódia feminina zen');
 exigirTexto('./src/lib/voz.ts', 'mstts:express-as', 'Voz: estilo Azure expressivo');
+exigirFicheiro('./src/lib/fundo-video.ts');
+exigirTexto('./src/lib/fundo-video.ts', 'mesa_tarot', 'Vídeo: tema mesa tarot');
+exigirTexto('./src/components/FundoVideoMistico.tsx', 'TemaVelas', 'Vídeo: velas animadas');
+exigirTexto('./gerar-e-publicar.ts', 'escolherFundoVideo', 'Diário: fundo vídeo animado');
 
 exigirFicheiro('./.github/workflows/diario.yml');
 exigirTexto('./.github/workflows/diario.yml', 'workflow_dispatch', 'Diário: disparo externo');
