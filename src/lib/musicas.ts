@@ -8,6 +8,8 @@ import {
   obterFontesMusica,
   resolverFonteMusica,
 } from './project-config';
+import { indicesPorEstilo, type EstiloMusicaZen } from './pool-musicas-zen';
+import { obterDiaSemanaPublicacao } from './dia-semana';
 
 const ESTADO_ROTACAO = path.resolve('./config/musica-rotacao.json');
 
@@ -21,7 +23,7 @@ export const SLOT_MUSICA = {
   HOROSCOPO_4: 7,
   /** Segunda-feira motivacional */
   MOTIVACIONAL_SEGUNDA: 3,
-  /** Quarta-feira VIP por divulgação */
+  /** Quarta-feira VIP por divulgação — legado, usar AFILIADOS_QUARTA */
   VIP_DIVULGACAO_QUARTA: 4,
   /** Sexta-feira VIP por divulgação */
   VIP_DIVULGACAO_SEXTA: 8,
@@ -31,6 +33,8 @@ export const SLOT_MUSICA = {
   MOTIVACIONAL_QUINTA: 5,
   /** Terça e sábado — afiliados (hora livre na fila Buffer) */
   AFILIADOS_DIA: 10,
+  /** Quarta-feira — afiliados às 14:00 */
+  AFILIADOS_QUARTA: 11,
 } as const;
 
 /** Pool único: horóscopo diário, motivacional, VIP — PT-PT e en-US */
@@ -107,18 +111,48 @@ function reservarSlotDoDia(data: string): number {
   return atual;
 }
 
+/** Estilo principal do dia — rota zen / worldbeat / enigma (todos os vídeos) */
+const ESTILO_POR_DIA_SEMANA: EstiloMusicaZen[] = [
+  'zen', // domingo
+  'worldbeat', // segunda
+  'enigma', // terça
+  'zen', // quarta
+  'worldbeat', // quinta
+  'enigma', // sexta
+  'zen', // sábado
+];
+
+function estiloMusicaDoDia(data: string): EstiloMusicaZen {
+  const dia = obterDiaSemanaPublicacao(new Date(data + 'T12:00:00'));
+  return ESTILO_POR_DIA_SEMANA[dia] ?? 'zen';
+}
+
 /**
- * Escolhe índice no pool: rotação diária + slot único por vídeo.
- * Com ~38 faixas e 3 vídeos/dia, os 3 slots usam sempre músicas diferentes.
+ * Escolhe índice no pool: estilo do dia (zen/worldbeat/enigma) + slot único por vídeo.
  */
 export function escolherIndiceMusica(
   poolSize: number,
   data: string,
   slotNoDia?: number,
+  entradasNomes?: string[],
 ): number {
   if (poolSize <= 0) {
     return 0;
   }
+
+  const estilo = estiloMusicaDoDia(data);
+  if (entradasNomes && entradasNomes.length === poolSize) {
+    const entradas = entradasNomes.map((nome) => ({ nome, fonte: '' }));
+    const porEstilo = indicesPorEstilo(entradas);
+    const indicesEstilo = porEstilo[estilo];
+    const slot =
+      slotNoDia !== undefined
+        ? slotNoDia
+        : hashString(`sidusastro-slot-${data}-${process.env.LOCALE ?? 'pt'}`) % 10_000;
+    const ordem = ordemMusicasDoDia(data, indicesEstilo.length);
+    return indicesEstilo[ordem[slot % indicesEstilo.length] ?? 0];
+  }
+
   const ordem = ordemMusicasDoDia(data, poolSize);
   const slot =
     slotNoDia !== undefined ? slotNoDia : reservarSlotDoDia(data);
@@ -235,6 +269,11 @@ export async function prepararMusicaEspecial(
   }
 
   const pool = obterPoolMusica();
+  const config = carregarConfigProjeto();
+  const nomes = config.musica.entradas
+    .filter((e) => pool.includes(e.fonte))
+    .map((e) => e.nome);
+  const estilo = estiloMusicaDoDia(data);
   const etiqueta =
     tipo === 'viral'
       ? 'zen-viral'
@@ -253,7 +292,7 @@ export async function prepararMusicaEspecial(
     hashString(`sidusastro-slot-${data}-${id}-${process.env.LOCALE ?? 'pt'}`) %
       10_000;
 
-  const indice = escolherIndiceMusica(pool.length, data, slot);
+  const indice = escolherIndiceMusica(pool.length, data, slot, nomes);
   const nomeFicheiro = 'musica-' + id + '.mp3';
   const destino = caminhoPublico(nomeFicheiro);
   const fontes = [
@@ -273,7 +312,14 @@ export async function prepararMusicaEspecial(
     ', ' +
     data +
     ']';
-  console.log('🎵 Música ' + etiquetaFinal + ' para ' + id);
+  console.log(
+    '🎵 Música ' +
+      etiquetaFinal +
+      ' [' +
+      estilo +
+      '] para ' +
+      id,
+  );
 
   for (const fonte of fontes) {
     try {

@@ -50,7 +50,7 @@ exigirTexto('./src/lib/horoscopoSite.ts', 'apiTextoValidoParaHoroscopo', 'Pack I
 exigirTexto('./src/lib/horoscopoSite.ts', 'pequenos passos', 'Filtro texto placeholder IA');
 
 exigirFicheiro('./gerar-video-vip-divulgacao.ts');
-exigirTexto('./gerar-video-vip-divulgacao.ts', 'exigirDiasVipDivulgacao', 'VIP: dias seg/qua/sex/dom');
+exigirTexto('./gerar-video-vip-divulgacao.ts', 'executarAfiliadosQuarta', 'VIP: quartas redireccionam para afiliados');
 exigirTexto('./gerar-video-vip-divulgacao.ts', 'obterConteudoVipDivulgacao', 'VIP: conteúdo divulgação');
 
 exigirFicheiro('./.github/workflows/vip-divulgacao.yml');
@@ -63,14 +63,20 @@ exigirTexto('./gerar-video-segunda.ts', 'escolherFraseMotivacional', 'Segunda: f
 exigirTexto('./gerar-video-segunda.ts', 'SLOT_MUSICA.MOTIVACIONAL_SEGUNDA', 'Segunda: slot música');
 exigirTexto('./src/lib/conteudo-especial.ts', 'SLOT_ESPECIAL_LISBOA', 'Slot especial Lisboa');
 
+exigirFicheiro('./src/lib/ganchos-afiliados.ts');
+exigirTexto('./src/lib/ganchos-afiliados.ts', 'escolherGanchoAfiliados', 'Afiliados: ganchos psicológicos');
+exigirTexto('./src/lib/afiliados-dia.ts', 'hookTexto', 'Afiliados ter/sáb: gancho inteligente');
+
 exigirFicheiro('./gerar-video-quarta.ts');
-exigirTexto('./gerar-video-quarta.ts', 'obterConteudoQuarta', 'Quarta: alternância afiliados/VIP');
-exigirTexto('./gerar-video-quarta.ts', 'obterVarianteQuarta', 'Quarta: variante por semana');
-exigirTexto('./gerar-video-quarta.ts', 'fundoZenAstrologia: true', 'Quarta: fundo zen');
-exigirTexto('./gerar-video-quarta.ts', 'SLOT_MUSICA.VIP_DIVULGACAO_QUARTA', 'Quarta: slot música');
+exigirTexto('./gerar-video-quarta.ts', 'executarAfiliadosQuarta', 'Quarta: afiliados');
+exigirFicheiro('./src/lib/executar-afiliados-quarta.ts');
+exigirTexto('./src/lib/executar-afiliados-quarta.ts', 'hookTexto', 'Quarta: gancho inteligente');
+exigirTexto('./src/lib/executar-afiliados-quarta.ts', 'afiliados-quarta', 'Quarta: id afiliados');
+exigirTexto('./gerar-video-quarta.ts', 'executarAfiliadosQuarta', 'Quarta: entrypoint');
+exigirTexto('./src/lib/dia-semana.ts', 'DIA_AFILIADOS_QUARTA', 'Quarta: dia afiliados');
+exigirTexto('./src/lib/dia-semana.ts', 'domingos, segundas e sextas', 'VIP: sem quartas');
 exigirTexto('./src/lib/conteudo-especial.ts', "export const TITULO_VIP_DIVULGACAO = 'O TEU VIP VITALÍCIO'", 'VIP: título marketing');
-exigirTexto('./src/lib/conteudo-especial.ts', 'obterConteudoAfiliados', 'Quarta: conteúdo afiliados');
-exigirFicheiro('./src/lib/legendas-marketing.ts');
+exigirTexto('./src/lib/conteudo-especial.ts', 'obterConteudoAfiliados', 'Afiliados: conteúdo com gancho');
 exigirTexto('./src/lib/legenda.ts', 'legendas-marketing', 'Diário: hashtags marketing');
 exigirTexto('./src/lib/conteudo-especial.ts', 'HASHTAGS_VIP_PT_TIKTOK', 'VIP: hashtags PT');
 
@@ -103,7 +109,9 @@ exigirTexto('./.github/workflows/monitor-crons.yml', 'verificar-us', 'Monitor: r
 
 exigirFicheiro('./src/lib/pool-musicas-zen.ts');
 exigirTexto('./src/lib/pool-musicas-zen.ts', 'filtrarEntradasZen', 'Música: filtro anti-gregoriano');
-exigirTexto('./src/lib/pool-musicas-zen.ts', 'POOL_MUSICAS_ZEN_ASTRO', 'Música: pool zen/Enigma curado');
+exigirTexto('./src/lib/pool-musicas-zen.ts', 'classificarEstiloMusica', 'Música: estilos zen/worldbeat/enigma');
+exigirTexto('./src/lib/musicas.ts', 'estiloMusicaDoDia', 'Música: rotação por dia da semana');
+exigirTexto('./src/lib/pool-musicas-zen.ts', 'Deep Reiki Energy', 'Música: faixas reiki profundas');
 exigirFicheiro('./.github/workflows/segunda.yml');
 exigirTexto('./.github/workflows/segunda.yml', 'workflow_dispatch', 'Segunda: disparo externo');
 const segundaWorkflow = fs.readFileSync('./.github/workflows/segunda.yml', 'utf8');

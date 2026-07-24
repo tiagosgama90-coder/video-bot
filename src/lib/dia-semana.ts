@@ -44,12 +44,15 @@ export function exigirDiaSemana(diaEsperado: number, nomeDia: string): void {
   }
 }
 
-/** 0=dom, 1=seg, 3=qua, 5=sex — VIP divulgação */
-export const DIAS_VIP_DIVULGACAO = [0, 1, 3, 5] as const;
+/** 0=dom, 1=seg, 5=sex — VIP divulgação (quartas = afiliados) */
+export const DIAS_VIP_DIVULGACAO = [0, 1, 5] as const;
 
 export function nomeDiasVipDivulgacao(): string {
-  return 'domingos, segundas, quartas e sextas';
+  return 'domingos, segundas e sextas';
 }
+
+/** 3=qua — afiliados às 14:00 (slot especial) */
+export const DIA_AFILIADOS_QUARTA = 3 as const;
 
 /** 2=ter, 6=sáb — afiliados substituem o 1.º horóscopo (09:00) */
 export const DIAS_AFILIADOS = [2, 6] as const;
