@@ -28,6 +28,8 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   previsao,
   hookTexto,
   fechoTexto,
+  frameInicioPrevisao,
+  frameInicioFecho,
   imagemFundoUrl,
   musicaFundoArquivo,
   segmentosEcra,
@@ -37,9 +39,10 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
   const scale = 1 + (frame / fps) * 0.015;
-  const inicioFecho = fechoTexto
-    ? durationInFrames - Math.round(fps * 4.8)
-    : durationInFrames + 1;
+
+  const inicioPrevisao = frameInicioPrevisao ?? Math.round(fps * 3);
+  const inicioFecho = frameInicioFecho
+    ?? (fechoTexto ? durationInFrames - Math.round(fps * 4.8) : durationInFrames + 1);
 
   const modoProgressivo = segmentosEcra && segmentosEcra.length > 0;
   const segmentosVisiveis = modoProgressivo
@@ -49,18 +52,22 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   const ecraLink =
     !modoProgressivo && /^[a-z0-9][-a-z0-9.]*\.[a-z]{2,}$/i.test(previsao.trim());
 
-  const opacidadePrevisao = interpolate(frame, [inicioFecho - 10, inicioFecho + 10], [1, 0], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  });
+  const opacidadePrevisao = interpolate(
+    frame,
+    [inicioPrevisao - 8, inicioPrevisao + 14, inicioFecho - 14, inicioFecho + 6],
+    [0, 1, 1, 0],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    },
+  );
   const opacidadeFecho = interpolate(frame, [inicioFecho - 6, inicioFecho + 18], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
 
-  const duracaoHookFrames = Math.round(fps * 3);
   const opacidadeHook = hookTexto
-    ? interpolate(frame, [0, 8, duracaoHookFrames - 10, duracaoHookFrames], [0, 1, 1, 0], {
+    ? interpolate(frame, [0, 8, inicioPrevisao - 16, inicioPrevisao - 4], [0, 1, 1, 0], {
         extrapolateLeft: 'clamp',
         extrapolateRight: 'clamp',
       })

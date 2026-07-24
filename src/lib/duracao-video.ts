@@ -4,6 +4,8 @@ import path from 'path';
 export const FPS_VIDEO = 30;
 export const DURACAO_MINIMA_SEG = 15;
 export const DURACAO_MAXIMA_SEG = 25;
+/** Máximo do vídeo diário com gancho + previsão + fecho narrados */
+export const DURACAO_MAXIMA_DIARIO_SEG = 38;
 /** Margem após a narração terminar — garante que a frase final não é cortada */
 export const MARGEM_FINAL_SEG = 2;
 

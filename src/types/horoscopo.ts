@@ -5,6 +5,10 @@ export interface HoroscopoProps {
   hookTexto?: string;
   /** Frase final (texto) — aparece no fim no lugar da previsão */
   fechoTexto: string;
+  /** Frame em que a previsão aparece (sincronizado com a narração) */
+  frameInicioPrevisao?: number;
+  /** Frame em que o fecho aparece (sincronizado com a narração) */
+  frameInicioFecho?: number;
   imagemFundoUrl: string;
   /** Nome do ficheiro em public/ — ex.: musica-peixes.mp3 */
   musicaFundoArquivo: string;

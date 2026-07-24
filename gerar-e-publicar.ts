@@ -6,7 +6,11 @@ import { publicarEmTodosOsCanais } from './src/lib/buffer';
 import { obterTextoHoroscopo, extrairAteSegundoPontoFinal } from './src/lib/horoscopo';
 import { escolherFechoNarracao, gerarLegendas } from './src/lib/legenda';
 import { obterImagemFundo } from './src/lib/imagem-fundo';
-import { calcularDuracaoFrames } from './src/lib/duracao-video';
+import { calcularDuracaoFrames, DURACAO_MAXIMA_DIARIO_SEG } from './src/lib/duracao-video';
+import {
+  calcularQuadrosNarracaoDiaria,
+  montarTextoNarracaoDiaria,
+} from './src/lib/narracao-diario';
 import { prepararMusicaParaVideo, SLOT_MUSICA } from './src/lib/musicas';
 import {
   escolherSignosParaExecucao,
@@ -41,6 +45,8 @@ interface PropsVideo {
   imagemFundoUrl: string;
   musicaFundoArquivo: string;
   duracaoFrames: number;
+  frameInicioPrevisao: number;
+  frameInicioFecho: number;
   siteMarca: string;
   volumeMusica: number;
 }
@@ -104,24 +110,48 @@ async function processarSigno(
 
   const fechoNarracao = escolherFechoNarracao();
   const fechoEcra = sanitizarTextoPublico(fechoNarracao.replace(/^\.\s+/, ''));
-  // Narração só com a previsão - fecho aparece no ecrã (retenção + vídeo mais curto)
-  console.log('🎙️ Narração: "' + previsaoVideo + '"');
-  await gerarNarracao(previsaoVideo, './public/narracao.mp3', obterPreferenciaVozConfig());
-
-  const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3');
 
   const legendas = gerarLegendas(signo, previsaoVideo, data);
+  const hookTexto = sanitizarTextoPublico(legendas.hook);
+
+  const partesNarracao = {
+    hook: hookTexto,
+    previsao: previsaoVideo,
+    fecho: fechoEcra,
+  };
+  const textoNarracao = montarTextoNarracaoDiaria(partesNarracao);
+  console.log('🎙️ Narração completa: gancho → previsão → fecho');
+  console.log('   "' + textoNarracao.slice(0, 120) + '..."');
+  await gerarNarracao(textoNarracao, './public/narracao.mp3', obterPreferenciaVozConfig());
+
+  const duracaoFrames = calcularDuracaoFrames(
+    './public/narracao.mp3',
+    DURACAO_MAXIMA_DIARIO_SEG,
+  );
+  const { frameInicioPrevisao, frameInicioFecho } = calcularQuadrosNarracaoDiaria(
+    partesNarracao,
+    duracaoFrames,
+  );
+  console.log(
+    '📺 Sincronização ecrã: previsão @ frame ' +
+      frameInicioPrevisao +
+      ', fecho @ frame ' +
+      frameInicioFecho,
+  );
+
   console.log('📋 Legenda TikTok:\n' + legendas.tiktok);
   console.log('📋 Legenda Instagram:\n' + legendas.instagram);
 
   const props: PropsVideo = {
     signo: obterNomeSigno(signo),
     previsao: previsaoVideo,
-    hookTexto: sanitizarTextoPublico(legendas.hook),
+    hookTexto,
     fechoTexto: fechoEcra,
     imagemFundoUrl,
     musicaFundoArquivo,
     duracaoFrames,
+    frameInicioPrevisao,
+    frameInicioFecho,
     siteMarca: urlSiteMarca(),
     volumeMusica: obterVolumeMusica(),
   };
