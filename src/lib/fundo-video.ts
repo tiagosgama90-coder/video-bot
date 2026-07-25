@@ -60,11 +60,7 @@ export function escolherFundoVideoZen(id: string, data: string): ConfigFundoVide
   return { tema, seed };
 }
 
-/** Motivacional: sempre imagem IA Pinterest. VIP/afiliados: ~1 em 2 animado. */
-export function deveUsarFundoAnimadoZen(id: string, data: string): boolean {
-  if (id.toLowerCase().includes('motivacao')) {
-    return false;
-  }
-  const hash = hashChave(`${data}|${id}|modo-fundo-zen-v2`);
-  return hash % 2 === 0;
+/** Todos os vídeos com fundo zen usam imagem IA Pinterest + overlay animado */
+export function deveUsarFundoAnimadoZen(_id: string, _data: string): boolean {
+  return false;
 }

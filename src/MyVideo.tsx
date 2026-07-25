@@ -11,6 +11,7 @@ import { EfeitosUniverso } from './components/EfeitosUniverso';
 import { FundoImagemZen } from './components/FundoImagemZen';
 import { FundoVideoMistico } from './components/FundoVideoMistico';
 import { OverlayLegibilidadeTexto } from './components/OverlayLegibilidadeTexto';
+import { ZenOverlayAnimado } from './components/ZenOverlayAnimado';
 import { MarcaSidusAstro } from './components/OverlaysSidus';
 import { PALETA_SIDUS } from './lib/paleta-visual';
 import type { HoroscopoProps } from './types/horoscopo';
@@ -182,9 +183,13 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
         <FundoVideoMistico tema={fundoVideoTema ?? 'zen_escuro'} seed={fundoVideoSeed ?? 0} />
       )}
 
-      <OverlayLegibilidadeTexto modoImagemZen={usaImagemZen} />
+      {usaImagemZen ? (
+        <ZenOverlayAnimado seed={fundoVideoSeed ?? 0} />
+      ) : (
+        <EfeitosUniverso />
+      )}
 
-      <EfeitosUniverso />
+      <OverlayLegibilidadeTexto modoImagemZen={usaImagemZen} />
 
       <AbsoluteFill
         style={{

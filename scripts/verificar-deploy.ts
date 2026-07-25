@@ -33,7 +33,7 @@ exigirTexto('./src/lib/ganchos-virais.ts', 'Casa tens a tua Vénus', 'Viral: gan
 exigirTexto('./src/lib/ganchos-virais.ts', 'verdadeira missão de vida', 'Viral: gancho ego');
 exigirTexto('./src/lib/ganchos-diario.ts', 'escolherGanchoViral', 'Diário: rotação ganchos virais');
 exigirTexto('./src/components/OverlayLegibilidadeTexto.tsx', 'OverlayLegibilidadeTexto', 'Vídeo: overlay legibilidade');
-exigirTexto('./src/components/FundoImagemZen.tsx', 'brightness(0.92)', 'Vídeo: imagem Pinterest visível');
+exigirTexto('./src/components/FundoImagemZen.tsx', 'interpolate(frame', 'Vídeo: Ken Burns na imagem Pinterest');
 exigirTexto('./src/components/OverlayLegibilidadeTexto.tsx', 'modoImagemZen', 'Vídeo: overlay leve com imagem zen');
 exigirTexto('./src/lib/legenda.ts', 'URGENTE - lê a legenda completa', 'Instagram: urgência gancho viral');
 exigirTexto('./src/lib/ganchos-diario.ts', 'escolherGanchoDiario', 'Diário: ganchos emocionais');
@@ -110,14 +110,15 @@ exigirTexto('./gerar-video-quinta.ts', 'SLOT_MUSICA.MOTIVACIONAL_QUINTA', 'Quint
 exigirTexto('./gerar-video-quinta.ts', 'obterEtiquetaGanchoMotivacional', 'Quinta: etiqueta gancho ecrã');
 exigirTexto('./gerar-video-quinta.ts', 'obterLegendasMotivacional(gancho', 'Quinta: legenda com gancho');
 exigirTexto('./gerar-video-segunda.ts', 'obterEtiquetaGanchoMotivacional', 'Segunda: etiqueta gancho ecrã');
-exigirTexto('./src/lib/fundo-video.ts', "includes('motivacao')", 'Motivacional: sempre imagem IA');
+exigirTexto('./src/lib/fundo-video.ts', 'return false', 'Zen: sempre imagem IA Pinterest');
 
 exigirTexto('./config/sidusastro.json', '"femininaRate": "+4%"', 'Voz: prosódia feminina zen');
 exigirTexto('./src/lib/voz.ts', 'mstts:express-as', 'Voz: estilo Azure expressivo');
 exigirFicheiro('./src/lib/fundo-video.ts');
 exigirTexto('./src/lib/fundo-video.ts', 'mesa_tarot', 'Vídeo: tema mesa tarot');
 exigirTexto('./src/components/FundoVideoMistico.tsx', 'TemaVelas', 'Vídeo: velas animadas');
-exigirTexto('./gerar-e-publicar.ts', 'escolherFundoVideo', 'Diário: fundo vídeo animado');
+exigirTexto('./gerar-e-publicar.ts', 'obterImagemFundo', 'Diário: fundo Pinterest IA por signo');
+exigirTexto('./src/MyVideo.tsx', 'ZenOverlayAnimado', 'Vídeo: movimento sobre imagem Pinterest');
 
 exigirFicheiro('./.github/workflows/diario.yml');
 exigirTexto('./.github/workflows/diario.yml', 'workflow_dispatch', 'Diário: disparo externo');
