@@ -1,7 +1,5 @@
 import React from 'react';
-import { AbsoluteFill, Img, staticFile } from 'remotion';
-import { PALETA_SIDUS } from '../lib/paleta-visual';
-import { ZenOverlayAnimado } from './ZenOverlayAnimado';
+import { AbsoluteFill, Img, staticFile, useVideoConfig } from 'remotion';
 
 function resolverSrcImagem(url: string): string {
   if (url.startsWith('http://') || url.startsWith('https://')) {
@@ -12,74 +10,28 @@ function resolverSrcImagem(url: string): string {
 
 export interface FundoImagemZenProps {
   imagemFundoUrl: string;
-  seed?: number;
-  /** Zoom suave Ken Burns — só na imagem principal, sem esticar */
-  kenBurns?: number;
 }
 
 /**
- * Imagem zen Pinterest — proporção original (contain), sem esticar.
- * Fundo desfocado preenche as barras laterais/superior como stories profissionais.
+ * Imagem a preencher o reel 1080×1920 — ecrã inteiro, proporção 9:16, sem esticar,
+ * sem cortar ao centro, sem barras nem blur por cima (como pins verticais do Pinterest).
  */
-export function FundoImagemZen({
-  imagemFundoUrl,
-  seed = 0,
-  kenBurns = 1,
-}: FundoImagemZenProps): React.ReactElement {
+export function FundoImagemZen({ imagemFundoUrl }: FundoImagemZenProps): React.ReactElement {
+  const { width, height } = useVideoConfig();
   const src = resolverSrcImagem(imagemFundoUrl);
 
   return (
-    <>
-      {/* Preenchimento ambiente — blur, não é a imagem principal */}
-      <AbsoluteFill style={{ overflow: 'hidden', backgroundColor: PALETA_SIDUS.fundo }}>
-        <Img
-          src={src}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: 'center center',
-            filter: 'blur(32px) brightness(0.38) saturate(1.15)',
-            transform: 'scale(1.2)',
-          }}
-        />
-      </AbsoluteFill>
-
-      {/* Imagem principal — tamanho original, centrada, SEM esticar */}
-      <AbsoluteFill
+    <AbsoluteFill style={{ overflow: 'hidden' }}>
+      <Img
+        src={src}
+        width={width}
+        height={height}
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'hidden',
-        }}
-      >
-        <Img
-          src={src}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain',
-            objectPosition: 'center center',
-            transform: `scale(${kenBurns})`,
-            transformOrigin: 'center center',
-          }}
-        />
-      </AbsoluteFill>
-
-      <AbsoluteFill
-        style={{
-          background: `linear-gradient(180deg, ${PALETA_SIDUS.fundo}cc 0%, transparent 18%, transparent 72%, ${PALETA_SIDUS.fundo}dd 100%)`,
-          pointerEvents: 'none',
+          width,
+          height,
+          display: 'block',
         }}
       />
-      <AbsoluteFill
-        style={{
-          boxShadow: `inset 0 0 80px 32px ${PALETA_SIDUS.fundo}88`,
-          pointerEvents: 'none',
-        }}
-      />
-      <ZenOverlayAnimado seed={seed} />
-    </>
+    </AbsoluteFill>
   );
 }

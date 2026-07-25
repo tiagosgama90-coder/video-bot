@@ -13,15 +13,61 @@ import {
 import type { SignoZodiaco } from './signos';
 import { NOMES_SIGNOS } from './signos';
 
+/** Dimensões nativas do reel Instagram/TikTok (9:16) */
+export const REEL_LARGURA = 1080;
+export const REEL_ALTURA = 1920;
+const RATIO_REEL = REEL_LARGURA / REEL_ALTURA;
+
 /** JPEG mínimo 1x1 (roxo escuro #08060e) — fallback local */
 const JPEG_MINIMO_BASE64 =
   '/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wAALCAABAAEBAREA/8QAJgABAAAAAAAAAAAAAAAAAAAAAxABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQAAPwCf/9k=';
+
+function lerDimensoesJpeg(dados: Buffer): { width: number; height: number } | null {
+  if (dados.length < 4 || dados[0] !== 0xff || dados[1] !== 0xd8) {
+    return null;
+  }
+
+  let i = 2;
+  while (i < dados.length - 9) {
+    if (dados[i] !== 0xff) {
+      i++;
+      continue;
+    }
+    const marcador = dados[i + 1];
+    if (marcador === 0xc0 || marcador === 0xc2 || marcador === 0xc1) {
+      const altura = dados.readUInt16BE(i + 5);
+      const largura = dados.readUInt16BE(i + 7);
+      if (largura > 0 && altura > 0) {
+        return { width: largura, height: altura };
+      }
+      return null;
+    }
+    const segmento = dados.readUInt16BE(i + 2);
+    if (segmento < 2) {
+      return null;
+    }
+    i += 2 + segmento;
+  }
+  return null;
+}
+
+/** Aceita só imagens verticais 9:16 com resolução mínima de reel — evita esticar ou cortar */
+export function validarImagemReel(largura: number, altura: number): boolean {
+  const ratio = largura / altura;
+  const ratioOk = Math.abs(ratio - RATIO_REEL) < 0.012;
+  const tamanhoOk = largura >= REEL_LARGURA && altura >= REEL_ALTURA;
+  return ratioOk && tamanhoOk;
+}
 
 function montarUrlPollinations(prompt: string, seed: number): string {
   return (
     'https://image.pollinations.ai/prompt/' +
     encodeURIComponent(prompt) +
-    '?width=1080&height=1920&nologo=true&seed=' +
+    '?width=' +
+    REEL_LARGURA +
+    '&height=' +
+    REEL_ALTURA +
+    '&nologo=true&seed=' +
     seed +
     '&model=flux'
   );
@@ -95,7 +141,27 @@ async function descarregarFicheiro(url: string, destino: string): Promise<void> 
   if (dados.length < 1000) {
     throw new Error('Resposta demasiado pequena (' + dados.length + ' bytes)');
   }
+
+  const dimensoes = lerDimensoesJpeg(dados);
+  if (!dimensoes) {
+    throw new Error('Não foi possível ler dimensões JPEG');
+  }
+  if (!validarImagemReel(dimensoes.width, dimensoes.height)) {
+    throw new Error(
+      'Proporção inválida para reel: ' +
+        dimensoes.width +
+        '×' +
+        dimensoes.height +
+        ' (esperado 9:16, mín. ' +
+        REEL_LARGURA +
+        '×' +
+        REEL_ALTURA +
+        ')',
+    );
+  }
+
   fs.writeFileSync(destino, dados);
+  console.log('📐 Imagem reel validada: ' + dimensoes.width + '×' + dimensoes.height);
 }
 
 function escreverJpegMinimo(destino: string): void {

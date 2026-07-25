@@ -87,7 +87,6 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
     extrapolateRight: 'clamp',
   });
 
-  const kenBurns = 1 + (frame / fps) * 0.012;
   const usaImagemZen = Boolean(imagemFundoUrl);
 
   const estiloCaixaBase = {
@@ -108,11 +107,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   return (
     <AbsoluteFill style={{ backgroundColor: PALETA_SIDUS.fundo, fontFamily: 'system-ui, sans-serif' }}>
       {usaImagemZen ? (
-        <FundoImagemZen
-          imagemFundoUrl={imagemFundoUrl!}
-          seed={fundoVideoSeed ?? 0}
-          kenBurns={kenBurns}
-        />
+        <FundoImagemZen imagemFundoUrl={imagemFundoUrl!} />
       ) : (
         <FundoVideoMistico tema={fundoVideoTema ?? 'zen_escuro'} seed={fundoVideoSeed ?? 0} />
       )}
