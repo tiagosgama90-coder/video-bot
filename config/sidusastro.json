@@ -203,29 +203,33 @@
   },
   "imagem": {
     "temas": [
-      "peaceful zen meditation space zodiac wheel astrology chart soft golden candlelight",
-      "calm night sky zodiac constellations horoscope map stars serene atmosphere",
-      "minimalist astrology horoscope chart moon phases zen garden peaceful",
-      "soft purple cosmic nebula zodiac symbols meditation calm spiritual",
-      "zen japanese garden stone lantern zodiac wheel moon astrology tranquil",
-      "astrology birth chart celestial map soft glow peaceful zen aesthetic",
-      "horoscope wheel golden symbols starry sky calm meditation temple",
-      "gentle aurora borealis zodiac constellation peaceful night zen mood",
-      "crystal healing altar zodiac glyphs soft light astrology spiritual calm",
-      "mandala zodiac wheel soft bokeh stars meditation zen horoscope art"
+      "epic dark gothic cathedral nave with giant glowing zodiac wheel altar hundreds of candles golden smoke",
+      "mystical tarot table black velvet crystal ball zodiac cards scattered candle flames dramatic chiaroscuro",
+      "ancient celtic stone circle under aurora sky zodiac constellations carved in monoliths fog moonlight",
+      "dark zen temple interior incense smoke moonbeam golden astrology mandala on floor reiki energy",
+      "cosmic nebula portal vortex with floating golden zodiac symbols epic scale enigma atmosphere",
+      "obsidian ritual altar golden astrology glyphs burning candles purple smoke dark sanctuary",
+      "astronomy dome observatory star chart projection golden constellations brass instruments moody",
+      "mystical forest clearing moonlit pool reflecting zodiac wheel mist ancient trees silhouette",
+      "black marble hall floating golden horoscope wheel particles embers dark purple haze cinematic",
+      "candlelit astrology manuscript desk quill ink stars through gothic window tarot aesthetic",
+      "dark meditation chamber reiki energy golden light streams purple shadows zen astrology fusion",
+      "celtic druid altar moon phases wheel carved wood golden runes storm clouds dramatic sky",
+      "deep space zodiac belt nebula indigo void golden constellation lines enigma mood",
+      "zen rock garden at night stone lanterns zodiac wheel reflection water purple gold mist"
     ],
     "modificadores": [
-      "soft cinematic lighting peaceful composition",
-      "minimalist zen aesthetic clean calm golden hour",
-      "ethereal soft glow dreamy peaceful atmosphere",
-      "watercolor soft pastel calm spiritual mood"
+      "ultra detailed cinematic masterpiece dramatic lighting volumetric fog hyperrealistic rich textures",
+      "dark mystical epic composition chiaroscuro moody atmospheric depth not minimal not flat",
+      "enigma style mysterious ambient brutal beauty 8k film grain subtle gold rim light",
+      "moody reiki energy meditation deep purple indigo darkness golden energy streams worldbeat mystic"
     ],
     "paletas": [
-      "deep indigo and gold",
-      "lavender and rose gold",
-      "midnight blue and silver",
-      "soft purple and celestial white"
+      "60% near-black indigo #08060e dominant shadows, 30% deep purple #2a1848 midtones, 10% gold #f3cc63 accent highlights only",
+      "60% obsidian black #08060e base, 30% royal violet #2a1848 atmosphere, 10% warm gold #f3cc63 candlelight accents",
+      "60% midnight void #08060e, 30% mystical purple #2a1848 nebula smoke, 10% celestial gold #f3cc63 zodiac glyphs",
+      "60% dark indigo abyss #08060e, 30% amethyst shadow #2a1848, 10% amber gold #f3cc63 rim light on symbols"
     ],
-    "sufixoPrompt": ", astrology horoscope zodiac theme, vertical portrait 9:16, no text, no watermark, no cars, no vehicles, no people, no modern city, calm spiritual masterpiece"
+    "sufixoPrompt": ", epic dark zen astrology horoscope mystical theme, rich dramatic detail not simple not flat not minimalist not pastel, vertical portrait 9:16, strict color harmony 60-30-10 dark purple gold, no text, no watermark, no people, no faces, no cars, no vehicles, no modern city, masterpiece"
   }
 }

@@ -114,12 +114,27 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   return (
     <AbsoluteFill style={{ backgroundColor: PALETA_SIDUS.fundo, fontFamily: 'system-ui, sans-serif' }}>
       {usaImagemZen ? (
-        <AbsoluteFill style={{ transform: `scale(${kenBurns})`, opacity: 0.42 }}>
-          <Img
-            src={resolverSrcImagem(imagemFundoUrl!)}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        <>
+          <AbsoluteFill style={{ transform: `scale(${kenBurns})`, opacity: 0.62 }}>
+            <Img
+              src={resolverSrcImagem(imagemFundoUrl!)}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          </AbsoluteFill>
+          {/* Grade 60-30-10 sobre a imagem IA */}
+          <AbsoluteFill
+            style={{
+              background: `linear-gradient(180deg, ${PALETA_SIDUS.fundo} 0%, rgba(42, 24, 72, 0.38) 42%, ${PALETA_SIDUS.fundo} 100%)`,
+              opacity: 0.72,
+            }}
           />
-        </AbsoluteFill>
+          <AbsoluteFill
+            style={{
+              boxShadow: `inset 0 0 100px 48px ${PALETA_SIDUS.fundo}, inset 0 -120px 80px -40px rgba(243, 204, 99, 0.08)`,
+              pointerEvents: 'none',
+            }}
+          />
+        </>
       ) : (
         <FundoVideoMistico tema={fundoVideoTema ?? 'zen_escuro'} seed={fundoVideoSeed ?? 0} />
       )}
