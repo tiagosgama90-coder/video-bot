@@ -22,6 +22,19 @@ function resolverSrcImagem(url: string): string {
   return staticFile(url);
 }
 
+function tamanhoFonteCaixa(texto: string, base: number, ecraLink = false): number {
+  if (ecraLink) {
+    return 48;
+  }
+  if (texto.length > 130) {
+    return base - 6;
+  }
+  if (texto.length > 90) {
+    return base - 3;
+  }
+  return base;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- asset estático em public/
 const logoSidus = require('../public/logo-sidus.png') as string;
 
@@ -43,7 +56,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
 
-  const inicioPrevisao = frameInicioPrevisao ?? Math.round(fps * 3);
+  const inicioCorpo = frameInicioPrevisao ?? Math.round(fps * 3);
   const inicioFecho = frameInicioFecho
     ?? (fechoTexto ? durationInFrames - Math.round(fps * 4.8) : durationInFrames + 1);
 
@@ -51,13 +64,24 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   const segmentosVisiveis = modoProgressivo
     ? segmentosEcra.filter((s) => frame >= s.frameInicio)
     : [];
+  const segmentoActivo =
+    segmentosVisiveis.length > 0 ? segmentosVisiveis[segmentosVisiveis.length - 1] : null;
+
+  const emFaseHook = Boolean(hookTexto && frame < inicioCorpo);
 
   const ecraLink =
-    !modoProgressivo && /^[a-z0-9][-a-z0-9.]*\.[a-z]{2,}$/i.test(previsao.trim());
+    !modoProgressivo && !emFaseHook && /^[a-z0-9][-a-z0-9.]*\.[a-z]{2,}$/i.test(previsao.trim());
+
+  const opacidadeHookCaixa = hookTexto
+    ? interpolate(frame, [0, 8, inicioCorpo - 8, inicioCorpo], [0, 1, 1, 0], {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+      })
+    : 0;
 
   const opacidadePrevisao = interpolate(
     frame,
-    [inicioPrevisao - 8, inicioPrevisao + 14, inicioFecho - 14, inicioFecho + 6],
+    [inicioCorpo - 6, inicioCorpo + 12, inicioFecho - 14, inicioFecho + 6],
     [0, 1, 1, 0],
     {
       extrapolateLeft: 'clamp',
@@ -69,64 +93,53 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
     extrapolateRight: 'clamp',
   });
 
-  const opacidadeHook = hookTexto
-    ? interpolate(frame, [0, 8, inicioPrevisao - 16, inicioPrevisao - 4], [0, 1, 1, 0], {
-        extrapolateLeft: 'clamp',
-        extrapolateRight: 'clamp',
-      })
-    : 0;
-
   const kenBurns = 1 + (frame / fps) * 0.012;
   const usaImagemZen = Boolean(imagemFundoUrl);
+
+  const estiloCaixaBase = {
+    backgroundColor: PALETA_SIDUS.marca,
+    backdropFilter: 'blur(15px)',
+    borderRadius: 24,
+    padding: modoProgressivo ? '18px 22px' : '28px 26px',
+    border: `1px solid ${PALETA_SIDUS.marcaBorda}`,
+    boxShadow: '0 10px 30px rgba(0,0,0,0.35)',
+    width: '100%',
+  };
+
+  const textoHook = hookTexto ?? '';
+  const textoPrincipal = emFaseHook ? textoHook : previsao;
+  const opacidadeCaixaPrincipal = emFaseHook ? opacidadeHookCaixa : opacidadePrevisao;
+  const fontePrincipal = tamanhoFonteCaixa(textoPrincipal, modoProgressivo ? 24 : 28, ecraLink);
 
   return (
     <AbsoluteFill style={{ backgroundColor: PALETA_SIDUS.fundo, fontFamily: 'system-ui, sans-serif' }}>
       {usaImagemZen ? (
-        <AbsoluteFill style={{ transform: `scale(${kenBurns})`, opacity: 0.42 }}>
-          <Img
-            src={resolverSrcImagem(imagemFundoUrl!)}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        <>
+          <AbsoluteFill style={{ transform: `scale(${kenBurns})`, opacity: 0.62 }}>
+            <Img
+              src={resolverSrcImagem(imagemFundoUrl!)}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          </AbsoluteFill>
+          {/* Grade 60-30-10 sobre a imagem IA */}
+          <AbsoluteFill
+            style={{
+              background: `linear-gradient(180deg, ${PALETA_SIDUS.fundo} 0%, rgba(42, 24, 72, 0.38) 42%, ${PALETA_SIDUS.fundo} 100%)`,
+              opacity: 0.72,
+            }}
           />
-        </AbsoluteFill>
+          <AbsoluteFill
+            style={{
+              boxShadow: `inset 0 0 100px 48px ${PALETA_SIDUS.fundo}, inset 0 -120px 80px -40px rgba(243, 204, 99, 0.08)`,
+              pointerEvents: 'none',
+            }}
+          />
+        </>
       ) : (
         <FundoVideoMistico tema={fundoVideoTema ?? 'zen_escuro'} seed={fundoVideoSeed ?? 0} />
       )}
 
       <EfeitosUniverso />
-
-      {hookTexto ? (
-        <AbsoluteFill
-          style={{
-            justifyContent: 'flex-start',
-            alignItems: 'center',
-            paddingTop: 120,
-            paddingLeft: 40,
-            paddingRight: 40,
-            opacity: opacidadeHook,
-            pointerEvents: 'none',
-            zIndex: 20,
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: PALETA_SIDUS.marcaMedia,
-              border: `3px solid ${PALETA_SIDUS.destaqueBorda}`,
-              borderRadius: 24,
-              padding: '22px 28px',
-              color: PALETA_SIDUS.textoCorpo,
-              fontSize: hookTexto.length > 55 ? 32 : hookTexto.length > 45 ? 34 : 40,
-              fontWeight: 900,
-              textAlign: 'center',
-              lineHeight: 1.2,
-              boxShadow: `0 12px 40px rgba(0,0,0,0.55), 0 0 24px ${PALETA_SIDUS.destaqueSombra}`,
-              textShadow: '0 2px 12px rgba(0,0,0,0.65)',
-              maxWidth: 980,
-            }}
-          >
-            {hookTexto}
-          </div>
-        </AbsoluteFill>
-      ) : null}
 
       <AbsoluteFill
         style={{
@@ -137,7 +150,6 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
           justifyContent: 'center',
         }}
       >
-        {/* 1. LOGÓTIPO */}
         <div
           style={{
             display: 'flex',
@@ -153,7 +165,6 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
           />
         </div>
 
-        {/* 2. TITULO DO SIGNO (a meio do vídeo) */}
         <div
           style={{
             color: PALETA_SIDUS.destaque,
@@ -167,112 +178,114 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
           {signo.toUpperCase()}
         </div>
 
-        {/* 3. TEXTO — progressivo (afiliados) ou bloco único (horóscopo) */}
-        <div style={{ width: '100%', maxWidth: 980 }}>
+        <div style={{ width: '100%', maxWidth: 980, position: 'relative' }}>
           {modoProgressivo ? (
+            emFaseHook ? (
+              <div
+                style={{
+                  ...estiloCaixaBase,
+                  color: PALETA_SIDUS.textoCorpo,
+                  fontSize: tamanhoFonteCaixa(textoHook, 26),
+                  fontWeight: 700,
+                  lineHeight: 1.4,
+                  textAlign: 'center',
+                  opacity: opacidadeHookCaixa,
+                  transform: `translateY(${(1 - opacidadeHookCaixa) * 8}px)`,
+                }}
+              >
+                {textoHook}
+              </div>
+            ) : segmentoActivo ? (
+              <div
+                style={{
+                  ...estiloCaixaBase,
+                  color: PALETA_SIDUS.textoCorpo,
+                  fontSize: tamanhoFonteCaixa(segmentoActivo.texto, 24),
+                  fontWeight: 600,
+                  lineHeight: 1.4,
+                  textAlign: 'center',
+                  opacity: interpolate(
+                    frame,
+                    [segmentoActivo.frameInicio, segmentoActivo.frameInicio + 10],
+                    [0, 1],
+                    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' },
+                  ),
+                }}
+              >
+                {segmentoActivo.texto.includes('sidusastro.com') ? (
+                  <>
+                    {segmentoActivo.texto.split('sidusastro.com')[0]}
+                    <span style={{ color: PALETA_SIDUS.destaque, fontWeight: 800 }}>sidusastro.com</span>
+                    {segmentoActivo.texto.split('sidusastro.com')[1] ?? ''}
+                  </>
+                ) : (
+                  segmentoActivo.texto
+                )}
+              </div>
+            ) : null
+          ) : (
             <div
               style={{
-                backgroundColor: PALETA_SIDUS.marca,
-                backdropFilter: 'blur(15px)',
-                borderRadius: 30,
-                padding: '34px 30px',
-                border: `1px solid ${PALETA_SIDUS.marcaBorda}`,
-                boxShadow: '0 10px 30px rgba(0,0,0,0.35)',
-                minHeight: 280,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 18,
+                ...estiloCaixaBase,
+                backgroundColor: ecraLink ? PALETA_SIDUS.marcaMedia : PALETA_SIDUS.marca,
+                color: ecraLink ? PALETA_SIDUS.destaque : PALETA_SIDUS.textoCorpo,
+                fontSize: fontePrincipal,
+                fontWeight: emFaseHook ? 700 : ecraLink ? 800 : 400,
+                lineHeight: 1.45,
+                textAlign: 'center',
+                border: ecraLink
+                  ? `2px solid ${PALETA_SIDUS.destaqueBorda}`
+                  : `1px solid ${PALETA_SIDUS.marcaBorda}`,
+                maxHeight: 420,
+                overflow: 'hidden',
+                opacity: opacidadeCaixaPrincipal,
+                transform: `translateY(${(1 - opacidadeCaixaPrincipal) * 10}px)`,
+                letterSpacing: ecraLink ? 1.5 : 0,
               }}
             >
-              {segmentosVisiveis.map((seg, i) => {
-                const activo = i === segmentosVisiveis.length - 1;
-                const temLink = seg.texto.includes('sidusastro.com');
-                return (
-                  <div
-                    key={seg.frameInicio}
-                    style={{
-                      color: PALETA_SIDUS.textoCorpo,
-                      fontSize: activo ? 26 : 22,
-                      fontWeight: activo ? 600 : 400,
-                      lineHeight: 1.45,
-                      textAlign: 'center',
-                      opacity: activo ? 1 : 0.72,
-                      transform: `translateY(${activo ? 0 : 2}px)`,
-                    }}
-                  >
-                    {temLink ? (
-                      <>
-                        {seg.texto.split('sidusastro.com')[0]}
-                        <span style={{ color: PALETA_SIDUS.destaque, fontWeight: 800 }}>sidusastro.com</span>
-                        {seg.texto.split('sidusastro.com')[1] ?? ''}
-                      </>
-                    ) : (
-                      seg.texto
-                    )}
-                  </div>
-                );
-              })}
+              {emFaseHook ? (
+                textoHook
+              ) : ecraLink ? (
+                previsao
+              ) : (
+                <>&quot;{previsao}&quot;</>
+              )}
             </div>
-          ) : (
-          <div
-            style={{
-              backgroundColor: ecraLink ? PALETA_SIDUS.marcaMedia : PALETA_SIDUS.marca,
-              backdropFilter: 'blur(15px)',
-              borderRadius: 30,
-              padding: ecraLink ? '40px 36px' : '34px 30px',
-              color: ecraLink ? PALETA_SIDUS.destaque : PALETA_SIDUS.textoCorpo,
-              fontSize: ecraLink ? 52 : previsao.length > 120 ? 22 : 28,
-              fontWeight: ecraLink ? 800 : 400,
-              lineHeight: 1.45,
-              textAlign: 'center',
-              border: ecraLink
-                ? `2px solid ${PALETA_SIDUS.destaqueBorda}`
-                : `1px solid ${PALETA_SIDUS.marcaBorda}`,
-              boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-              maxHeight: 520,
-              overflow: 'hidden',
-              opacity: opacidadePrevisao,
-              transform: `translateY(${(1 - opacidadePrevisao) * 10}px)`,
-              letterSpacing: ecraLink ? 1.5 : 0,
-            }}
-          >
-            {ecraLink ? previsao : <>&quot;{previsao}&quot;</>}
-          </div>
           )}
 
           {!modoProgressivo && fechoTexto ? (
-          <div
-            style={{
-              position: 'absolute',
-              left: 44,
-              right: 44,
-              top: '50%',
-              transform: `translateY(${120 - (opacidadeFecho * 16)}px)`,
-              display: 'flex',
-              justifyContent: 'center',
-              opacity: opacidadeFecho,
-              pointerEvents: 'none',
-            }}
-          >
             <div
               style={{
-                backgroundColor: PALETA_SIDUS.marcaMedia,
-                border: `3px solid ${PALETA_SIDUS.destaqueForte}`,
-                borderRadius: 22,
-                padding: '24px 30px',
-                color: PALETA_SIDUS.destaqueForte,
-                fontSize: fechoTexto.length > 70 ? 28 : 32,
-                fontWeight: 900,
-                textAlign: 'center',
-                lineHeight: 1.25,
-                boxShadow: `0 12px 40px rgba(0,0,0,0.55), 0 0 32px ${PALETA_SIDUS.destaqueSombra}`,
-                textShadow: '0 2px 12px rgba(0,0,0,0.65)',
-                maxWidth: 980,
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                top: '50%',
+                transform: `translateY(${120 - opacidadeFecho * 16}px)`,
+                display: 'flex',
+                justifyContent: 'center',
+                opacity: opacidadeFecho,
+                pointerEvents: 'none',
               }}
             >
-              {fechoTexto}
+              <div
+                style={{
+                  backgroundColor: PALETA_SIDUS.marcaMedia,
+                  border: `3px solid ${PALETA_SIDUS.destaqueForte}`,
+                  borderRadius: 22,
+                  padding: '20px 26px',
+                  color: PALETA_SIDUS.destaqueForte,
+                  fontSize: fechoTexto.length > 70 ? 26 : 30,
+                  fontWeight: 900,
+                  textAlign: 'center',
+                  lineHeight: 1.25,
+                  boxShadow: `0 12px 40px rgba(0,0,0,0.55), 0 0 32px ${PALETA_SIDUS.destaqueSombra}`,
+                  textShadow: '0 2px 12px rgba(0,0,0,0.65)',
+                  maxWidth: 980,
+                }}
+              >
+                {fechoTexto}
+              </div>
             </div>
-          </div>
           ) : null}
         </div>
       </AbsoluteFill>

@@ -7,90 +7,123 @@ import { sanitizarTextoPublico } from './texto-publico';
 type GanchoFn = (n: string) => string;
 
 /**
- * Ganchos psicológicos PT-PT — como se soubesses o que a pessoa pensa.
- * Cada um liga ao horóscopo / astros / energia do dia.
+ * Ganchos PT-PT — curiosidade, leitura emocional, ligação directa ao dia.
+ * Curtos, específicos, sem fórmulas repetidas.
  */
 const GANCHOS_PSICOLOGIA_PT: GanchoFn[] = [
-  (n) => 'Ninguém te diz isto, mas eu vou-te contar, ' + n + ': o que sentes hoje tem explicação nos astros',
-  (n) => 'Parece mentira, ' + n + ', mas o que vais saber agora muda o teu dia',
-  (n) => 'Eu não devia estar a contar-te isto, ' + n + ', mas o teu horóscopo obriga-me',
-  (n) => 'O segredo que as apps de horóscopo escondem de ti, ' + n + ', está aqui',
-  (n) => 'Não sei bem como te dizer isto, ' + n + ', mas a verdade está no teu signo hoje',
-  (n) => n + ', isto vai parecer que leio a tua mente - e é o horóscopo que explica',
-  (n) => 'Algo em ti já sabe a resposta, ' + n + ' - deixa os astros confirmar',
-  (n) => 'Se és ' + n + ', não é paranoia: a energia de hoje bate certo com o que pensas',
-  (n) => n + ', ninguém fala disto em voz alta, mas o teu coração já sabe',
-  (n) => 'Vais achar que exagero, ' + n + ', mas o que os planetas dizem hoje é directo',
-  (n) => 'Prepara-te, ' + n + ': isto descreve exactamente o que tens na cabeça',
-  (n) => n + ', a sensação estranha que tens hoje não é coincidência',
-  (n) => 'Não ignores isto, ' + n + ' - é como se o universo soubesse o teu nome',
-  (n) => 'Se és ' + n + ' e sentes que algo não encaixa, lê até ao fim',
-  (n) => n + ': o que evitas pensar é o que o horóscopo traz à superfície',
-  (n) => 'Isto não devia aparecer no teu feed por acaso, ' + n,
-  (n) => n + ', a tua intuição grita e os astros só confirmam',
-  (n) => 'Pouca gente percebe isto, ' + n + ', mas o teu signo explica tudo hoje',
-  (n) => 'Respira, ' + n + ' - o que vais ouvir parece feito à tua medida',
-  (n) => n + ', se andas a repetir a mesma cena na cabeça, não estás sozinho',
-  (n) => 'Ninguém te preparou para o que ' + n + ' sente hoje - eu preparo',
-  (n) => 'Parece que invado a tua privacidade, ' + n + ', mas é o horóscopo a falar',
-  (n) => n + ': o silêncio que te incomoda tem nome nos astros',
-  (n) => 'Se és ' + n + ', o que pensas à noite finalmente faz sentido',
-  (n) => n + ', não é o primeiro vídeo que vês - mas pode ser o que precisavas',
-  (n) => 'A verdade que ninguém te conta sobre ' + n + ' está na previsão de hoje',
-  (n) => n + ', o que te tira o sono hoje aparece no teu mapa astral',
-  (n) => 'Confessa, ' + n + ': já sentiste que o dia ia ser diferente',
-  (n) => n + ': parece que te conheço, mas são os astros a ser precisos',
-  (n) => 'Último aviso, ' + n + ' - depois disto o teu dia não se vê igual',
+  (n) => n + ', paraste o scroll por um motivo — em 20 segundos percebes qual',
+  (n) => 'Algo em ti já sabe o que vou dizer, ' + n + ' — os astros só confirmam',
+  (n) => n + ': a sensação estranha de hoje tem nome no teu horóscopo',
+  (n) => 'Se és ' + n + ', isto vai bater certo com o que pensaste ao acordar',
+  (n) => n + ', alguém perto de ti não está a ser totalmente honesto — lê isto',
+  (n) => 'Não era suposto veres isto hoje, ' + n + ', mas a Lua insistiu',
+  (n) => n + ': o que evitas sentir é exactamente o que o dia traz à tona',
+  (n) => 'Pouca gente fala disto em voz alta, ' + n + ' — o teu signo sim',
+  (n) => n + ', o silêncio que te pesa hoje não é coincidência',
+  (n) => 'Respira, ' + n + ' — o que vem a seguir parece escrito para ti',
+  (n) => n + ': se repetiste a mesma cena na cabeça, não estás sozinho',
+  (n) => 'O universo deixou isto no teu feed por um motivo, ' + n,
+  (n) => n + ', a tua intuição grita — o horóscopo traduz',
+  (n) => 'Se és ' + n + ' e sentes que algo não encaixa, fica até ao fim',
+  (n) => n + ': o que te tira o sono esta noite aparece nos astros',
+  (n) => 'Confessa, ' + n + ' — já sentiste que hoje seria diferente',
+  (n) => n + ', parece que leio a tua mente, mas é o mapa de hoje',
+  (n) => 'Último aviso, ' + n + ': depois disto o dia não se vê igual',
+  (n) => n + ': há uma decisão que adias — o céu fala disso agora',
+  (n) => 'Se és ' + n + ', o que sentes no peito hoje faz sentido',
+  (n) => n + ', alguém vai surpreender-te hoje — os planetas já sabem',
+  (n) => 'Isto não é coincidência, ' + n + ' — é energia do teu signo',
+  (n) => n + ': o que pensas e não dizes em voz alta está aqui',
+  (n) => 'Prepara-te, ' + n + ' — a mensagem de hoje é directa',
+  (n) => n + ', o teu coração já sabe; deixa o horóscopo confirmar',
+  (n) => 'Ninguém te preparou para o que ' + n + ' sente hoje — eu preparo',
+  (n) => n + ': a resposta que procuras está no teu signo, não no Google',
+  (n) => 'Se és ' + n + ', o que te bloqueia tem solução nos astros',
+  (n) => n + ', hoje o universo pede-te coragem — lê porquê',
+  (n) => 'Parece invasivo, ' + n + ', mas o teu horóscopo é preciso hoje',
+  (n) => n + ': o que te distrai de ti mesmo aparece na previsão',
+  (n) => 'Não ignores o sinal, ' + n + ' — é pequeno mas real',
+  (n) => n + ', a pessoa em quem pensaste agora aparece nos astros',
+  (n) => 'Se és ' + n + ', o medo de hoje tem explicação cósmica',
+  (n) => n + ': o que te faz hesitar é o que o dia quer resolver',
+  (n) => 'Isto vai parecer demasiado pessoal, ' + n + ' — e é',
+  (n) => n + ', a calma que finges hoje não engana os planetas',
+  (n) => 'O que ninguém te diz sobre ' + n + ' está na previsão de hoje',
+  (n) => n + ': se sentes que o tempo aperta, os astros concordam',
+  (n) => 'Fica mais 20 segundos, ' + n + ' — vale a pena',
 ];
 
 const GANCHOS_PSICOLOGIA_EN: GanchoFn[] = [
-  (n) => "Nobody tells you this, but I will, " + n + ': what you feel today is in the stars',
-  (n) => 'Sounds crazy, ' + n + ', but what you hear now changes your day',
-  (n) => "I shouldn't be telling you this, " + n + ', but your horoscope makes me',
-  (n) => 'The secret free horoscope apps hide from you, ' + n + ', is right here',
-  (n) => "I don't know how to say this, " + n + ', but the truth is in your sign today',
-  (n) => n + ', this will feel like I read your mind - the horoscope explains it',
-  (n) => 'Something in you already knows, ' + n + ' - let the stars confirm',
-  (n) => "If you're " + n + ", it's not paranoia: today's energy matches your thoughts",
-  (n) => n + ', nobody says this out loud, but your heart already knows',
-  (n) => 'You will think I exaggerate, ' + n + ', but the planets are direct today',
-  (n) => 'Get ready, ' + n + ': this describes exactly what is on your mind',
-  (n) => n + ', that strange feeling today is not random',
-  (n) => "Don't ignore this, " + n + ' - it is like the universe knows your name',
+  (n) => n + ', you stopped scrolling for a reason — in 20 seconds you will know why',
+  (n) => 'Something in you already knows what I will say, ' + n + ' — the stars just confirm',
+  (n) => n + ': that strange feeling today has a name in your horoscope',
+  (n) => "If you're " + n + ', this will match what you thought when you woke up',
+  (n) => n + ', someone close is not being fully honest — read this',
+  (n) => "You weren't supposed to see this today, " + n + ', but the Moon insisted',
+  (n) => n + ': what you avoid feeling is exactly what today surfaces',
+  (n) => 'Few people say this out loud, ' + n + ' — your sign does',
+  (n) => n + ', the silence weighing on you today is not random',
+  (n) => 'Breathe, ' + n + ' — what comes next feels written for you',
+  (n) => n + ': if you replayed the same scene in your head, you are not alone',
+  (n) => 'The universe left this on your feed for a reason, ' + n,
+  (n) => n + ', your intuition screams — the horoscope translates',
   (n) => "If you're " + n + ' and something feels off, stay until the end',
-  (n) => n + ': what you avoid thinking is what the horoscope surfaces',
-  (n) => "This shouldn't land on your feed by accident, " + n,
-  (n) => n + ', your intuition screams and the stars only confirm',
-  (n) => 'Few people get this, ' + n + ', but your sign explains everything today',
-  (n) => 'Breathe, ' + n + ' - what you hear feels tailor-made for you',
-  (n) => n + ', if you keep replaying the same scene in your head, you are not alone',
-  (n) => 'Nobody prepared you for what ' + n + ' feels today - I will',
-  (n) => 'Feels invasive, ' + n + ', but it is the horoscope speaking',
-  (n) => n + ': the silence that bothers you has a name in the stars',
-  (n) => "If you're " + n + ', what keeps you up at night finally makes sense',
-  (n) => n + ', not your first video - but maybe the one you needed',
-  (n) => 'The truth nobody tells ' + n + ' is in today\'s forecast',
-  (n) => n + ', what steals your sleep tonight shows in your birth chart',
-  (n) => 'Admit it, ' + n + ': you already felt today would be different',
-  (n) => n + ': feels personal, but the stars are just precise',
-  (n) => 'Last warning, ' + n + ' - after this your day will not look the same',
+  (n) => n + ': what keeps you up tonight shows in the stars',
+  (n) => 'Admit it, ' + n + ' — you already felt today would be different',
+  (n) => n + ', feels like I read your mind, but it is today\'s chart',
+  (n) => 'Last warning, ' + n + ': after this your day will not look the same',
+  (n) => n + ': there is a decision you delay — the sky talks about it now',
+  (n) => "If you're " + n + ', what you feel in your chest today makes sense',
+  (n) => n + ', someone will surprise you today — the planets already know',
+  (n) => 'This is not coincidence, ' + n + ' — it is your sign\'s energy',
+  (n) => n + ': what you think and do not say out loud is right here',
+  (n) => 'Get ready, ' + n + ' — today\'s message is direct',
+  (n) => n + ', your heart already knows; let the horoscope confirm',
+  (n) => 'Nobody prepared you for what ' + n + ' feels today — I will',
+  (n) => n + ': the answer you seek is in your sign, not on Google',
+  (n) => "If you're " + n + ', what blocks you has a solution in the stars',
+  (n) => n + ', today the universe asks for courage — read why',
+  (n) => 'Feels invasive, ' + n + ', but your horoscope is precise today',
+  (n) => n + ': what distracts you from yourself appears in the forecast',
+  (n) => 'Do not ignore the sign, ' + n + ' — it is small but real',
+  (n) => n + ', the person you just thought of appears in the stars',
+  (n) => "If you're " + n + ", today's fear has a cosmic explanation",
+  (n) => n + ': what makes you hesitate is what today wants to resolve',
+  (n) => 'This will feel too personal, ' + n + ' — and it is',
+  (n) => n + ', the calm you fake today does not fool the planets',
+  (n) => 'What nobody tells ' + n + ' is in today\'s forecast',
+  (n) => n + ': if you feel time is tight, the stars agree',
+  (n) => 'Stay 20 more seconds, ' + n + ' — worth it',
 ];
 
-/** Horóscopo directo — complemento (~15%) */
 const GANCHOS_HOROSCOPO_PT: GanchoFn[] = [
-  (n) => n + ', o teu horóscopo de hoje não é o que estás à espera',
-  (n) => 'Previsão do dia para ' + n + ' - os astros não mentem',
-  (n) => n + ': Lua e planetas alinhados - lê a mensagem de hoje',
-  (n) => 'Horóscopo ' + n + ' - isto é para ti e só para ti',
-  (n) => n + ', a energia cósmica de hoje explica o teu estado de espírito',
+  (n) => n + ', o horóscopo de hoje não é o que esperavas',
+  (n) => 'Mensagem do dia para ' + n + ' — os astros não mentem',
+  (n) => n + ': Lua e planetas alinhados — lê agora',
+  (n) => 'Previsão ' + n + ' — feita para ti e só para ti',
+  (n) => n + ', a energia de hoje explica o teu humor',
 ];
 
 const GANCHOS_HOROSCOPO_EN: GanchoFn[] = [
-  (n) => n + ", today's horoscope is not what you expect",
-  (n) => 'Daily forecast for ' + n + ' - the stars do not lie',
-  (n) => n + ': Moon and planets aligned - read today\'s message',
-  (n) => 'Horoscope ' + n + ' - this is for you and only you',
-  (n) => n + ", today's cosmic energy explains your mood",
+  (n) => n + ", today's horoscope is not what you expected",
+  (n) => 'Daily message for ' + n + ' — the stars do not lie',
+  (n) => n + ': Moon and planets aligned — read now',
+  (n) => 'Forecast ' + n + ' — for you and only you',
+  (n) => n + ", today's energy explains your mood",
+];
+
+const PREFIXOS_PREVISAO_PT = [
+  (n: string) => 'Não sei bem como te dizer isto, ' + n + ', mas ',
+  (n: string) => n + ', escuta isto com calma: ',
+  (n: string) => 'O que os astros dizem sobre ti hoje, ' + n + ': ',
+  (n: string) => n + ', a verdade do dia é esta: ',
+];
+
+const PREFIXOS_PREVISAO_EN = [
+  (n: string) => "I don't know how to tell you this, " + n + ', but ',
+  (n: string) => n + ', listen calmly: ',
+  (n: string) => 'What the stars say about you today, ' + n + ': ',
+  (n: string) => n + ', the truth of the day is this: ',
 ];
 
 function hashGancho(seed: string): number {
@@ -108,23 +141,24 @@ function escolherIndiceGancho(signo: SignoZodiaco, data: string, total: number):
   return hashGancho('gancho-' + signo + '-' + data) % total;
 }
 
-function ganchoDaPrevisao(nomeSigno: string, previsao: string): string | null {
+function ganchoDaPrevisao(nomeSigno: string, previsao: string, signo: SignoZodiaco, data: string): string | null {
   const limpa = sanitizarTextoPublico(previsao);
   const primeira = limpa.split(/[.!?]/)[0]?.trim();
-  if (!primeira || primeira.length < 14 || primeira.length > 78) {
+  if (!primeira || primeira.length < 12 || primeira.length > 72) {
     return null;
   }
-  const prefixo = 'Não sei bem como te dizer isto, ' + nomeSigno + ', mas ';
+  const prefixos = isLocaleUS() ? PREFIXOS_PREVISAO_EN : PREFIXOS_PREVISAO_PT;
+  const indice = escolherIndiceGancho(signo, data + '-pref', prefixos.length);
   const frase =
     primeira.charAt(0).toLowerCase() === primeira.charAt(0)
       ? primeira
       : primeira.charAt(0).toLowerCase() + primeira.slice(1);
-  return sanitizarTextoPublico(prefixo + frase);
+  return sanitizarTextoPublico(prefixos[indice](nomeSigno) + frase);
 }
 
 /**
  * Gancho narrado — psicologia + horóscopo (PT-PT).
- * 85% mind-reading emocional | 15% horóscopo directo | 12% derivado da previsão real.
+ * 70% mind-reading | 15% horóscopo directo | 25% derivado da previsão real.
  */
 export function escolherGanchoDiario(
   signo: SignoZodiaco,
@@ -134,8 +168,8 @@ export function escolherGanchoDiario(
   const nomeSigno = obterNomeSigno(signo);
   const dataRef = data ?? new Date().toISOString().slice(0, 10);
 
-  if (escolherIndiceGancho(signo, dataRef + '-prev', 100) < 12) {
-    const daPrevisao = ganchoDaPrevisao(nomeSigno, previsao);
+  if (escolherIndiceGancho(signo, dataRef + '-prev', 100) < 25) {
+    const daPrevisao = ganchoDaPrevisao(nomeSigno, previsao, signo, dataRef);
     if (daPrevisao) {
       return daPrevisao;
     }

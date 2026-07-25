@@ -1,6 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 import { POOL_MUSICAS_ZEN_ASTRO, filtrarEntradasZen } from './pool-musicas-zen';
+import {
+  MODIFICADORES_IMAGEM_BRUTAL,
+  PALETAS_60_30_10,
+  SUFIXO_PROMPT_IMAGEM,
+  TEMAS_IMAGEM_BRUTAL,
+} from './imagem-prompts';
 
 export type PreferenciaVoz = 'feminina' | 'masculina' | 'aleatoria';
 
@@ -122,28 +128,10 @@ export const CONFIG_PADRAO: ConfigProjeto = {
     entradas: PRESET_MUSICAS_ZEN,
   },
   imagem: {
-    temas: [
-      'peaceful zen meditation space zodiac wheel astrology chart soft golden candlelight',
-      'calm night sky zodiac constellations horoscope map stars serene atmosphere',
-      'minimalist astrology horoscope chart moon phases zen garden peaceful',
-      'zen japanese garden stone lantern zodiac wheel moon astrology tranquil',
-      'astrology birth chart celestial map soft glow peaceful zen aesthetic',
-      'mandala zodiac wheel soft bokeh stars meditation zen horoscope art',
-    ],
-    modificadores: [
-      'soft cinematic lighting peaceful composition',
-      'minimalist zen aesthetic clean calm golden hour',
-      'ethereal soft glow dreamy peaceful atmosphere',
-      'watercolor soft pastel calm spiritual mood',
-    ],
-    paletas: [
-      'deep indigo and gold',
-      'lavender and rose gold',
-      'midnight blue and silver',
-      'soft purple and celestial white',
-    ],
-    sufixoPrompt:
-      ', astrology horoscope zodiac theme, vertical portrait 9:16, no text, no watermark, no cars, no vehicles, no people, no modern city, calm spiritual masterpiece',
+    temas: [...TEMAS_IMAGEM_BRUTAL],
+    modificadores: [...MODIFICADORES_IMAGEM_BRUTAL],
+    paletas: [...PALETAS_60_30_10],
+    sufixoPrompt: SUFIXO_PROMPT_IMAGEM,
   },
 };
 

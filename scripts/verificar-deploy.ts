@@ -26,8 +26,8 @@ exigirTexto('./src/lib/conteudo-especial.ts', 'Okay this is real', 'VIP: legenda
 exigirFicheiro('./src/lib/ganchos-diario.ts');
 exigirTexto('./src/lib/ganchos-diario.ts', 'escolherGanchoDiario', 'Diário: ganchos emocionais');
 exigirTexto('./src/lib/ganchos-diario.ts', 'GANCHOS_PSICOLOGIA_PT', 'Diário: ganchos psicológicos PT');
-exigirTexto('./src/lib/ganchos-diario.ts', 'Ninguém te diz isto', 'Diário: gancho psicológico PT');
-exigirTexto('./src/lib/ganchos-diario.ts', 'Nobody tells you this', 'Diário: gancho psicológico EN');
+exigirTexto('./src/lib/ganchos-diario.ts', 'paraste o scroll', 'Diário: gancho psicológico PT');
+exigirTexto('./src/lib/ganchos-diario.ts', 'you stopped scrolling', 'Diário: gancho psicológico EN');
 exigirTexto('./src/lib/legenda.ts', 'Ninguém te mostra isto nas apps grátis', 'Diário: fecho curiosidade site');
 exigirTexto('./src/lib/paleta-visual.ts', 'PALETA_SIDUS', 'Visual: regra 60-30-10');
 exigirTexto('./config/sidusastro.json', 'estiloAzureMasculina', 'Voz: estilo masculino místico');
@@ -77,6 +77,10 @@ exigirTexto('./src/lib/conteudo-especial.ts', 'HASHTAGS_VIP_PT_TIKTOK', 'VIP: ha
 exigirFicheiro('./gerar-video-quinta.ts');
 exigirTexto('./gerar-video-quinta.ts', 'fundoZenAstrologia: true', 'Quinta motivacional: imagem zen');
 exigirTexto('./gerar-video-segunda.ts', 'fundoZenAstrologia: true', 'Segunda motivacional: imagem zen');
+exigirFicheiro('./src/lib/imagem-prompts.ts');
+exigirTexto('./src/lib/imagem-prompts.ts', 'PALETAS_60_30_10', 'Imagem: paleta 60-30-10');
+exigirTexto('./src/lib/imagem-prompts.ts', 'TEMAS_IMAGEM_BRUTAL', 'Imagem: temas brutais');
+exigirTexto('./config/sidusastro.json', '#08060e', 'Imagem config: cor base 60%');
 exigirTexto('./src/lib/gerar-video-especial.ts', 'obterImagemFundoZenAstrologia', 'Especiais: imagem zen quando fundoZenAstrologia');
 exigirTexto('./gerar-video-quinta.ts', 'SLOT_MUSICA.MOTIVACIONAL_QUINTA', 'Quinta: slot música');
 exigirTexto('./gerar-video-quinta.ts', "escolherFraseMotivacional(data, 'quinta')", 'Quinta: variante frase');
