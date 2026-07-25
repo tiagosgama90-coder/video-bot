@@ -82,11 +82,5 @@ jobs:
           AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
           AZURE_SPEECH_REGION: northeurope
 
-      - name: Guardar vídeo como artefacto
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: video-quarta
-          path: output/*-quarta*.mp4
-          retention-days: 7
-          if-no-files-found: ignore
+
+      # Vídeos ficam no Firebase + Buffer — sem upload-artifact (evita quota 0.5 GB GitHub)
