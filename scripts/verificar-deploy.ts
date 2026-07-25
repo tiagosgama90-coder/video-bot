@@ -98,7 +98,9 @@ exigirTexto('./src/lib/imagem-prompts.ts', 'TEMAS_IMAGEM_ZEN_ESPIRITUAL', 'Image
 exigirTexto('./src/lib/imagem-prompts.ts', 'moon phases vertical', 'Imagem: fases da lua Pinterest');
 exigirTexto('./src/lib/imagem-prompts.ts', 'antique astrolabe', 'Imagem: astrolábio gravura antiga');
 exigirTexto('./src/lib/imagem-prompts.ts', 'tarot card illustration', 'Imagem: alquimia/tarot Pinterest');
-exigirTexto('./src/lib/imagem-prompts.ts', 'deep cosmic texture', 'Imagem: texturas cósmicas profundas');
+exigirTexto('./src/lib/imagem-prompts.ts', 'reiki healing', 'Imagem: espiritual reiki colorido');
+exigirTexto('./src/lib/imagem-prompts.ts', 'vibrant saturated', 'Imagem: cores vivas saturadas');
+exigirTexto('./src/components/FundoImagemZen.tsx', 'saturate(1.28)', 'Vídeo: saturação cores Pinterest');
 exigirTexto('./src/lib/gerar-video-especial.ts', 'deveUsarFundoAnimadoZen', 'Especiais: alternância fundo animado');
 exigirTexto('./src/lib/gerar-video-especial.ts', 'escolherFundoVideoZen', 'Especiais: fundo zen animado');
 exigirTexto('./src/lib/fundo-video.ts', 'reiki_energia', 'Vídeo: tema reiki animado');
