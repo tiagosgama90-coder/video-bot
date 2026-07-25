@@ -15,6 +15,21 @@ export const TEMAS_FUNDO_MISTICO = [
   'oraculo',
   'nebula',
   'lua',
+  'reiki_energia',
+  'mandala_sagrada',
+  'energia_cosmica',
+] as const;
+
+/** Temas suaves zen/espiritual — para vídeos especiais com fundo animado (estilo Pinterest) */
+export const TEMAS_FUNDO_ZEN_ESPIRITUAL = [
+  'zen_escuro',
+  'horoscopo',
+  'nebula',
+  'lua',
+  'oraculo',
+  'reiki_energia',
+  'mandala_sagrada',
+  'energia_cosmica',
 ] as const;
 
 export type TemaFundoMistico = (typeof TEMAS_FUNDO_MISTICO)[number];
@@ -35,4 +50,18 @@ export function escolherFundoVideo(signo: string, data: string): ConfigFundoVide
   const tema = TEMAS_FUNDO_MISTICO[hash % TEMAS_FUNDO_MISTICO.length];
   const seed = hash % 9_999_999;
   return { tema, seed };
+}
+
+/** Fundo animado zen/espiritual — motivacional, VIP, afiliados (sem gótico/tarot pesado) */
+export function escolherFundoVideoZen(id: string, data: string): ConfigFundoVideo {
+  const hash = hashChave(`${data}|${id}|fundo-zen-espiritual-v1`);
+  const tema = TEMAS_FUNDO_ZEN_ESPIRITUAL[hash % TEMAS_FUNDO_ZEN_ESPIRITUAL.length];
+  const seed = hash % 9_999_999;
+  return { tema, seed };
+}
+
+/** ~1 em 2 vídeos especiais usa fundo 100% animado em vez de imagem IA */
+export function deveUsarFundoAnimadoZen(id: string, data: string): boolean {
+  const hash = hashChave(`${data}|${id}|modo-fundo-zen-v2`);
+  return hash % 2 === 0;
 }

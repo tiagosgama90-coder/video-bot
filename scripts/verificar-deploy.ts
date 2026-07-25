@@ -79,7 +79,13 @@ exigirTexto('./gerar-video-quinta.ts', 'fundoZenAstrologia: true', 'Quinta motiv
 exigirTexto('./gerar-video-segunda.ts', 'fundoZenAstrologia: true', 'Segunda motivacional: imagem zen');
 exigirFicheiro('./src/lib/imagem-prompts.ts');
 exigirTexto('./src/lib/imagem-prompts.ts', 'PALETAS_60_30_10', 'Imagem: paleta 60-30-10');
-exigirTexto('./src/lib/imagem-prompts.ts', 'TEMAS_IMAGEM_BRUTAL', 'Imagem: temas brutais');
+exigirTexto('./src/lib/imagem-prompts.ts', 'TEMAS_IMAGEM_ZEN_ESPIRITUAL', 'Imagem: temas zen Pinterest');
+exigirTexto('./src/lib/imagem-prompts.ts', 'pinterest spiritual', 'Imagem: estilo Pinterest espiritual');
+exigirTexto('./src/lib/gerar-video-especial.ts', 'deveUsarFundoAnimadoZen', 'Especiais: alternância fundo animado');
+exigirTexto('./src/lib/gerar-video-especial.ts', 'escolherFundoVideoZen', 'Especiais: fundo zen animado');
+exigirTexto('./src/lib/fundo-video.ts', 'reiki_energia', 'Vídeo: tema reiki animado');
+exigirTexto('./src/components/FundoImagemZen.tsx', 'objectFit: \'contain\'', 'Vídeo: imagem zen sem esticar');
+exigirTexto('./src/components/ZenOverlayAnimado.tsx', 'ZenOverlayAnimado', 'Vídeo: overlay animado sobre imagem');
 exigirTexto('./config/sidusastro.json', '#08060e', 'Imagem config: cor base 60%');
 exigirTexto('./src/lib/gerar-video-especial.ts', 'obterImagemFundoZenAstrologia', 'Especiais: imagem zen quando fundoZenAstrologia');
 exigirTexto('./gerar-video-quinta.ts', 'SLOT_MUSICA.MOTIVACIONAL_QUINTA', 'Quinta: slot música');
