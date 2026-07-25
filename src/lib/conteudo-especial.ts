@@ -1,6 +1,8 @@
 /* eslint-disable @remotion/deterministic-randomness -- script Node apenas */
 import crypto from 'crypto';
 import {
+  CTA_COMENTARIO_INSTAGRAM_EN,
+  CTA_COMENTARIO_INSTAGRAM_PT,
   CTA_AFILIADOS_EN,
   CTA_AFILIADOS_PT,
   CTA_MOTIVACIONAL_EN,
@@ -64,7 +66,10 @@ export const LEGENDA_VIP_INSTAGRAM =
   'Se já amas o SidusAstro, isto pode interessar-te ✨\n\n' +
   'Partilha um vídeo, marca @sidusastro e podes ficar com VIP vitalício - mapa astral, tarot e oráculo.\n\n' +
   'Resposta em até 48h 👇\n\n' +
-  CTA_VIP_PT + '\n\n' +
+  CTA_COMENTARIO_INSTAGRAM_PT +
+  '\n\n' +
+  CTA_VIP_PT +
+  '\n\n' +
   HASHTAGS_VIP_PT_INSTAGRAM;
 
 export const LEGENDA_VIP_TIKTOK_EN =
@@ -78,7 +83,10 @@ export const LEGENDA_VIP_INSTAGRAM_EN =
   'If you already love SidusAstro, this one is for you ✨\n\n' +
   'Share a video, tag @sidusastro and you can unlock lifetime VIP - birth chart, tarot and oracle.\n\n' +
   'Usually within 48 hours 👇\n\n' +
-  CTA_VIP_EN + '\n\n' +
+  CTA_COMENTARIO_INSTAGRAM_EN +
+  '\n\n' +
+  CTA_VIP_EN +
+  '\n\n' +
   HASHTAGS_VIP_EN_INSTAGRAM;
 
 export const TITULO_AFILIADOS = 'GANHA COM O CÉU';
@@ -105,7 +113,10 @@ export const LEGENDA_AFILIADOS_TIKTOK =
 export const LEGENDA_AFILIADOS_INSTAGRAM =
   'Gostas de falar de signos? Podes ganhar com isso ✨\n\n' +
   'Programa de afiliados SidusAstro: 50% de comissão em cada venda. Sem taxas, sem investimento, link exclusivo teu.\n\n' +
-  CTA_AFILIADOS_PT + '\n\n' +
+  CTA_COMENTARIO_INSTAGRAM_PT +
+  '\n\n' +
+  CTA_AFILIADOS_PT +
+  '\n\n' +
   HASHTAGS_AFILIADOS_PT_INSTAGRAM;
 
 export const LEGENDA_AFILIADOS_TIKTOK_EN =
@@ -117,7 +128,10 @@ export const LEGENDA_AFILIADOS_TIKTOK_EN =
 export const LEGENDA_AFILIADOS_INSTAGRAM_EN =
   'Love talking about the zodiac? You can earn from it ✨\n\n' +
   'SidusAstro affiliate program: 50% commission on every sale. No fees, no investment, your exclusive link.\n\n' +
-  CTA_AFILIADOS_EN + '\n\n' +
+  CTA_COMENTARIO_INSTAGRAM_EN +
+  '\n\n' +
+  CTA_AFILIADOS_EN +
+  '\n\n' +
   HASHTAGS_AFILIADOS_EN_INSTAGRAM;
 
 const FRASES_MOTIVACIONAIS = [
@@ -264,6 +278,8 @@ export function obterLegendasMotivacional(): { tiktok: string; instagram: string
       instagram: sanitizarTextoPublico(
         'A little reminder for whoever needs it today ✨\n\n' +
           'Save this reel - your birth chart still has answers. 🔮\n\n' +
+          CTA_COMENTARIO_INSTAGRAM_EN +
+          '\n\n' +
           CTA_MOTIVACIONAL_EN +
           '\n\n' +
           HASHTAGS_MOTIVACIONAL_EN_INSTAGRAM,
@@ -281,6 +297,8 @@ export function obterLegendasMotivacional(): { tiktok: string; instagram: string
     instagram: sanitizarTextoPublico(
       'Uma lembrança rápida para quem precisa hoje ✨\n\n' +
         'Guarda este reel - o teu mapa astral ainda tem respostas. 🔮\n\n' +
+        CTA_COMENTARIO_INSTAGRAM_PT +
+        '\n\n' +
         CTA_MOTIVACIONAL_PT +
         '\n\n' +
         HASHTAGS_MOTIVACIONAL_PT_INSTAGRAM,

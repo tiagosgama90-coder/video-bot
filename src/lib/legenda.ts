@@ -11,6 +11,7 @@ import {
   HASHTAGS_DIARIO_PT_TIKTOK,
 } from './legendas-marketing';
 import { escolherGanchoDiario } from './ganchos-diario';
+import { ehGanchoViralLongo } from './ganchos-virais';
 import { isLocaleUS } from './locale';
 import { obterNomeSigno, type SignoZodiaco } from './signos';
 import { sanitizarTextoPublico } from './texto-publico';
@@ -71,10 +72,21 @@ function sufixoTikTok(signo: SignoZodiaco): string {
   return CTA_DIARIO_PT + '\n\n' + HASHTAGS_DIARIO_PT_TIKTOK + ' ' + tagSigno;
 }
 
-function sufixoInstagram(signo: SignoZodiaco): string {
+function prefixoUrgenciaInstagram(hook: string): string {
+  if (!ehGanchoViralLongo(hook)) {
+    return '';
+  }
+  return isLocaleUS()
+    ? '🚨 URGENT — read the full caption!\n\n'
+    : '🚨 URGENTE — lê a legenda completa!\n\n';
+}
+
+function sufixoInstagram(signo: SignoZodiaco, hook: string): string {
   const tagSigno = hashtagSigno(signo);
+  const urgencia = prefixoUrgenciaInstagram(hook);
   if (isLocaleUS()) {
     return (
+      urgencia +
       CTA_DIARIO_EN +
       '\n\n' +
       CTA_COMENTARIO_INSTAGRAM_EN +
@@ -85,6 +97,7 @@ function sufixoInstagram(signo: SignoZodiaco): string {
     );
   }
   return (
+    urgencia +
     CTA_DIARIO_PT +
     '\n\n' +
     CTA_COMENTARIO_INSTAGRAM_PT +
@@ -122,7 +135,7 @@ export function gerarLegendaInstagram(
 ): string {
   const hook = escolherGanchoDiario(signo, previsao, data);
   return sanitizarTextoPublico(
-    gerarCorpoLegenda(previsao, hook) + '\n\n' + sufixoInstagram(signo),
+    gerarCorpoLegenda(previsao, hook) + '\n\n' + sufixoInstagram(signo, hook),
   );
 }
 
@@ -137,7 +150,7 @@ export function gerarLegendas(
   return {
     hook,
     tiktok: sanitizarTextoPublico(corpo + '\n\n' + sufixoTikTok(signo)),
-    instagram: sanitizarTextoPublico(corpo + '\n\n' + sufixoInstagram(signo)),
+    instagram: sanitizarTextoPublico(corpo + '\n\n' + sufixoInstagram(signo, hook)),
   };
 }
 
