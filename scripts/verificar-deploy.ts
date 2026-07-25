@@ -84,6 +84,7 @@ exigirTexto('./src/lib/imagem-prompts.ts', 'pinterest spiritual', 'Imagem: estil
 exigirTexto('./src/lib/gerar-video-especial.ts', 'deveUsarFundoAnimadoZen', 'Especiais: alternância fundo animado');
 exigirTexto('./src/lib/gerar-video-especial.ts', 'escolherFundoVideoZen', 'Especiais: fundo zen animado');
 exigirTexto('./src/lib/fundo-video.ts', 'reiki_energia', 'Vídeo: tema reiki animado');
+exigirTexto('./src/components/FundoImagemZen.tsx', 'objectFit: \'contain\'', 'Vídeo: imagem zen sem esticar');
 exigirTexto('./src/components/ZenOverlayAnimado.tsx', 'ZenOverlayAnimado', 'Vídeo: overlay animado sobre imagem');
 exigirTexto('./config/sidusastro.json', '#08060e', 'Imagem config: cor base 60%');
 exigirTexto('./src/lib/gerar-video-especial.ts', 'obterImagemFundoZenAstrologia', 'Especiais: imagem zen quando fundoZenAstrologia');

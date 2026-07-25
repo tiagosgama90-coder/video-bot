@@ -60,8 +60,8 @@ export function escolherFundoVideoZen(id: string, data: string): ConfigFundoVide
   return { tema, seed };
 }
 
-/** ~1 em 3 vídeos especiais usa fundo 100% animado em vez de imagem IA */
+/** ~1 em 2 vídeos especiais usa fundo 100% animado em vez de imagem IA */
 export function deveUsarFundoAnimadoZen(id: string, data: string): boolean {
-  const hash = hashChave(`${data}|${id}|modo-fundo-zen-v1`);
-  return hash % 3 === 0;
+  const hash = hashChave(`${data}|${id}|modo-fundo-zen-v2`);
+  return hash % 2 === 0;
 }
