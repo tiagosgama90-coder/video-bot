@@ -21,6 +21,8 @@ if (process.env.GITHUB_SHA) {
 exigirFicheiro('./gerar-e-publicar.ts');
 exigirFicheiro('./src/lib/texto-publico.ts');
 exigirTexto('./src/lib/texto-publico.ts', 'sanitizarTextoPublico', 'Texto público: banir traço tipográfico');
+exigirTexto('./src/lib/texto-publico.ts', 'prepararTextoNarracao', 'Voz: sanitizar texto TTS');
+exigirTexto('./src/lib/voz.ts', 'ehErroAzureSsml', 'Voz: retry SSML Azure em 400');
 exigirTexto('./src/lib/conteudo-especial.ts', 'Ok, isto é real', 'VIP: legendas humanizadas PT');
 exigirTexto('./src/lib/conteudo-especial.ts', 'Okay this is real', 'VIP: legendas humanizadas EN');
 exigirFicheiro('./src/lib/ganchos-diario.ts');
