@@ -5,14 +5,29 @@ import { execSync } from 'child_process';
 import axios from 'axios';
 import { carregarConfigProjeto } from './project-config';
 import {
-  MODIFICADORES_IMAGEM_BRUTAL,
-  PALETAS_60_30_10,
-  PROMPTS_FALLBACK_BRUTAL,
-  SUFIXO_PROMPT_IMAGEM,
-  TEMAS_IMAGEM_BRUTAL,
+  escolherModoPaletaImagem,
+  MODIFICADORES_COLOR,
+  MODIFICADORES_MONO,
+  PALETAS_COLOR,
+  PALETAS_MONOCROMATICAS,
+  PROMPTS_FALLBACK_COLOR,
+  PROMPTS_FALLBACK_MONO,
+  SUFIXO_PROMPT_COLOR,
+  SUFIXO_PROMPT_MONO,
+  TEMAS_COLOR,
+  TEMAS_MONOCROMATICOS,
+  type ModoPaletaImagem,
 } from './imagem-prompts';
 import type { SignoZodiaco } from './signos';
 import { NOMES_SIGNOS } from './signos';
+
+export type { ModoPaletaImagem } from './imagem-prompts';
+export { escolherModoPaletaImagem } from './imagem-prompts';
+
+export interface ImagemFundoGerada {
+  ficheiro: string;
+  modo: ModoPaletaImagem;
+}
 
 /** Dimensões nativas do reel Instagram/TikTok (9:16) */
 export const REEL_LARGURA = 1080;
@@ -52,20 +67,17 @@ function lerDimensoesJpeg(dados: Buffer): { width: number; height: number } | nu
   return null;
 }
 
-/** Proporção vertical 9:16 — aceita 576×1024 da Pollinations, etc. */
 export function validarRatioReel(largura: number, altura: number): boolean {
   const ratio = largura / altura;
   return Math.abs(ratio - RATIO_REEL) < 0.012;
 }
 
-/** Aceita 9:16; dimensão mínima 360×640 para rejeitar quadrados/horizontais */
 export function validarImagemReel(largura: number, altura: number): boolean {
   const ratioOk = validarRatioReel(largura, altura);
   const tamanhoMinimo = largura >= 360 && altura >= 640;
   return ratioOk && tamanhoMinimo;
 }
 
-/** Escala proporcionalmente para 1080×1920 sem esticar (só se já for 9:16) */
 export function normalizarImagemReel(destino: string): void {
   const dados = fs.readFileSync(destino);
   const dimensoes = lerDimensoesJpeg(dados);
@@ -116,12 +128,6 @@ function montarUrlPollinations(prompt: string, seed: number): string {
   );
 }
 
-function urlsFallback(seed: number): string[] {
-  return PROMPTS_FALLBACK_BRUTAL.map((prompt, i) =>
-    montarUrlPollinations(prompt, seed + i * 19),
-  );
-}
-
 function escolher<T>(lista: readonly T[]): T {
   return lista[crypto.randomInt(0, lista.length)];
 }
@@ -137,39 +143,49 @@ function gerarSeedUnico(chave: string, data: string): number {
   return hash % 9_999_999;
 }
 
-function obterListasPrompt() {
+function obterListasPromptPorModo(modo: ModoPaletaImagem) {
+  if (modo === 'mono') {
+    return {
+      temas: TEMAS_MONOCROMATICOS,
+      modificadores: MODIFICADORES_MONO,
+      paletas: PALETAS_MONOCROMATICAS,
+      sufixo: SUFIXO_PROMPT_MONO,
+      fallbacks: PROMPTS_FALLBACK_MONO,
+    };
+  }
+
   const cfg = carregarConfigProjeto().imagem;
   return {
-    temas: cfg.temas.length ? cfg.temas : [...TEMAS_IMAGEM_BRUTAL],
-    modificadores: cfg.modificadores.length ? cfg.modificadores : [...MODIFICADORES_IMAGEM_BRUTAL],
-    paletas: cfg.paletas.length ? cfg.paletas : [...PALETAS_60_30_10],
-    sufixo: cfg.sufixoPrompt || SUFIXO_PROMPT_IMAGEM,
+    temas: (cfg.temas.length ? cfg.temas : TEMAS_COLOR) as readonly string[],
+    modificadores: (cfg.modificadores.length ? cfg.modificadores : MODIFICADORES_COLOR) as readonly string[],
+    paletas: (cfg.paletas.length ? cfg.paletas : PALETAS_COLOR) as readonly string[],
+    sufixo: cfg.sufixoPrompt || SUFIXO_PROMPT_COLOR,
+    fallbacks: PROMPTS_FALLBACK_COLOR,
   };
 }
 
-function montarPromptBase(extraSigno?: string): string {
-  const { temas, modificadores, paletas, sufixo } = obterListasPrompt();
+function montarPrompt(chave: string, data: string, extraSigno?: string): { prompt: string; modo: ModoPaletaImagem } {
+  const modo = escolherModoPaletaImagem(chave, data);
+  const { temas, modificadores, paletas, sufixo } = obterListasPromptPorModo(modo);
   const tema = escolher(temas);
   const modificador = escolher(modificadores);
   const paleta = escolher(paletas);
 
-  return (
+  const prompt =
     tema +
     ', ' +
     modificador +
     ', color palette ' +
     paleta +
     (extraSigno ? ', zodiac sign ' + extraSigno : '') +
-    sufixo
-  );
+    sufixo;
+
+  return { prompt, modo };
 }
 
-function montarPromptZenAstrologia(): string {
-  return montarPromptBase();
-}
-
-function montarPrompt(signo: SignoZodiaco): string {
-  return montarPromptBase(NOMES_SIGNOS[signo]);
+function urlsFallback(modo: ModoPaletaImagem, seed: number): string[] {
+  const fallbacks = obterListasPromptPorModo(modo).fallbacks;
+  return fallbacks.map((prompt, i) => montarUrlPollinations(prompt, seed + i * 19));
 }
 
 async function descarregarFicheiro(url: string, destino: string): Promise<void> {
@@ -212,28 +228,34 @@ function escreverJpegMinimo(destino: string): void {
   fs.writeFileSync(destino, Buffer.from(JPEG_MINIMO_BASE64, 'base64'));
 }
 
-export async function obterImagemFundo(signo: SignoZodiaco, data: string): Promise<string> {
+async function gerarImagemFundo(
+  chave: string,
+  data: string,
+  prefixoFicheiro: string,
+  extraSigno?: string,
+): Promise<ImagemFundoGerada> {
   if (!fs.existsSync('./public')) {
     fs.mkdirSync('./public', { recursive: true });
   }
 
-  const prompt = montarPrompt(signo);
-  const seed = gerarSeedUnico(signo, data);
+  const { prompt, modo } = montarPrompt(chave, data, extraSigno);
+  const seed = gerarSeedUnico(chave, data);
   const sufixo = crypto.randomBytes(4).toString('hex');
-  const nomeFicheiro = 'fundo-' + signo + '-' + sufixo + '.jpg';
+  const nomeFicheiro = prefixoFicheiro + '-' + sufixo + '.jpg';
   const imagemLocal = './public/' + nomeFicheiro;
   const urlPollinations = montarUrlPollinations(prompt, seed);
 
-  console.log('🎨 Prompt IA [' + signo + ']: ' + prompt.slice(0, 120) + '...');
+  const etiquetaModo = modo === 'mono' ? 'monocromático' : 'colorido';
+  console.log('🎨 Prompt IA [' + chave + '] (' + etiquetaModo + '): ' + prompt.slice(0, 120) + '...');
   console.log('🎨 Seed único: ' + seed);
 
-  const fontes = [urlPollinations, ...urlsFallback(seed)];
+  const fontes = [urlPollinations, ...urlsFallback(modo, seed)];
 
   for (const url of fontes) {
     try {
       await descarregarFicheiro(url, imagemLocal);
-      console.log('✅ Imagem única guardada: ' + nomeFicheiro);
-      return nomeFicheiro;
+      console.log('✅ Imagem guardada (' + etiquetaModo + '): ' + nomeFicheiro);
+      return { ficheiro: nomeFicheiro, modo };
     } catch (erro) {
       console.log('⚠️ Fonte indisponível: ' + url.slice(0, 80) + '...');
       console.log(String(erro));
@@ -242,39 +264,13 @@ export async function obterImagemFundo(signo: SignoZodiaco, data: string): Promi
 
   console.log('⚠️ Todas as fontes falharam — a usar JPEG local mínimo.');
   escreverJpegMinimo(imagemLocal);
-  return nomeFicheiro;
+  return { ficheiro: nomeFicheiro, modo };
 }
 
-/** Fundo zen espiritual Pinterest — motivacional, VIP, afiliados */
-export async function obterImagemFundoZenAstrologia(id: string, data: string): Promise<string> {
-  if (!fs.existsSync('./public')) {
-    fs.mkdirSync('./public', { recursive: true });
-  }
+export async function obterImagemFundo(signo: SignoZodiaco, data: string): Promise<ImagemFundoGerada> {
+  return gerarImagemFundo(signo, data, 'fundo-' + signo, NOMES_SIGNOS[signo]);
+}
 
-  const prompt = montarPromptZenAstrologia();
-  const seed = gerarSeedUnico(id, data);
-  const sufixo = crypto.randomBytes(4).toString('hex');
-  const nomeFicheiro = 'fundo-zen-' + id + '-' + sufixo + '.jpg';
-  const imagemLocal = './public/' + nomeFicheiro;
-  const urlPollinations = montarUrlPollinations(prompt, seed);
-
-  console.log('🎨 Prompt zen espiritual [' + id + ']: ' + prompt.slice(0, 120) + '...');
-  console.log('🎨 Seed único: ' + seed);
-
-  const fontes = [urlPollinations, ...urlsFallback(seed + 3)];
-
-  for (const url of fontes) {
-    try {
-      await descarregarFicheiro(url, imagemLocal);
-      console.log('✅ Imagem zen guardada: ' + nomeFicheiro);
-      return nomeFicheiro;
-    } catch (erro) {
-      console.log('⚠️ Fonte indisponível: ' + url.slice(0, 80) + '...');
-      console.log(String(erro));
-    }
-  }
-
-  console.log('⚠️ Todas as fontes falharam — a usar JPEG local mínimo.');
-  escreverJpegMinimo(imagemLocal);
-  return nomeFicheiro;
+export async function obterImagemFundoZenAstrologia(id: string, data: string): Promise<ImagemFundoGerada> {
+  return gerarImagemFundo(id, data, 'fundo-zen-' + id);
 }

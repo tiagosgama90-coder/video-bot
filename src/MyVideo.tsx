@@ -65,6 +65,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   fundoVideoTema,
   fundoVideoSeed,
   imagemFundoUrl,
+  imagemFundoModo,
   musicaFundoArquivo,
   segmentosEcra,
   siteMarca,
@@ -178,7 +179,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   return (
     <AbsoluteFill style={{ backgroundColor: PALETA_SIDUS.fundo, fontFamily: 'system-ui, sans-serif' }}>
       {usaImagemZen ? (
-        <FundoImagemZen imagemFundoUrl={imagemFundoUrl!} />
+        <FundoImagemZen imagemFundoUrl={imagemFundoUrl!} modoPaleta={imagemFundoModo} />
       ) : (
         <FundoVideoMistico tema={fundoVideoTema ?? 'zen_escuro'} seed={fundoVideoSeed ?? 0} />
       )}

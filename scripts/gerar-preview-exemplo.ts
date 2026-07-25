@@ -59,7 +59,7 @@ async function executar(): Promise<void> {
 
   const hook = escolherGanchoEspecial('motivacao-quinta', DATA);
   const fecho = escolherFechoNarracao();
-  const imagemFundoUrl = await obterImagemFundoZenAstrologia(ID, DATA);
+  const { ficheiro: imagemFundoUrl, modo: imagemFundoModo } = await obterImagemFundoZenAstrologia(ID, DATA);
   const fundo = escolherFundoVideoZen(ID, DATA);
   const musicaFundoArquivo = await prepararMusicaEspecial(ID, DATA, 'zen');
 
@@ -75,6 +75,7 @@ async function executar(): Promise<void> {
     frameInicioFecho: duracaoFrames - Math.round(30 * 4.8),
     fundoVideoSeed: fundo.seed,
     imagemFundoUrl,
+    imagemFundoModo,
     musicaFundoArquivo,
     duracaoFrames,
     siteMarca: 'sidusastro.com',

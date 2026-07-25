@@ -36,6 +36,7 @@ interface PropsVideoEspecial {
   fundoVideoTema?: TemaFundoMistico;
   fundoVideoSeed?: number;
   imagemFundoUrl?: string;
+  imagemFundoModo?: 'color' | 'mono';
   musicaFundoArquivo: string;
   duracaoFrames: number;
   siteMarca?: string;
@@ -87,6 +88,7 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
   let fundoVideoTema: TemaFundoMistico | undefined;
   let fundoVideoSeed: number | undefined;
   let imagemFundoUrl: string | undefined;
+  let imagemFundoModo: 'color' | 'mono' | undefined;
 
   if (opcoes.fundoZenAstrologia) {
     if (deveUsarFundoAnimadoZen(idPublicacao, opcoes.data)) {
@@ -95,10 +97,17 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
       fundoVideoSeed = fundo.seed;
       console.log('🎬 Fundo animado zen/espiritual: ' + fundoVideoTema + ' (seed ' + fundoVideoSeed + ')');
     } else {
-      imagemFundoUrl = await obterImagemFundoZenAstrologia(idPublicacao, opcoes.data);
+      const imagem = await obterImagemFundoZenAstrologia(idPublicacao, opcoes.data);
+      imagemFundoUrl = imagem.ficheiro;
+      imagemFundoModo = imagem.modo;
       const fundo = escolherFundoVideoZen(idPublicacao, opcoes.data);
       fundoVideoSeed = fundo.seed;
-      console.log('🎨 Fundo imagem zen Pinterest: ' + imagemFundoUrl);
+      console.log(
+        '🎨 Fundo imagem zen Pinterest (' +
+          (imagem.modo === 'mono' ? 'monocromático' : 'colorido') +
+          '): ' +
+          imagemFundoUrl,
+      );
     }
   } else {
     const chaveFundo = signoChave;
@@ -176,6 +185,7 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
     fundoVideoTema,
     fundoVideoSeed,
     imagemFundoUrl,
+    imagemFundoModo,
     musicaFundoArquivo,
     duracaoFrames,
     siteMarca: urlSiteMarca(),

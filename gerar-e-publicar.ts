@@ -44,6 +44,7 @@ interface PropsVideo {
   hookTexto: string;
   fechoTexto: string;
   imagemFundoUrl: string;
+  imagemFundoModo: 'color' | 'mono';
   fundoVideoSeed: number;
   musicaFundoArquivo: string;
   duracaoFrames: number;
@@ -105,8 +106,16 @@ async function processarSigno(
   console.log('✂️ Vídeo (1.ª + 2.ª frase por ponto final): "' + previsaoVideo + '"');
 
   const { seed: fundoVideoSeed } = escolherFundoVideo(signo, data);
-  const imagemFundoUrl = await obterImagemFundo(signo, data);
-  console.log('🎨 Fundo Pinterest IA: ' + imagemFundoUrl + ' (movimento + overlay zen, seed ' + fundoVideoSeed + ')');
+  const { ficheiro: imagemFundoUrl, modo: imagemFundoModo } = await obterImagemFundo(signo, data);
+  console.log(
+    '🎨 Fundo Pinterest IA: ' +
+      imagemFundoUrl +
+      ' (' +
+      (imagemFundoModo === 'mono' ? 'monocromático' : 'colorido') +
+      ', movimento + overlay zen, seed ' +
+      fundoVideoSeed +
+      ')',
+  );
   const slotMusica =
     SLOTS_MUSICA_HOROSCOPO[indiceSlot] ??
     SLOTS_MUSICA_HOROSCOPO[indiceSlot % SLOTS_MUSICA_HOROSCOPO.length];
@@ -152,6 +161,7 @@ async function processarSigno(
     hookTexto,
     fechoTexto: fechoEcra,
     imagemFundoUrl,
+    imagemFundoModo,
     fundoVideoSeed,
     musicaFundoArquivo,
     duracaoFrames,

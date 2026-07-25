@@ -9,7 +9,7 @@ import { escolherGanchoDiario } from '../src/lib/ganchos-diario';
 import { escolherGanchoEspecial } from '../src/lib/ganchos-especial';
 import { obterEtiquetaGanchoMotivacional } from '../src/lib/conteudo-especial';
 import { calcularDuracaoFrames } from '../src/lib/duracao-video';
-import { escolherFundoVideo } from '../src/lib/fundo-video';
+import { escolherFundoVideo, escolherFundoVideoZen } from '../src/lib/fundo-video';
 import { obterImagemFundo } from '../src/lib/imagem-fundo';
 import { obterImagemFundoZenAstrologia } from '../src/lib/imagem-fundo';
 import { escolherFechoNarracao } from '../src/lib/legenda';
@@ -79,7 +79,7 @@ async function previewDiario(): Promise<string> {
     fecho,
   });
   const fundo = escolherFundoVideo(signo, DATA);
-  const imagem = await obterImagemFundo(signo, DATA);
+  const { ficheiro: imagem, modo: imagemFundoModo } = await obterImagemFundo(signo, DATA);
   const musica = await prepararMusicaParaVideo(signo, DATA, SLOT_MUSICA.HOROSCOPO_0);
 
   return renderizarPreview('preview-diario-touro', {
@@ -90,6 +90,7 @@ async function previewDiario(): Promise<string> {
     frameInicioPrevisao,
     frameInicioFecho,
     imagemFundoUrl: imagem,
+    imagemFundoModo,
     fundoVideoSeed: fundo.seed,
     musicaFundoArquivo: musica,
     duracaoFrames,
@@ -108,7 +109,8 @@ async function previewMotivacionalZen(): Promise<string> {
     previsao: frase,
     fecho,
   });
-  const imagem = await obterImagemFundoZenAstrologia('preview-motivacional', DATA);
+  const { ficheiro: imagem, modo: imagemFundoModo } = await obterImagemFundoZenAstrologia('preview-motivacional', DATA);
+  const fundo = escolherFundoVideoZen('preview-motivacional', DATA);
   const musica = await prepararMusicaEspecial('preview-motivacional', DATA, 'zen');
 
   return renderizarPreview('preview-motivacional-zen', {
@@ -119,6 +121,8 @@ async function previewMotivacionalZen(): Promise<string> {
     frameInicioPrevisao,
     frameInicioFecho,
     imagemFundoUrl: imagem,
+    imagemFundoModo,
+    fundoVideoSeed: fundo.seed,
     musicaFundoArquivo: musica,
     duracaoFrames,
     siteMarca: 'sidusastro.com',
