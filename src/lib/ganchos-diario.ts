@@ -2,6 +2,7 @@
 import crypto from 'crypto';
 import { isLocaleUS } from './locale';
 import { obterNomeSigno, type SignoZodiaco } from './signos';
+import { escolherGanchoViral } from './ganchos-virais';
 import { sanitizarTextoPublico } from './texto-publico';
 
 type GanchoFn = (n: string) => string;
@@ -157,8 +158,7 @@ function ganchoDaPrevisao(nomeSigno: string, previsao: string, signo: SignoZodia
 }
 
 /**
- * Gancho narrado — psicologia + horóscopo (PT-PT).
- * 70% mind-reading | 15% horóscopo directo | 25% derivado da previsão real.
+ * Gancho narrado — 55% viral (dinheiro/amor/ego) | resto psicologia + horóscopo.
  */
 export function escolherGanchoDiario(
   signo: SignoZodiaco,
@@ -168,7 +168,11 @@ export function escolherGanchoDiario(
   const nomeSigno = obterNomeSigno(signo);
   const dataRef = data ?? new Date().toISOString().slice(0, 10);
 
-  if (escolherIndiceGancho(signo, dataRef + '-prev', 100) < 25) {
+  if (escolherIndiceGancho(signo, dataRef + '-viral', 100) < 55) {
+    return escolherGanchoViral(signo, dataRef);
+  }
+
+  if (escolherIndiceGancho(signo, dataRef + '-prev', 100) < 20) {
     const daPrevisao = ganchoDaPrevisao(nomeSigno, previsao, signo, dataRef);
     if (daPrevisao) {
       return daPrevisao;
