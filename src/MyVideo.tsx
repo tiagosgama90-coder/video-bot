@@ -17,6 +17,8 @@ import type { HoroscopoProps } from './types/horoscopo';
 
 export type { HoroscopoProps } from './types/horoscopo';
 
+const LOGO_SIDUS_PX = 280;
+
 function tamanhoFonteCaixa(texto: string, base: number, ecraLink = false): number {
   if (ecraLink) {
     return 48;
@@ -69,9 +71,13 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
     segmentosVisiveis.length > 0 ? segmentosVisiveis[segmentosVisiveis.length - 1] : null;
 
   const emFaseHook = Boolean(hookTexto && frame < inicioCorpo);
+  const emFaseFecho = Boolean(fechoTexto && frame >= inicioFecho);
 
   const ecraLink =
-    !modoProgressivo && !emFaseHook && /^[a-z0-9][-a-z0-9.]*\.[a-z]{2,}$/i.test(previsao.trim());
+    !modoProgressivo &&
+    !emFaseHook &&
+    !emFaseFecho &&
+    /^[a-z0-9][-a-z0-9.]*\.[a-z]{2,}$/i.test(previsao.trim());
 
   const opacidadeHookCaixa = hookTexto
     ? interpolate(frame, [0, 8, inicioCorpo - 8, inicioCorpo], [0, 1, 1, 0], {
@@ -104,12 +110,56 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
     border: `1px solid ${PALETA_SIDUS.marcaBorda}`,
     boxShadow: '0 10px 30px rgba(0,0,0,0.35)',
     width: '100%',
+    minHeight: 120,
   };
 
   const textoHook = hookTexto ?? '';
-  const textoPrincipal = emFaseHook ? textoHook : previsao;
-  const opacidadeCaixaPrincipal = emFaseHook ? opacidadeHookCaixa : opacidadePrevisao;
-  const fontePrincipal = tamanhoFonteCaixa(textoPrincipal, modoProgressivo ? 24 : 28, ecraLink);
+  const textoFecho = fechoTexto ?? '';
+
+  let textoCaixa = previsao;
+  let opacidadeCaixa = opacidadePrevisao;
+  let pesoCaixa = 400;
+  let corCaixa: string = PALETA_SIDUS.textoCorpo;
+  let bordaCaixa = `1px solid ${PALETA_SIDUS.marcaBorda}`;
+  let fundoCaixa: string = PALETA_SIDUS.marca;
+
+  if (emFaseHook) {
+    textoCaixa = textoHook;
+    opacidadeCaixa = opacidadeHookCaixa;
+    pesoCaixa = 700;
+  } else if (emFaseFecho) {
+    textoCaixa = textoFecho;
+    opacidadeCaixa = opacidadeFecho;
+    pesoCaixa = 900;
+    corCaixa = PALETA_SIDUS.destaqueForte;
+    bordaCaixa = `3px solid ${PALETA_SIDUS.destaqueForte}`;
+    fundoCaixa = PALETA_SIDUS.marcaMedia;
+  } else if (modoProgressivo && segmentoActivo) {
+    textoCaixa = segmentoActivo.texto;
+    opacidadeCaixa = interpolate(
+      frame,
+      [segmentoActivo.frameInicio, segmentoActivo.frameInicio + 10],
+      [0, 1],
+      { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' },
+    );
+    pesoCaixa = 600;
+  } else if (modoProgressivo) {
+    textoCaixa = '';
+    opacidadeCaixa = 0;
+  } else if (ecraLink) {
+    pesoCaixa = 800;
+    corCaixa = PALETA_SIDUS.destaque;
+    fundoCaixa = PALETA_SIDUS.marcaMedia;
+    bordaCaixa = `2px solid ${PALETA_SIDUS.destaqueBorda}`;
+  } else if (!modoProgressivo && previsao) {
+    textoCaixa = `"${previsao}"`;
+  }
+
+  const fonteCaixa = tamanhoFonteCaixa(
+    textoCaixa,
+    modoProgressivo ? 24 : 28,
+    ecraLink && !emFaseHook && !emFaseFecho,
+  );
 
   return (
     <AbsoluteFill style={{ backgroundColor: PALETA_SIDUS.fundo, fontFamily: 'system-ui, sans-serif' }}>
@@ -143,7 +193,12 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
         >
           <Img
             src={logoSidus}
-            style={{ width: 240, height: 240, marginBottom: 16, objectFit: 'contain' }}
+            style={{
+              width: LOGO_SIDUS_PX,
+              height: LOGO_SIDUS_PX,
+              marginBottom: 16,
+              objectFit: 'contain',
+            }}
           />
         </div>
 
@@ -161,114 +216,36 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
         </div>
 
         <div style={{ width: '100%', maxWidth: 980, position: 'relative' }}>
-          {modoProgressivo ? (
-            emFaseHook ? (
-              <div
-                style={{
-                  ...estiloCaixaBase,
-                  color: PALETA_SIDUS.textoCorpo,
-                  fontSize: tamanhoFonteCaixa(textoHook, 26),
-                  fontWeight: 700,
-                  lineHeight: 1.4,
-                  textAlign: 'center',
-                  opacity: opacidadeHookCaixa,
-                  transform: `translateY(${(1 - opacidadeHookCaixa) * 8}px)`,
-                }}
-              >
-                {textoHook}
-              </div>
-            ) : segmentoActivo ? (
-              <div
-                style={{
-                  ...estiloCaixaBase,
-                  color: PALETA_SIDUS.textoCorpo,
-                  fontSize: tamanhoFonteCaixa(segmentoActivo.texto, 24),
-                  fontWeight: 600,
-                  lineHeight: 1.4,
-                  textAlign: 'center',
-                  opacity: interpolate(
-                    frame,
-                    [segmentoActivo.frameInicio, segmentoActivo.frameInicio + 10],
-                    [0, 1],
-                    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' },
-                  ),
-                }}
-              >
-                {segmentoActivo.texto.includes('sidusastro.com') ? (
-                  <>
-                    {segmentoActivo.texto.split('sidusastro.com')[0]}
-                    <span style={{ color: PALETA_SIDUS.destaque, fontWeight: 800 }}>sidusastro.com</span>
-                    {segmentoActivo.texto.split('sidusastro.com')[1] ?? ''}
-                  </>
-                ) : (
-                  segmentoActivo.texto
-                )}
-              </div>
-            ) : null
-          ) : (
-            <div
-              style={{
-                ...estiloCaixaBase,
-                backgroundColor: ecraLink ? PALETA_SIDUS.marcaMedia : PALETA_SIDUS.marca,
-                color: ecraLink ? PALETA_SIDUS.destaque : PALETA_SIDUS.textoCorpo,
-                fontSize: fontePrincipal,
-                fontWeight: emFaseHook ? 700 : ecraLink ? 800 : 400,
-                lineHeight: 1.45,
-                textAlign: 'center',
-                border: ecraLink
-                  ? `2px solid ${PALETA_SIDUS.destaqueBorda}`
-                  : `1px solid ${PALETA_SIDUS.marcaBorda}`,
-                maxHeight: 420,
-                overflow: 'hidden',
-                opacity: opacidadeCaixaPrincipal,
-                transform: `translateY(${(1 - opacidadeCaixaPrincipal) * 10}px)`,
-                letterSpacing: ecraLink ? 1.5 : 0,
-              }}
-            >
-              {emFaseHook ? (
-                textoHook
-              ) : ecraLink ? (
-                previsao
-              ) : (
-                <>&quot;{previsao}&quot;</>
-              )}
-            </div>
-          )}
-
-          {!modoProgressivo && fechoTexto ? (
-            <div
-              style={{
-                position: 'absolute',
-                left: 0,
-                right: 0,
-                top: '50%',
-                transform: `translateY(${120 - opacidadeFecho * 16}px)`,
-                display: 'flex',
-                justifyContent: 'center',
-                opacity: opacidadeFecho,
-                pointerEvents: 'none',
-              }}
-            >
-              <div
-                style={{
-                  backgroundColor: PALETA_SIDUS.marcaMedia,
-                  border: `3px solid ${PALETA_SIDUS.destaqueForte}`,
-                  borderRadius: 22,
-                  padding: '20px 26px',
-                  color: PALETA_SIDUS.destaqueForte,
-                  fontSize: fechoTexto.length > 70 ? 26 : 30,
-                  fontWeight: 900,
-                  textAlign: 'center',
-                  lineHeight: 1.25,
-                  boxShadow: `0 12px 40px rgba(0,0,0,0.55), 0 0 32px ${PALETA_SIDUS.destaqueSombra}`,
-                  textShadow: '0 2px 12px rgba(0,0,0,0.65)',
-                  maxWidth: 980,
-                }}
-              >
-                {fechoTexto}
-              </div>
-            </div>
-          ) : null}
+          <div
+            style={{
+              ...estiloCaixaBase,
+              backgroundColor: fundoCaixa,
+              color: corCaixa,
+              fontSize: fonteCaixa,
+              fontWeight: pesoCaixa,
+              lineHeight: 1.45,
+              textAlign: 'center',
+              border: bordaCaixa,
+              maxHeight: 420,
+              overflow: 'hidden',
+              opacity: opacidadeCaixa,
+              transform: `translateY(${(1 - opacidadeCaixa) * 10}px)`,
+              letterSpacing: ecraLink && !emFaseHook && !emFaseFecho ? 1.5 : 0,
+              boxShadow: emFaseFecho
+                ? `0 12px 40px rgba(0,0,0,0.55), 0 0 32px ${PALETA_SIDUS.destaqueSombra}`
+                : '0 10px 30px rgba(0,0,0,0.35)',
+            }}
+          >
+            {modoProgressivo && segmentoActivo?.texto.includes('sidusastro.com') ? (
+              <>
+                {segmentoActivo.texto.split('sidusastro.com')[0]}
+                <span style={{ color: PALETA_SIDUS.destaque, fontWeight: 800 }}>sidusastro.com</span>
+                {segmentoActivo.texto.split('sidusastro.com')[1] ?? ''}
+              </>
+            ) : (
+              textoCaixa
+            )}
+          </div>
         </div>
       </AbsoluteFill>
 

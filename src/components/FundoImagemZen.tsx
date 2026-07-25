@@ -30,13 +30,13 @@ export function FundoImagemZen({ imagemFundoUrl }: FundoImagemZenProps): React.R
           width,
           height,
           display: 'block',
-          filter: 'blur(11px) brightness(0.48) saturate(0.92)',
+          filter: 'blur(14px) brightness(0.4) saturate(0.88)',
           transform: 'scale(1.04)',
         }}
       />
       <AbsoluteFill
         style={{
-          background: `linear-gradient(180deg, ${PALETA_SIDUS.fundo}bb 0%, ${PALETA_SIDUS.fundo}55 35%, ${PALETA_SIDUS.fundo}66 100%)`,
+          background: `linear-gradient(180deg, ${PALETA_SIDUS.fundo}dd 0%, ${PALETA_SIDUS.fundo}70 40%, ${PALETA_SIDUS.fundo}cc 100%)`,
           pointerEvents: 'none',
         }}
       />
