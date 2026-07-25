@@ -5,6 +5,7 @@ import axios from 'axios';
 import say from 'say';
 import { isLocaleUS } from './locale';
 import { carregarConfigProjeto, type PreferenciaVoz, type ProsodiaLocale } from './project-config';
+import { prepararTextoNarracao } from './texto-publico';
 
 interface VozNeural {
   id: string;
@@ -45,7 +46,7 @@ function escapeXml(texto: string): string {
     .replace(/'/g, '&apos;');
 }
 
-function prepararTextoSsml(texto: string): string {
+function prepararTextoSsml(texto: string, comEnfase = true): string {
   const cfg = carregarConfigProjeto();
   const escapado = escapeXml(texto);
   const pausaFrase = cfg.voz.pausaFraseMs;
@@ -54,6 +55,10 @@ function prepararTextoSsml(texto: string): string {
   const comPausas = escapado
     .replace(/([.!?…])\s+/g, '$1<break time="' + pausaFrase + 'ms"/> ')
     .replace(/([,;:])\s+/g, '$1<break time="' + pausaVirgula + 'ms"/> ');
+
+  if (!comEnfase) {
+    return comPausas;
+  }
 
   const primeiraFrase = comPausas.match(/^[^<]+/);
   if (!primeiraFrase) {
@@ -96,10 +101,17 @@ function obterEstiloAzure(voz: VozNeural, bloco: ProsodiaLocale): { estilo: stri
   return { estilo, grau };
 }
 
-function montarCorpoSsml(texto: string, voz: VozNeural): string {
+interface OpcoesSsml {
+  comEstilo?: boolean;
+  comEnfase?: boolean;
+}
+
+function montarCorpoSsml(texto: string, voz: VozNeural, opcoes: OpcoesSsml = {}): string {
+  const comEstilo = opcoes.comEstilo !== false;
+  const comEnfase = opcoes.comEnfase !== false;
   const bloco = obterBlocoVoz(voz);
   const prosodia = obterProsodiaExpressiva(voz);
-  const conteudo = prepararTextoSsml(texto);
+  const conteudo = prepararTextoSsml(texto, comEnfase);
   const { estilo, grau } = obterEstiloAzure(voz, bloco);
 
   const prosody =
@@ -113,7 +125,7 @@ function montarCorpoSsml(texto: string, voz: VozNeural): string {
     conteudo +
     '</prosody>';
 
-  if (estilo) {
+  if (comEstilo && estilo) {
     return (
       "<mstts:express-as style='" +
       escapeXml(estilo) +
@@ -126,6 +138,27 @@ function montarCorpoSsml(texto: string, voz: VozNeural): string {
   }
 
   return prosody;
+}
+
+function montarSsmlCompleto(texto: string, voz: VozNeural, opcoes: OpcoesSsml = {}): string {
+  return (
+    "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' " +
+    "xmlns:mstts='https://www.w3.org/2001/m10/synthesis' xml:lang='" +
+    voz.lang +
+    "'>" +
+    "<voice name='" +
+    voz.id +
+    "'>" +
+    montarCorpoSsml(texto, voz, opcoes) +
+    '</voice></speak>'
+  );
+}
+
+function ehErroAzureSsml(erro: unknown): boolean {
+  if (!axios.isAxiosError(erro)) {
+    return false;
+  }
+  return erro.response?.status === 400;
 }
 
 export function obterPreferenciaVozConfig(): PreferenciaVoz {
@@ -145,28 +178,13 @@ export function escolherVozAleatoria(
   return vozes[crypto.randomInt(0, vozes.length)];
 }
 
-async function gerarNarracaoAzure(
-  texto: string,
-  destino: string,
-  voz: VozNeural,
-): Promise<void> {
+async function enviarSsmlAzure(ssml: string): Promise<ArrayBuffer> {
   const speechKey = process.env.AZURE_SPEECH_KEY;
   const speechRegion = process.env.AZURE_SPEECH_REGION;
 
   if (!speechKey || !speechRegion) {
     throw new Error('Azure Speech não configurado');
   }
-
-  const ssml =
-    "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' " +
-    "xmlns:mstts='https://www.w3.org/2001/m10/synthesis' xml:lang='" +
-    voz.lang +
-    "'>" +
-    "<voice name='" +
-    voz.id +
-    "'>" +
-    montarCorpoSsml(texto, voz) +
-    '</voice></speak>';
 
   const endpoint =
     'https://' + speechRegion + '.tts.speech.microsoft.com/cognitiveservices/v1';
@@ -181,7 +199,45 @@ async function gerarNarracaoAzure(
     },
   });
 
-  fs.writeFileSync(destino, Buffer.from(resposta.data));
+  return resposta.data;
+}
+
+async function gerarNarracaoAzure(
+  texto: string,
+  destino: string,
+  voz: VozNeural,
+): Promise<void> {
+  const textoLimpo = prepararTextoNarracao(texto);
+  if (!textoLimpo) {
+    throw new Error('Texto de narração vazio após sanitização');
+  }
+
+  const tentativas: OpcoesSsml[] = [
+    { comEstilo: true, comEnfase: true },
+    { comEstilo: false, comEnfase: true },
+    { comEstilo: false, comEnfase: false },
+  ];
+
+  let ultimoErro: unknown;
+  for (let i = 0; i < tentativas.length; i++) {
+    const ssml = montarSsmlCompleto(textoLimpo, voz, tentativas[i]);
+    try {
+      const audio = await enviarSsmlAzure(ssml);
+      fs.writeFileSync(destino, Buffer.from(audio));
+      if (i > 0) {
+        console.log('ℹ️ Narração Azure OK com SSML simplificado (tentativa ' + (i + 1) + ').');
+      }
+      return;
+    } catch (erro) {
+      ultimoErro = erro;
+      if (!ehErroAzureSsml(erro) || i === tentativas.length - 1) {
+        throw erro;
+      }
+      console.log('⚠️ Azure SSML rejeitado (400) — a simplificar e repetir...');
+    }
+  }
+
+  throw ultimoErro;
 }
 
 function gerarNarracaoHelia(texto: string, destino: string): Promise<void> {
@@ -223,7 +279,7 @@ export async function gerarNarracao(
   );
 
   try {
-    await gerarNarracaoAzure(texto, destino, vozEscolhida);
+    await gerarNarracaoAzure(prepararTextoNarracao(texto), destino, vozEscolhida);
     console.log('✅ Narração neural Azure gravada.');
     return;
   } catch (erroAzure) {
@@ -241,7 +297,7 @@ export async function gerarNarracao(
   }
 
   console.log('🗣️ A gerar voz local ' + VOZ_HELIA.id + '...');
-  await gerarNarracaoHelia(texto, destino);
+  await gerarNarracaoHelia(prepararTextoNarracao(texto), destino);
   console.log('✅ Narração Helia gravada.');
 }
 

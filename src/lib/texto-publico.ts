@@ -11,6 +11,17 @@ export function sanitizarTextoPublico(texto: string): string {
     .trim();
 }
 
+/** Texto para TTS Azure — remove emojis e símbolos que quebram SSML */
+export function prepararTextoNarracao(texto: string): string {
+  return sanitizarTextoPublico(texto)
+    .replace(/[\u{1F000}-\u{1FFFF}]/gu, '')
+    .replace(/[\u2600-\u27BF]/g, '')
+    .replace(/[\uFE00-\uFE0F]/g, '')
+    .replace(/\u200D/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
 export function sanitizarLegendas(legendas: {
   tiktok: string;
   instagram: string;

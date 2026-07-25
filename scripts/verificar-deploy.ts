@@ -21,6 +21,8 @@ if (process.env.GITHUB_SHA) {
 exigirFicheiro('./gerar-e-publicar.ts');
 exigirFicheiro('./src/lib/texto-publico.ts');
 exigirTexto('./src/lib/texto-publico.ts', 'sanitizarTextoPublico', 'Texto público: banir traço tipográfico');
+exigirTexto('./src/lib/texto-publico.ts', 'prepararTextoNarracao', 'Voz: sanitizar texto TTS');
+exigirTexto('./src/lib/voz.ts', 'ehErroAzureSsml', 'Voz: retry SSML Azure em 400');
 exigirTexto('./src/lib/conteudo-especial.ts', 'Ok, isto é real', 'VIP: legendas humanizadas PT');
 exigirTexto('./src/lib/conteudo-especial.ts', 'Okay this is real', 'VIP: legendas humanizadas EN');
 exigirFicheiro('./src/lib/ganchos-diario.ts');
@@ -31,7 +33,8 @@ exigirTexto('./src/lib/ganchos-virais.ts', 'Casa tens a tua Vénus', 'Viral: gan
 exigirTexto('./src/lib/ganchos-virais.ts', 'verdadeira missão de vida', 'Viral: gancho ego');
 exigirTexto('./src/lib/ganchos-diario.ts', 'escolherGanchoViral', 'Diário: rotação ganchos virais');
 exigirTexto('./src/components/OverlayLegibilidadeTexto.tsx', 'OverlayLegibilidadeTexto', 'Vídeo: overlay legibilidade');
-exigirTexto('./src/components/FundoImagemZen.tsx', 'blur(11px)', 'Vídeo: blur fundo zen para texto');
+exigirTexto('./src/components/FundoImagemZen.tsx', 'brightness(0.92)', 'Vídeo: imagem Pinterest visível');
+exigirTexto('./src/components/OverlayLegibilidadeTexto.tsx', 'modoImagemZen', 'Vídeo: overlay leve com imagem zen');
 exigirTexto('./src/lib/legenda.ts', 'URGENTE - lê a legenda completa', 'Instagram: urgência gancho viral');
 exigirTexto('./src/lib/ganchos-diario.ts', 'escolherGanchoDiario', 'Diário: ganchos emocionais');
 exigirTexto('./src/lib/ganchos-diario.ts', 'GANCHOS_PSICOLOGIA_PT', 'Diário: ganchos psicológicos PT');
@@ -104,7 +107,10 @@ exigirTexto('./src/components/ZenOverlayAnimado.tsx', 'ZenOverlayAnimado', 'Víd
 exigirTexto('./config/sidusastro.json', '#08060e', 'Imagem config: cor base 60%');
 exigirTexto('./src/lib/gerar-video-especial.ts', 'obterImagemFundoZenAstrologia', 'Especiais: imagem zen quando fundoZenAstrologia');
 exigirTexto('./gerar-video-quinta.ts', 'SLOT_MUSICA.MOTIVACIONAL_QUINTA', 'Quinta: slot música');
-exigirTexto('./gerar-video-quinta.ts', "escolherFraseMotivacional(data, 'quinta')", 'Quinta: variante frase');
+exigirTexto('./gerar-video-quinta.ts', 'obterEtiquetaGanchoMotivacional', 'Quinta: etiqueta gancho ecrã');
+exigirTexto('./gerar-video-quinta.ts', 'obterLegendasMotivacional(gancho', 'Quinta: legenda com gancho');
+exigirTexto('./gerar-video-segunda.ts', 'obterEtiquetaGanchoMotivacional', 'Segunda: etiqueta gancho ecrã');
+exigirTexto('./src/lib/fundo-video.ts', "includes('motivacao')", 'Motivacional: sempre imagem IA');
 
 exigirTexto('./config/sidusastro.json', '"femininaRate": "+4%"', 'Voz: prosódia feminina zen');
 exigirTexto('./src/lib/voz.ts', 'mstts:express-as', 'Voz: estilo Azure expressivo');

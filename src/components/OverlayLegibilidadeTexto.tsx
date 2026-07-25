@@ -2,8 +2,26 @@ import React from 'react';
 import { AbsoluteFill } from 'remotion';
 import { PALETA_SIDUS } from '../lib/paleta-visual';
 
-/** Escurece fundos para o texto ganhar prioridade - imagem Pinterest não compete com letras */
-export function OverlayLegibilidadeTexto(): React.ReactElement {
+export interface OverlayLegibilidadeTextoProps {
+  /** Com imagem zen Pinterest: overlay mínimo para não apagar o pin */
+  modoImagemZen?: boolean;
+}
+
+/** Escurece fundos animados para o texto destacar; com imagem zen mantém o pin visível */
+export function OverlayLegibilidadeTexto({
+  modoImagemZen = false,
+}: OverlayLegibilidadeTextoProps): React.ReactElement {
+  if (modoImagemZen) {
+    return (
+      <AbsoluteFill
+        style={{
+          background: `linear-gradient(180deg, transparent 0%, transparent 35%, ${PALETA_SIDUS.fundo}33 55%, ${PALETA_SIDUS.fundo}77 100%)`,
+          pointerEvents: 'none',
+        }}
+      />
+    );
+  }
+
   return (
     <AbsoluteFill
       style={{

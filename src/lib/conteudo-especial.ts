@@ -261,23 +261,71 @@ export function escolherFraseMotivacional(
   return sanitizarTextoPublico(frases[indice]);
 }
 
-export function obterTituloMotivacional(): string {
-  return isLocaleUS() ? 'MESSAGE FROM THE COSMOS' : 'MENSAGEM DO COSMOS';
+const ETIQUETAS_GANCHO_MOTIVACIONAL_PT = [
+  'PARA QUEM PAROU O SCROLL',
+  'ISTO É PARA TI',
+  'O CÉU MANDOU ISTO',
+  'NÃO É COINCIDÊNCIA',
+  'LÊ COM ATENÇÃO',
+  'GUARDA ESTE REEL',
+  'PARA QUEM PRECISAVA',
+  'O UNIVERSO FALA',
+] as const;
+
+const ETIQUETAS_GANCHO_MOTIVACIONAL_EN = [
+  'FOR WHOEVER NEEDED THIS',
+  'THIS IS FOR YOU',
+  'THE COSMOS SENT THIS',
+  'NOT A COINCIDENCE',
+  'READ THIS CAREFULLY',
+  'SAVE THIS REEL',
+  'IF YOU NEEDED A SIGN',
+  'THE UNIVERSE SPEAKS',
+] as const;
+
+/** Etiqueta curta no ecrã (substitui "MOTIVAÇÃO" / "MENSAGEM DO COSMOS") */
+export function obterEtiquetaGanchoMotivacional(
+  data: string,
+  variante: 'segunda' | 'quinta' = 'segunda',
+): string {
+  const etiquetas = isLocaleUS() ? ETIQUETAS_GANCHO_MOTIVACIONAL_EN : ETIQUETAS_GANCHO_MOTIVACIONAL_PT;
+  const indice = hashTexto('etiqueta-motiv-' + variante + '-' + data) % etiquetas.length;
+  return etiquetas[indice];
 }
 
-export function obterLegendasMotivacional(): { tiktok: string; instagram: string } {
+/** @deprecated usar obterEtiquetaGanchoMotivacional */
+export function obterTituloMotivacional(): string {
+  return obterEtiquetaGanchoMotivacional('1970-01-01', 'segunda');
+}
+
+function prefixoUrgenciaMotivacionalInstagram(gancho: string): string {
+  if (gancho.length < 120) {
+    return '';
+  }
+  return isLocaleUS()
+    ? '🚨 URGENT - read the full caption!\n\n'
+    : '🚨 URGENTE - lê a legenda completa!\n\n';
+}
+
+export function obterLegendasMotivacional(
+  gancho: string,
+  frase: string,
+): { tiktok: string; instagram: string } {
+  const hook = sanitizarTextoPublico(gancho);
+  const corpo = sanitizarTextoPublico(frase);
+  const resumo = corpo.length > 95 ? corpo.slice(0, 92).trim() + '...' : corpo;
+
   if (isLocaleUS()) {
     return {
       tiktok: sanitizarTextoPublico(
-        'Needed this today, so maybe you do too ✨\n\n' +
-          'Save it for later if it hits.\n\n' +
-          CTA_MOTIVACIONAL_EN +
-          '\n\n' +
-          HASHTAGS_MOTIVACIONAL_EN_TIKTOK,
+        hook + '\n\n' + resumo + '\n\n' + CTA_MOTIVACIONAL_EN + '\n\n' + HASHTAGS_MOTIVACIONAL_EN_TIKTOK,
       ),
       instagram: sanitizarTextoPublico(
-        'A little reminder for whoever needs it today ✨\n\n' +
-          'Save this reel - your birth chart still has answers. 🔮\n\n' +
+        prefixoUrgenciaMotivacionalInstagram(hook) +
+          hook +
+          '\n\n' +
+          resumo +
+          '\n\n' +
           CTA_COMENTARIO_INSTAGRAM_EN +
           '\n\n' +
           CTA_MOTIVACIONAL_EN +
@@ -288,15 +336,14 @@ export function obterLegendasMotivacional(): { tiktok: string; instagram: string
   }
   return {
     tiktok: sanitizarTextoPublico(
-      'Precisava disto hoje, talvez tu também ✨\n\n' +
-        'Guarda para quando precisares.\n\n' +
-        CTA_MOTIVACIONAL_PT +
-        '\n\n' +
-        HASHTAGS_MOTIVACIONAL_PT_TIKTOK,
+      hook + '\n\n' + resumo + '\n\n' + CTA_MOTIVACIONAL_PT + '\n\n' + HASHTAGS_MOTIVACIONAL_PT_TIKTOK,
     ),
     instagram: sanitizarTextoPublico(
-      'Uma lembrança rápida para quem precisa hoje ✨\n\n' +
-        'Guarda este reel - o teu mapa astral ainda tem respostas. 🔮\n\n' +
+      prefixoUrgenciaMotivacionalInstagram(hook) +
+        hook +
+        '\n\n' +
+        resumo +
+        '\n\n' +
         CTA_COMENTARIO_INSTAGRAM_PT +
         '\n\n' +
         CTA_MOTIVACIONAL_PT +
