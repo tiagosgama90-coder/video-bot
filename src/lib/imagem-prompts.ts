@@ -1,61 +1,68 @@
 /**
- * Prompts IA — estilo Pinterest espiritual/místico (alquimia, tarot, fases da lua, astrolábio).
- * Paleta 60-30-10 alinhada com PALETA_SIDUS (fundo #08060e · marca #2a1848 · ouro #f3cc63).
+ * Prompts IA — Pinterest espiritual colorido (alquimia, tarot, lua, astrolábio, reiki, mandala).
+ * Paleta 60-30-10 + acentos de cor viva (violeta, teal, rosa, esmeralda, ouro, aurora).
  */
 
 export const PALETAS_60_30_10 = [
-  '60% midnight navy blue #08060e, 30% deep cosmic indigo #1a1530, 10% aged antique gold #c9a227 tarnished metallic accents',
-  '60% deep indigo void #08060e, 30% soft violet aura #2a1848, 10% warm gold light #f3cc63 glowing accents only',
-  '60% midnight purple #08060e base, 30% amethyst nebula mist #2a1848, 10% celestial aged gold #d4af37 highlights',
-  '60% cosmic dark blue-black #08060e, 30% stardust indigo haze #2a1848, 10% golden engraved line art #f3cc63',
+  '60% midnight navy #08060e, 30% rich amethyst violet #6b3fa0, 10% luminous gold #f3cc63 and soft rose pink #e8a0bf accents',
+  '60% deep indigo void #08060e, 30% cosmic purple nebula #4a2d7a, 10% teal cyan healing light #5ec8c8 and golden glow #f3cc63',
+  '60% dark cosmic blue #08060e, 30% emerald spiritual green #2d6b5a, 10% warm amber gold #d4af37 and coral rose aura #e07a8a',
+  '60% midnight purple base #08060e, 30% lavender mist #7b5ea7, 10% aurora magenta teal and gold multicolor spiritual highlights',
+  '60% deep space indigo #08060e, 30% sapphire blue violet haze #3d2b7a, 10% aged gold #c9a227 with ruby red and jade green jewel accents',
+  '60% cosmic dark #08060e, 30% soft violet aura #2a1848, 10% radiant chakra rainbow hints gold violet emerald rose subtle not neon',
 ] as const;
 
 /**
- * Estilo Pinterest — 4 famílias visuais:
- * alquimia/tarot em moldura, fases da lua verticais, cosmologia antiga, texturas cósmicas profundas.
+ * Pinterest colorido + espiritual — alquimia/tarot, fases lua, cosmologia antiga, nebulosas,
+ * reiki, mandala, chakra, lotus, geometria sagrada, aurora curativa.
  */
 export const TEMAS_IMAGEM_ZEN_ESPIRITUAL = [
-  'vertical tarot card illustration ornate golden frame border, mystical hands holding sun and moon cosmic orbs, alchemy symbols, decorative ornamental band at base abstract glyphs not readable text, pinterest spiritual art',
-  'alchemy tarot card poster vertical format structured frame, hands emerging from darkness holding stars and planets, antique gold line art on midnight blue, inspirational mystical illustration pinterest',
-  'tarot major arcana style vertical card design ornate border, cosmic hands cupping glowing sphere, moon sun alchemical icons, decorative scrollwork base ornamental lettering style abstract only pinterest',
-  'vertical moon phases column waxing waning full crescent sequence, fine geometric lines star chart patterns, lunar cycle diagram gold linework on deep indigo, pinterest moon aesthetic wallpaper',
-  'moon phases vertical alignment eight lunar stages, delicate sacred geometry grid, constellation dots connecting lines, soft gold glow midnight blue background pinterest spiritual',
-  'lunar cycle vertical poster all moon phases stacked, celestial coordinate lines thin gold geometry, stardust particles, dreamy meditative pinterest moon art',
-  'antique astrolabe engraving illustration brass celestial mechanism, zodiac ring engraved, vintage scientific mysticism vertical composition aged gold on dark blue pinterest',
-  'ancient celestial mechanics map planetary orbits concentric circles, heliocentric diagram antique engraving style, zodiac symbols orbit paths woodcut etching midnight gold pinterest',
-  'vintage zodiac wheel chart antique engraving look, astrolabe overlay planetary spheres, old manuscript celestial map vertical 9:16 ornate border pinterest astrology art',
-  'deep cosmic texture vertical wallpaper nebula galaxy swirl, stardust clouds midnight navy blue and aged gold particles, deep space pinterest spiritual background luminous',
-  'cosmic nebula deep space vertical composition dark blue-black void, golden stardust veins galaxy dust, ethereal luminous depth aged gold accents pinterest meditation art',
-  'deep space nebula and star field texture vertical, indigo purple cosmic fog aged gold glitter dust, ancient universe atmosphere soft glow pinterest wallpaper',
-  'sacred geometry flower of life metatron cube soft gold lines on midnight blue, reiki energy orbs, dreamy luminous not harsh pinterest spiritual',
-  'sri yantra mandala glowing golden purple energy, soft aurora cosmic portal, meditation aesthetic vertical pinterest wallpaper',
-  'reiki healing light streams mandala lotus chakra soft violet gold aura, ethereal spiritual pinterest art vertical',
+  'vertical tarot card illustration ornate golden frame, mystical hands holding colorful sun moon stars, alchemy symbols rich violet teal rose gold colors, decorative ornamental band pinterest spiritual art',
+  'alchemy tarot card poster vertical ornate border, cosmic hands cupping glowing multicolor sphere emerald violet gold, inspirational mystical illustration vibrant pinterest',
+  'colorful tarot major arcana vertical card design, moon sun alchemical icons in jewel tones amethyst coral teal gold, decorative scrollwork base pinterest',
+  'vertical moon phases column waxing waning full sequence, fine gold geometric lines, constellation stars in soft teal and violet, lunar cycle rich indigo purple gold pinterest',
+  'moon phases vertical alignment colorful spiritual aesthetic, sacred geometry grid rose gold linework, stardust magenta and cyan particles midnight blue pinterest',
+  'lunar cycle vertical poster moon phases stacked, aurora borealis green magenta hints behind moons, celestial gold geometry dreamy pinterest',
+  'antique astrolabe engraving brass gold with emerald and ruby jewel accents, zodiac ring colorful vintage mysticism vertical pinterest',
+  'ancient celestial mechanics map planetary orbits, heliocentric diagram gold copper teal engraving on deep blue, zodiac symbols colorful pinterest',
+  'vintage zodiac wheel chart antique look with rich purple emerald rose gold tones, astrolabe overlay luminous pinterest astrology art vertical',
+  'deep cosmic nebula galaxy swirl rich colors violet teal magenta gold stardust, colorful spiritual deep space vertical wallpaper pinterest',
+  'cosmic nebula vertical composition jewel tone clouds emerald rose sapphire gold, ethereal luminous spiritual meditation pinterest',
+  'colorful aurora spiritual sky over cosmic texture, green magenta violet gold light rays, stardust dreamy pinterest wallpaper vertical',
+  'sacred geometry flower of life metatron cube glowing gold violet teal lines, reiki energy orbs colorful, spiritual healing pinterest',
+  'sri yantra mandala radiant golden purple rose energy, soft colorful aurora portal, meditation spiritual aesthetic vertical pinterest',
+  'reiki healing light streams rainbow subtle chakra colors violet emerald rose gold, mandala lotus aura ethereal spiritual pinterest art',
+  'chakra alignment lotus mandala rotating colorful energy orbs teal violet gold rose, spiritual healing luminous pinterest vertical',
+  'third eye chakra mandala radiant gold violet emerald rays, cosmic spiritual awakening colorful soft glow pinterest',
+  'kundalini energy spiral ascending chakra colors gold violet teal rose, cosmic spiritual pinterest aesthetic vertical',
+  'zen lotus pond twilight reflecting colorful mandala sky violet gold teal mist, reiki ripples spiritual pinterest',
+  'angelic light beams through sacred geometry window, purple gold rose teal dust particles healing sanctuary pinterest spiritual',
 ] as const;
 
 /** @deprecated alias — manter para verificar-deploy e imports antigos */
 export const TEMAS_IMAGEM_BRUTAL = TEMAS_IMAGEM_ZEN_ESPIRITUAL;
 
 export const MODIFICADORES_IMAGEM_ZEN = [
-  'pinterest spiritual wallpaper aesthetic vertical 9:16 ornate illustration highly detailed 8k',
-  'antique engraving line art style aged gold on midnight blue cosmic mystical atmosphere',
-  'tarot card illustration structured frame decorative border dreamy luminous soft contrast',
-  'fine geometric linework star patterns celestial vintage manuscript look not photorealistic',
-  'deep cosmic nebula texture stardust aged gold particles soft ethereal glow meditative',
-  'mystical alchemy illustration hands and cosmic symbols artistic not horror not brutal',
+  'pinterest spiritual wallpaper rich vibrant saturated colors jewel tones vertical 9:16 highly detailed 8k',
+  'colorful mystical illustration luminous teal violet rose emerald gold soft ethereal glow not dull not monochrome',
+  'spiritual healing energy aesthetic reiki mandala chakra aurora dreamy bokeh colorful pinterest',
+  'tarot alchemy moon astrolabe ornate frame decorative border antique gold with vivid color accents',
+  'fine geometric linework star patterns celestial vintage manuscript rich purple indigo gold colors',
+  'deep cosmic nebula texture multicolor stardust spiritual meditative luminous not horror not brutal',
 ] as const;
 
 /** @deprecated alias */
 export const MODIFICADORES_IMAGEM_BRUTAL = MODIFICADORES_IMAGEM_ZEN;
 
 export const SUFIXO_PROMPT_IMAGEM =
-  ', pinterest spiritual mystical illustration aesthetic, alchemy tarot moon phases astrolabe cosmic texture, native instagram reel wallpaper 1080x1920 pixels full bleed edge to edge vertical 9:16, perfect circles not oval not stretched, entire composition fits reel frame, midnight navy blue and aged antique gold palette, dreamy luminous engraved line art style, ornate frame or border when tarot card theme, illustrated mystical hands allowed if alchemy tarot theme, decorative ornamental band allowed abstract glyphs only no readable words, no watermark, no photorealistic faces, no modern city, no cars, masterpiece';
+  ', pinterest spiritual mystical illustration aesthetic colorful vibrant saturated jewel tones, alchemy tarot moon phases astrolabe reiki mandala chakra healing energy, native instagram reel wallpaper 1080x1920 pixels full bleed edge to edge vertical 9:16, perfect circles not oval not stretched, entire composition fits reel frame, rich colors violet teal emerald rose gold amber aurora accents on deep cosmic base, dreamy luminous spiritual glow not monochrome not grey not desaturated, ornate frame when tarot theme, illustrated mystical hands allowed, decorative ornamental band abstract glyphs only no readable words, no watermark, no photorealistic faces, no modern city, masterpiece';
 
 export const PROMPTS_FALLBACK_ZEN = [
-  'vertical tarot card ornate frame mystical hands sun moon alchemy symbols midnight blue aged gold pinterest',
-  'vertical moon phases column fine geometric lines constellation gold on deep indigo pinterest spiritual',
-  'antique astrolabe engraving zodiac ring planetary orbits vintage celestial map aged gold dark blue pinterest',
-  'deep cosmic nebula galaxy stardust midnight navy and aged gold vertical wallpaper pinterest spiritual',
-  'sacred geometry mandala soft golden purple glow reiki energy dreamy pinterest meditation art vertical',
+  'colorful vertical tarot card ornate frame mystical hands sun moon alchemy violet teal rose gold pinterest spiritual',
+  'vertical moon phases column colorful geometric lines constellation gold purple teal pinterest spiritual',
+  'antique astrolabe engraving zodiac colorful jewel tones emerald rose gold dark blue pinterest',
+  'rich colorful cosmic nebula galaxy violet teal magenta gold stardust spiritual vertical pinterest wallpaper',
+  'reiki mandala sacred geometry chakra colors violet emerald rose gold healing spiritual pinterest vertical',
 ] as const;
 
 /** @deprecated alias */

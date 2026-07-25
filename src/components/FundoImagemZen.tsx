@@ -44,7 +44,7 @@ export function FundoImagemZen({ imagemFundoUrl }: FundoImagemZenProps): React.R
           width,
           height,
           display: 'block',
-          filter: 'brightness(0.92) saturate(1.08)',
+          filter: 'brightness(0.94) saturate(1.28) contrast(1.04)',
           transform: `scale(${escala}) translate(${deslocamentoX}px, ${deslocamentoY}px)`,
           transformOrigin: 'center center',
         }}
