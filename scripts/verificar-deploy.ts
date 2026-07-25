@@ -26,8 +26,8 @@ exigirTexto('./src/lib/conteudo-especial.ts', 'Okay this is real', 'VIP: legenda
 exigirFicheiro('./src/lib/ganchos-diario.ts');
 exigirTexto('./src/lib/ganchos-diario.ts', 'escolherGanchoDiario', 'Diário: ganchos emocionais');
 exigirTexto('./src/lib/ganchos-diario.ts', 'GANCHOS_PSICOLOGIA_PT', 'Diário: ganchos psicológicos PT');
-exigirTexto('./src/lib/ganchos-diario.ts', 'Ninguém te diz isto', 'Diário: gancho psicológico PT');
-exigirTexto('./src/lib/ganchos-diario.ts', 'Nobody tells you this', 'Diário: gancho psicológico EN');
+exigirTexto('./src/lib/ganchos-diario.ts', 'paraste o scroll', 'Diário: gancho psicológico PT');
+exigirTexto('./src/lib/ganchos-diario.ts', 'you stopped scrolling', 'Diário: gancho psicológico EN');
 exigirTexto('./src/lib/legenda.ts', 'Ninguém te mostra isto nas apps grátis', 'Diário: fecho curiosidade site');
 exigirTexto('./src/lib/paleta-visual.ts', 'PALETA_SIDUS', 'Visual: regra 60-30-10');
 exigirTexto('./config/sidusastro.json', 'estiloAzureMasculina', 'Voz: estilo masculino místico');

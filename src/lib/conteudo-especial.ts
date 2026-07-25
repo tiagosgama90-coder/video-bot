@@ -29,15 +29,15 @@ export const TITULO_VIP_DIVULGACAO_EN = 'YOUR LIFETIME VIP';
 
 /** Texto no ecrã - curto e natural */
 export const SEGMENTOS_VIP_ECRA = [
-  'Queres VIP vitalício no SidusAstro? É mais simples do que pensas',
-  'Mapa astral, tarot e oráculo sem limites - só por partilhares',
-  'Grava, marca @sidusastro e pede em sidusastro.com/pt/divulgacao-vip',
+  'VIP vitalício? Mais simples do que pensas',
+  'Mapa astral + tarot + oráculo — só partilhares',
+  'Marca @sidusastro → sidusastro.com/pt/divulgacao-vip',
 ];
 
 export const SEGMENTOS_VIP_ECRA_EN = [
-  'Want lifetime VIP on SidusAstro? It is easier than you think',
-  'Birth chart, tarot and oracle unlocked - just by sharing',
-  'Record, tag @sidusastro and apply at sidusastro.com/en/divulgacao-vip',
+  'Lifetime VIP? Easier than you think',
+  'Birth chart + tarot + oracle — just share',
+  'Tag @sidusastro → sidusastro.com/en/divulgacao-vip',
 ];
 
 /** Narração TTS curta (~25-30s) */

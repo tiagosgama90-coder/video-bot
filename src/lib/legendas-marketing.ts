@@ -75,3 +75,10 @@ export const CTA_AFILIADOS_PT =
 
 export const CTA_AFILIADOS_EN =
   '💰 50% commission → sidusastro.com/en';
+
+/** Palavras-chave para ManyChat / resposta manual — usar nas legendas Instagram */
+export const CTA_COMENTARIO_INSTAGRAM_PT =
+  '💬 Comenta MAPA (mapa grátis) ou VIP (acesso vitalício) — respondemos por DM.';
+
+export const CTA_COMENTARIO_INSTAGRAM_EN =
+  '💬 Comment MAP (free chart) or VIP (lifetime access) — we reply in DM.';

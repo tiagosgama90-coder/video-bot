@@ -1,6 +1,8 @@
 /* eslint-disable @remotion/deterministic-randomness -- usado apenas no script Node, não no render Remotion */
 import crypto from 'crypto';
 import {
+  CTA_COMENTARIO_INSTAGRAM_EN,
+  CTA_COMENTARIO_INSTAGRAM_PT,
   CTA_DIARIO_EN,
   CTA_DIARIO_PT,
   HASHTAGS_DIARIO_EN_INSTAGRAM,
@@ -72,9 +74,25 @@ function sufixoTikTok(signo: SignoZodiaco): string {
 function sufixoInstagram(signo: SignoZodiaco): string {
   const tagSigno = hashtagSigno(signo);
   if (isLocaleUS()) {
-    return CTA_DIARIO_EN + '\n\n' + HASHTAGS_DIARIO_EN_INSTAGRAM + ' ' + tagSigno;
+    return (
+      CTA_DIARIO_EN +
+      '\n\n' +
+      CTA_COMENTARIO_INSTAGRAM_EN +
+      '\n\n' +
+      HASHTAGS_DIARIO_EN_INSTAGRAM +
+      ' ' +
+      tagSigno
+    );
   }
-  return CTA_DIARIO_PT + '\n\n' + HASHTAGS_DIARIO_PT_INSTAGRAM + ' ' + tagSigno;
+  return (
+    CTA_DIARIO_PT +
+    '\n\n' +
+    CTA_COMENTARIO_INSTAGRAM_PT +
+    '\n\n' +
+    HASHTAGS_DIARIO_PT_INSTAGRAM +
+    ' ' +
+    tagSigno
+  );
 }
 
 /** Frase final no ecrã (não narrada) */
