@@ -9,6 +9,7 @@ import {
 } from 'remotion';
 import { EfeitosUniverso } from './components/EfeitosUniverso';
 import { FundoVideoMistico } from './components/FundoVideoMistico';
+import { ZenOverlayAnimado } from './components/ZenOverlayAnimado';
 import { MarcaSidusAstro } from './components/OverlaysSidus';
 import { PALETA_SIDUS } from './lib/paleta-visual';
 import type { HoroscopoProps } from './types/horoscopo';
@@ -134,6 +135,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
               pointerEvents: 'none',
             }}
           />
+          <ZenOverlayAnimado seed={fundoVideoSeed ?? 0} />
         </>
       ) : (
         <FundoVideoMistico tema={fundoVideoTema ?? 'zen_escuro'} seed={fundoVideoSeed ?? 0} />

@@ -135,7 +135,7 @@ export async function obterImagemFundo(signo: SignoZodiaco, data: string): Promi
   return nomeFicheiro;
 }
 
-/** Fundo zen brutal + astrologia — motivacional, VIP, afiliados */
+/** Fundo zen espiritual Pinterest — motivacional, VIP, afiliados */
 export async function obterImagemFundoZenAstrologia(id: string, data: string): Promise<string> {
   if (!fs.existsSync('./public')) {
     fs.mkdirSync('./public', { recursive: true });
@@ -148,7 +148,7 @@ export async function obterImagemFundoZenAstrologia(id: string, data: string): P
   const imagemLocal = './public/' + nomeFicheiro;
   const urlPollinations = montarUrlPollinations(prompt, seed);
 
-  console.log('🎨 Prompt zen brutal [' + id + ']: ' + prompt.slice(0, 120) + '...');
+  console.log('🎨 Prompt zen espiritual [' + id + ']: ' + prompt.slice(0, 120) + '...');
   console.log('🎨 Seed único: ' + seed);
 
   const fontes = [urlPollinations, ...urlsFallback(seed + 3)];

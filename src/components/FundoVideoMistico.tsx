@@ -22,6 +22,9 @@ const PALETAS: Record<TemaFundoMistico, [string, string, string]> = {
   oraculo: ['#0a0810', '#1a1030', '#b088e8'],
   nebula: ['#0a0614', '#2a1045', '#9b59b6'],
   lua: ['#080610', '#181428', '#d4c4a8'],
+  reiki_energia: ['#08060e', '#2a1848', '#f3cc63'],
+  mandala_sagrada: ['#0a0812', '#241840', '#e8c878'],
+  energia_cosmica: ['#060810', '#1a2848', '#c9a0ff'],
 };
 
 function clamp(n: number, min: number, max: number): number {
@@ -714,6 +717,160 @@ function TemaNebula({ seed, cores }: { seed: number; cores: [string, string, str
   );
 }
 
+function TemaReikiEnergia({ seed, cores }: { seed: number; cores: [string, string, string] }): React.ReactElement {
+  const frame = useCurrentFrame();
+  const { width, height } = useVideoConfig();
+  const cx = width / 2;
+  const cy = height * 0.38;
+  const pulso = 0.85 + 0.15 * Math.sin(frame * 0.06);
+
+  const raios = Array.from({ length: 12 }, (_, i) => {
+    const angulo = (i / 12) * Math.PI * 2 + frame * 0.015;
+    const comprimento = height * 0.35 * (0.7 + 0.3 * Math.sin(frame * 0.04 + i));
+    return { angulo, comprimento };
+  });
+
+  return (
+    <AbsoluteFill style={{ background: `radial-gradient(circle at 50% 38%, ${cores[1]} 0%, ${cores[0]} 72%)` }}>
+      {raios.map((r, i) => (
+        <div
+          key={`raio-${i}`}
+          style={{
+            position: 'absolute',
+            left: cx,
+            top: cy,
+            width: 3,
+            height: r.comprimento,
+            transformOrigin: 'top center',
+            transform: `rotate(${r.angulo}rad) translateY(-${r.comprimento * 0.5}px)`,
+            background: `linear-gradient(180deg, transparent, ${cores[2]}88, transparent)`,
+            opacity: 0.25 + 0.15 * Math.sin(frame * 0.05 + i),
+            filter: 'blur(2px)',
+          }}
+        />
+      ))}
+      <div
+        style={{
+          position: 'absolute',
+          left: cx - 120 * pulso,
+          top: cy - 120 * pulso,
+          width: 240 * pulso,
+          height: 240 * pulso,
+          borderRadius: '50%',
+          background: `radial-gradient(circle, ${cores[2]}66 0%, ${cores[1]}33 45%, transparent 70%)`,
+          boxShadow: `0 0 80px ${cores[2]}55`,
+        }}
+      />
+      <ParticulasFlutuantes seed={seed} quantidade={70} cor={cores[2]} />
+    </AbsoluteFill>
+  );
+}
+
+function TemaMandalaSagrada({ seed, cores }: { seed: number; cores: [string, string, string] }): React.ReactElement {
+  const frame = useCurrentFrame();
+  const { width, height } = useVideoConfig();
+  const rotacao = frame * 0.12;
+  const cx = width / 2;
+  const cy = height * 0.4;
+  const tamanho = Math.min(width, height) * 0.55;
+
+  return (
+    <AbsoluteFill style={{ background: `radial-gradient(circle at 50% 35%, ${cores[1]} 0%, ${cores[0]} 75%)` }}>
+      <AbsoluteFill style={{ transform: `rotate(${rotacao}deg)`, transformOrigin: `${cx}px ${cy}px` }}>
+        {Array.from({ length: 8 }, (_, i) => (
+          <div
+            key={`petala-${i}`}
+            style={{
+              position: 'absolute',
+              left: cx - tamanho * 0.08,
+              top: cy - tamanho * 0.5,
+              width: tamanho * 0.16,
+              height: tamanho,
+              transformOrigin: 'center bottom',
+              transform: `rotate(${(i / 8) * 360}deg)`,
+              borderRadius: '50% 50% 20% 20%',
+              border: `2px solid ${cores[2]}44`,
+              background: `linear-gradient(180deg, ${cores[2]}22 0%, transparent 80%)`,
+            }}
+          />
+        ))}
+        {Array.from({ length: 3 }, (_, i) => (
+          <div
+            key={`circ-${i}`}
+            style={{
+              position: 'absolute',
+              left: cx - (tamanho * 0.35 - i * 40),
+              top: cy - (tamanho * 0.35 - i * 40),
+              width: (tamanho * 0.7 - i * 80),
+              height: (tamanho * 0.7 - i * 80),
+              borderRadius: '50%',
+              border: `1px solid ${cores[2]}${Math.round(30 + i * 15).toString(16).padStart(2, '0')}`,
+              boxShadow: `inset 0 0 30px ${cores[1]}44`,
+            }}
+          />
+        ))}
+      </AbsoluteFill>
+      <ParticulasFlutuantes seed={seed} quantidade={50} cor={cores[2]} />
+    </AbsoluteFill>
+  );
+}
+
+function TemaEnergiaCosmica({ seed, cores }: { seed: number; cores: [string, string, string] }): React.ReactElement {
+  const frame = useCurrentFrame();
+  const { width, height, fps } = useVideoConfig();
+  const t = frame / fps;
+  const ondas = Array.from({ length: 6 }, (_, i) => ({
+    y: height * (0.25 + i * 0.1),
+    offset: Math.sin(t * 0.4 + i) * 40,
+    opacidade: 0.15 + 0.1 * Math.sin(t * 0.3 + i * 0.5),
+  }));
+
+  return (
+    <AbsoluteFill style={{ background: cores[0] }}>
+      <FundoEscuro cor={cores[1]} />
+      {ondas.map((o, i) => (
+        <div
+          key={`onda-${i}`}
+          style={{
+            position: 'absolute',
+            left: -60 + o.offset,
+            top: o.y,
+            width: width + 120,
+            height: 3,
+            borderRadius: 4,
+            background: `linear-gradient(90deg, transparent, ${cores[2]}aa, ${cores[1]}88, transparent)`,
+            opacity: o.opacidade,
+            filter: 'blur(3px)',
+          }}
+        />
+      ))}
+      {Array.from({ length: 5 }, (_, i) => {
+        const angulo = t * (0.15 + i * 0.04) + random(`ec-a-${seed}-${i}`) * Math.PI;
+        const x = width * (0.5 + Math.cos(angulo) * 0.3);
+        const y = height * (0.4 + Math.sin(angulo) * 0.25);
+        const escala = 0.8 + 0.2 * Math.sin(t + i);
+        return (
+          <div
+            key={`orb-${i}`}
+            style={{
+              position: 'absolute',
+              left: x - 60,
+              top: y - 60,
+              width: 120,
+              height: 120,
+              transform: `scale(${escala})`,
+              borderRadius: '50%',
+              background: `radial-gradient(circle, ${cores[2]}77 0%, transparent 70%)`,
+              filter: 'blur(20px)',
+            }}
+          />
+        );
+      })}
+      <ParticulasFlutuantes seed={seed} quantidade={65} cor={cores[2]} />
+    </AbsoluteFill>
+  );
+}
+
 function TemaLua({ seed, cores }: { seed: number; cores: [string, string, string] }): React.ReactElement {
   const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
@@ -811,6 +968,18 @@ export function FundoVideoMistico({ tema, seed }: FundoVideoMisticoProps): React
       break;
     case 'oraculo':
       conteudo = <TemaOraculo seed={seed} cores={cores} />;
+      break;
+    case 'reiki_energia':
+      conteudo = <TemaReikiEnergia seed={seed} cores={cores} />;
+      break;
+    case 'mandala_sagrada':
+      conteudo = <TemaMandalaSagrada seed={seed} cores={cores} />;
+      break;
+    case 'energia_cosmica':
+      conteudo = <TemaEnergiaCosmica seed={seed} cores={cores} />;
+      break;
+    case 'nebula':
+      conteudo = <TemaNebula seed={seed} cores={cores} />;
       break;
     case 'lua':
       conteudo = <TemaLua seed={seed} cores={cores} />;

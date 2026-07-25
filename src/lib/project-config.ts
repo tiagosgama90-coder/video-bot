@@ -2,10 +2,10 @@ import fs from 'fs';
 import path from 'path';
 import { POOL_MUSICAS_ZEN_ASTRO, filtrarEntradasZen } from './pool-musicas-zen';
 import {
-  MODIFICADORES_IMAGEM_BRUTAL,
+  MODIFICADORES_IMAGEM_ZEN,
   PALETAS_60_30_10,
   SUFIXO_PROMPT_IMAGEM,
-  TEMAS_IMAGEM_BRUTAL,
+  TEMAS_IMAGEM_ZEN_ESPIRITUAL,
 } from './imagem-prompts';
 
 export type PreferenciaVoz = 'feminina' | 'masculina' | 'aleatoria';
@@ -128,8 +128,8 @@ export const CONFIG_PADRAO: ConfigProjeto = {
     entradas: PRESET_MUSICAS_ZEN,
   },
   imagem: {
-    temas: [...TEMAS_IMAGEM_BRUTAL],
-    modificadores: [...MODIFICADORES_IMAGEM_BRUTAL],
+    temas: [...TEMAS_IMAGEM_ZEN_ESPIRITUAL],
+    modificadores: [...MODIFICADORES_IMAGEM_ZEN],
     paletas: [...PALETAS_60_30_10],
     sufixoPrompt: SUFIXO_PROMPT_IMAGEM,
   },
