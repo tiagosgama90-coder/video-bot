@@ -45,7 +45,7 @@ export const MODIFICADORES_IMAGEM_ZEN = [
 export const MODIFICADORES_IMAGEM_BRUTAL = MODIFICADORES_IMAGEM_ZEN;
 
 export const SUFIXO_PROMPT_IMAGEM =
-  ', soft zen spiritual meditation healing energy aesthetic pinterest style, sacred geometry reiki mandala astrology, dreamy luminous glow not gothic not brutal not horror not dark cathedral, vertical portrait 9:16 aspect ratio full composition centered not cropped not stretched, color harmony 60-30-10 indigo purple gold, no text, no watermark, no people, no faces, no hands, no cars, no vehicles, no modern city, masterpiece';
+  ', soft zen spiritual meditation healing energy aesthetic pinterest style, sacred geometry reiki mandala astrology, native instagram reel wallpaper 1080x1920 pixels full bleed edge to edge vertical 9:16, perfect circles not oval not stretched, entire composition fits reel frame, dreamy luminous glow not gothic not brutal, no text, no watermark, no people, no faces, no hands, no cars, no vehicles, no modern city, masterpiece';
 
 export const PROMPTS_FALLBACK_ZEN = [
   'sacred geometry flower of life golden purple reiki energy soft glow meditation spiritual pinterest',
