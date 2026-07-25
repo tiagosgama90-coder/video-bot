@@ -32,7 +32,7 @@ exigirTexto('./src/lib/ganchos-virais.ts', 'verdadeira missão de vida', 'Viral:
 exigirTexto('./src/lib/ganchos-diario.ts', 'escolherGanchoViral', 'Diário: rotação ganchos virais');
 exigirTexto('./src/components/OverlayLegibilidadeTexto.tsx', 'OverlayLegibilidadeTexto', 'Vídeo: overlay legibilidade');
 exigirTexto('./src/components/FundoImagemZen.tsx', 'blur(11px)', 'Vídeo: blur fundo zen para texto');
-exigirTexto('./src/lib/legenda.ts', 'URGENTE — lê a legenda completa', 'Instagram: urgência gancho viral');
+exigirTexto('./src/lib/legenda.ts', 'URGENTE - lê a legenda completa', 'Instagram: urgência gancho viral');
 exigirTexto('./src/lib/ganchos-diario.ts', 'escolherGanchoDiario', 'Diário: ganchos emocionais');
 exigirTexto('./src/lib/ganchos-diario.ts', 'GANCHOS_PSICOLOGIA_PT', 'Diário: ganchos psicológicos PT');
 exigirTexto('./src/lib/ganchos-diario.ts', 'paraste o scroll', 'Diário: gancho psicológico PT');

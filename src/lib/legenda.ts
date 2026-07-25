@@ -77,8 +77,8 @@ function prefixoUrgenciaInstagram(hook: string): string {
     return '';
   }
   return isLocaleUS()
-    ? '🚨 URGENT — read the full caption!\n\n'
-    : '🚨 URGENTE — lê a legenda completa!\n\n';
+    ? '🚨 URGENT - read the full caption!\n\n'
+    : '🚨 URGENTE - lê a legenda completa!\n\n';
 }
 
 function sufixoInstagram(signo: SignoZodiaco, hook: string): string {

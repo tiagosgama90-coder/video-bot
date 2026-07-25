@@ -58,7 +58,7 @@ const GANCHOS_FINANCAS_PT: GanchoViralFn[] = [
     ' e para quem tem Sol em Touro, Capricórnio, Escorpião ou Virgem: o céu está a reorganizar a tua carreira e rendimento. Isto não volta tão cedo. Lê a legenda 🚨',
   (n) =>
     n +
-    ', se sentes que o dinheiro trava sempre no mesmo sítio, não é azar — é um trânsito que termina em breve. O mapa natal mostra a saída. Urgente 🚨',
+    ', se sentes que o dinheiro trava sempre no mesmo sítio, não é azar - é um trânsito que termina em breve. O mapa natal mostra a saída. Urgente 🚨',
   (n) =>
     'Trânsito financeiro raro para ' +
     n +
@@ -70,7 +70,7 @@ const GANCHOS_AMOR_PT: GanchoViralFn[] = [
     'Diz-me em que Casa tens a tua Vénus e eu digo-te exactamente por que razão os teus relacionamentos dão sempre errado ou parecem travar no mesmo sítio.',
   (n) =>
     n +
-    ', a Casa da tua Vénus explica porque repetiste a mesma história amorosa. Não é coincidência — é padrão no mapa. Comenta MAPA para saberes qual é 🚨',
+    ', a Casa da tua Vénus explica porque repetiste a mesma história amorosa. Não é coincidência - é padrão no mapa. Comenta MAPA para saberes qual é 🚨',
   (n) =>
     'Se és ' +
     n +
@@ -79,7 +79,7 @@ const GANCHOS_AMOR_PT: GanchoViralFn[] = [
     'Por que é que atraís sempre o mesmo tipo de pessoa? A resposta está na Casa de Vénus + aspectos a Marte. Quem comenta MAPA recebe o caminho.',
   (n) =>
     n +
-    ', o teu coração não está partido — o teu mapa está a pedir um ajuste na Casa 7. Relacionamentos mudam quando vês isto. Urgente 🚨',
+    ', o teu coração não está partido - o teu mapa está a pedir um ajuste na Casa 7. Relacionamentos mudam quando vês isto. Urgente 🚨',
 ];
 
 const GANCHOS_EGO_PT: GanchoViralFn[] = [
@@ -93,14 +93,14 @@ const GANCHOS_EGO_PT: GanchoViralFn[] = [
         ', o teu Sol também fala disto. Legenda 🚨',
   (n) =>
     n +
-    ', não é drama — é alerta: Plutão está a pressionar quem foge do propósito. O mapa natal mostra o que evitas há anos. Comenta MAPA 🚨',
+    ', não é drama - é alerta: Plutão está a pressionar quem foge do propósito. O mapa natal mostra o que evitas há anos. Comenta MAPA 🚨',
   (n) =>
     'Se és ' +
     n +
     ' e sentes que nasceste para mais mas travas no meio, o ascendente + Meio-Céu explicam o porquê. Isto é para ti. Urgente 🚨',
   (n) =>
     n +
-    ': o universo não te manda sinais por acaso. Ignorar a missão de vida custa caro em 2026. O teu mapa já avisou — vês ou não vês?',
+    ': o universo não te manda sinais por acaso. Ignorar a missão de vida custa caro em 2026. O teu mapa já avisou - vês ou não vês?',
   (n) =>
     'Ascendente + Nodo Norte = missão de alma. ' +
     n +
@@ -163,7 +163,7 @@ function poolPorCategoria(categoria: CategoriaGanchoViral): GanchoViralFn[] {
   }
 }
 
-/** Gancho viral estilo Reels — dinheiro, amor/Vénus ou ego/missão */
+/** Gancho viral estilo Reels - dinheiro, amor/Vénus ou ego/missão */
 export function escolherGanchoViral(signo: SignoZodiaco, data: string): string {
   const nomeSigno = obterNomeSigno(signo);
   const categoria = escolherCategoria(signo, data);
