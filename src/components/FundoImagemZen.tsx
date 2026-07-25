@@ -11,12 +11,20 @@ function resolverSrcImagem(url: string): string {
 
 export interface FundoImagemZenProps {
   imagemFundoUrl: string;
+  modoPaleta?: 'color' | 'mono';
+}
+
+function filtroImagem(modoPaleta?: 'color' | 'mono'): string {
+  if (modoPaleta === 'mono') {
+    return 'brightness(0.9) saturate(0.18) grayscale(0.82) contrast(1.1)';
+  }
+  return 'brightness(0.94) saturate(1.28) contrast(1.04)';
 }
 
 /**
  * Reel 1080×1920 full bleed — imagem Pinterest visível, vinheta leve na zona do texto.
  */
-export function FundoImagemZen({ imagemFundoUrl }: FundoImagemZenProps): React.ReactElement {
+export function FundoImagemZen({ imagemFundoUrl, modoPaleta }: FundoImagemZenProps): React.ReactElement {
   const frame = useCurrentFrame();
   const { width, height, durationInFrames } = useVideoConfig();
   const src = resolverSrcImagem(imagemFundoUrl);
@@ -44,7 +52,7 @@ export function FundoImagemZen({ imagemFundoUrl }: FundoImagemZenProps): React.R
           width,
           height,
           display: 'block',
-          filter: 'brightness(0.94) saturate(1.28) contrast(1.04)',
+          filter: filtroImagem(modoPaleta),
           transform: `scale(${escala}) translate(${deslocamentoX}px, ${deslocamentoY}px)`,
           transformOrigin: 'center center',
         }}

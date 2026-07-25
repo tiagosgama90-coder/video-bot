@@ -17,6 +17,8 @@ export interface HoroscopoProps {
   fundoVideoSeed?: number;
   /** Imagem zen IA Pinterest em public/ — diário, motivacional e especiais */
   imagemFundoUrl?: string;
+  /** Paleta da imagem IA — colorido ou monocromático (alternância automática) */
+  imagemFundoModo?: 'color' | 'mono';
   /** Nome do ficheiro em public/ — ex.: musica-peixes.mp3 */
   musicaFundoArquivo: string;
   /** Duração calculada a partir do áudio — evita cortar a narração */
