@@ -38,6 +38,7 @@ async function executar(): Promise<void> {
     data,
     generoVoz: 'aleatoria',
     tipoMusica: 'zen',
+    fundoZenAstrologia: true,
     slotHorario: obterSlotEspecial(),
     slotMusica: SLOT_MUSICA.MOTIVACIONAL_QUINTA,
     fundoZenAstrologia: true,

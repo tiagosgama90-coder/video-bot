@@ -83,6 +83,7 @@ exigirTexto('./src/lib/imagem-prompts.ts', 'TEMAS_IMAGEM_BRUTAL', 'Imagem: temas
 exigirTexto('./config/sidusastro.json', '#08060e', 'Imagem config: cor base 60%');
 exigirTexto('./src/lib/gerar-video-especial.ts', 'obterImagemFundoZenAstrologia', 'Especiais: imagem zen quando fundoZenAstrologia');
 exigirTexto('./gerar-video-quinta.ts', 'SLOT_MUSICA.MOTIVACIONAL_QUINTA', 'Quinta: slot música');
+exigirTexto('./gerar-video-quinta.ts', 'fundoZenAstrologia: true', 'Quinta: fundo zen');
 exigirTexto('./gerar-video-quinta.ts', "escolherFraseMotivacional(data, 'quinta')", 'Quinta: variante frase');
 
 exigirTexto('./config/sidusastro.json', '"femininaRate": "+4%"', 'Voz: prosódia feminina zen');
