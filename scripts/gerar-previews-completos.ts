@@ -10,6 +10,7 @@ import { escolherGanchoEspecial } from '../src/lib/ganchos-especial';
 import { obterEtiquetaGanchoMotivacional } from '../src/lib/conteudo-especial';
 import { calcularDuracaoFrames } from '../src/lib/duracao-video';
 import { escolherFundoVideo } from '../src/lib/fundo-video';
+import { obterImagemFundo } from '../src/lib/imagem-fundo';
 import { obterImagemFundoZenAstrologia } from '../src/lib/imagem-fundo';
 import { escolherFechoNarracao } from '../src/lib/legenda';
 import {
@@ -78,6 +79,7 @@ async function previewDiario(): Promise<string> {
     fecho,
   });
   const fundo = escolherFundoVideo(signo, DATA);
+  const imagem = await obterImagemFundo(signo, DATA);
   const musica = await prepararMusicaParaVideo(signo, DATA, SLOT_MUSICA.HOROSCOPO_0);
 
   return renderizarPreview('preview-diario-touro', {
@@ -87,7 +89,7 @@ async function previewDiario(): Promise<string> {
     fechoTexto: fecho,
     frameInicioPrevisao,
     frameInicioFecho,
-    fundoVideoTema: fundo.tema,
+    imagemFundoUrl: imagem,
     fundoVideoSeed: fundo.seed,
     musicaFundoArquivo: musica,
     duracaoFrames,

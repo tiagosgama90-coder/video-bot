@@ -15,7 +15,7 @@ export interface HoroscopoProps {
   fundoVideoTema?: TemaFundoMistico;
   /** Seed determinístico — varia partículas e cores dentro do tema */
   fundoVideoSeed?: number;
-  /** Imagem zen IA em public/ — motivacional e especiais (em vez de vídeo animado) */
+  /** Imagem zen IA Pinterest em public/ — diário, motivacional e especiais */
   imagemFundoUrl?: string;
   /** Nome do ficheiro em public/ — ex.: musica-peixes.mp3 */
   musicaFundoArquivo: string;
