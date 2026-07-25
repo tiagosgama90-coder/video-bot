@@ -1,6 +1,7 @@
 /* eslint-disable @remotion/deterministic-randomness -- usado apenas no script Node */
 import crypto from 'crypto';
 import fs from 'fs';
+import { execSync } from 'child_process';
 import axios from 'axios';
 import { carregarConfigProjeto } from './project-config';
 import {
@@ -51,12 +52,54 @@ function lerDimensoesJpeg(dados: Buffer): { width: number; height: number } | nu
   return null;
 }
 
-/** Aceita só imagens verticais 9:16 com resolução mínima de reel — evita esticar ou cortar */
-export function validarImagemReel(largura: number, altura: number): boolean {
+/** Proporção vertical 9:16 — aceita 576×1024 da Pollinations, etc. */
+export function validarRatioReel(largura: number, altura: number): boolean {
   const ratio = largura / altura;
-  const ratioOk = Math.abs(ratio - RATIO_REEL) < 0.012;
-  const tamanhoOk = largura >= REEL_LARGURA && altura >= REEL_ALTURA;
-  return ratioOk && tamanhoOk;
+  return Math.abs(ratio - RATIO_REEL) < 0.012;
+}
+
+/** Aceita 9:16; dimensão mínima 360×640 para rejeitar quadrados/horizontais */
+export function validarImagemReel(largura: number, altura: number): boolean {
+  const ratioOk = validarRatioReel(largura, altura);
+  const tamanhoMinimo = largura >= 360 && altura >= 640;
+  return ratioOk && tamanhoMinimo;
+}
+
+/** Escala proporcionalmente para 1080×1920 sem esticar (só se já for 9:16) */
+export function normalizarImagemReel(destino: string): void {
+  const dados = fs.readFileSync(destino);
+  const dimensoes = lerDimensoesJpeg(dados);
+  if (!dimensoes || !validarRatioReel(dimensoes.width, dimensoes.height)) {
+    return;
+  }
+  if (dimensoes.width === REEL_LARGURA && dimensoes.height === REEL_ALTURA) {
+    return;
+  }
+
+  const tmp = destino + '.reel.jpg';
+  execSync(
+    'ffmpeg -y -i "' +
+      destino.replace(/"/g, '\\"') +
+      '" -vf "scale=' +
+      REEL_LARGURA +
+      ':' +
+      REEL_ALTURA +
+      '" -q:v 2 "' +
+      tmp.replace(/"/g, '\\"') +
+      '"',
+    { stdio: 'pipe' },
+  );
+  fs.renameSync(tmp, destino);
+  console.log(
+    '📐 Imagem normalizada para reel: ' +
+      dimensoes.width +
+      '×' +
+      dimensoes.height +
+      ' → ' +
+      REEL_LARGURA +
+      '×' +
+      REEL_ALTURA,
+  );
 }
 
 function montarUrlPollinations(prompt: string, seed: number): string {
@@ -152,16 +195,17 @@ async function descarregarFicheiro(url: string, destino: string): Promise<void> 
         dimensoes.width +
         '×' +
         dimensoes.height +
-        ' (esperado 9:16, mín. ' +
-        REEL_LARGURA +
-        '×' +
-        REEL_ALTURA +
-        ')',
+        ' (esperado 9:16 vertical)',
     );
   }
 
   fs.writeFileSync(destino, dados);
-  console.log('📐 Imagem reel validada: ' + dimensoes.width + '×' + dimensoes.height);
+  normalizarImagemReel(destino);
+  const finais = lerDimensoesJpeg(fs.readFileSync(destino));
+  console.log(
+    '📐 Imagem reel validada: ' +
+      (finais ? finais.width + '×' + finais.height : dimensoes.width + '×' + dimensoes.height),
+  );
 }
 
 function escreverJpegMinimo(destino: string): void {
