@@ -78,7 +78,7 @@ export const CTA_AFILIADOS_EN =
 
 /** Palavras-chave para ManyChat / resposta manual — usar nas legendas Instagram */
 export const CTA_COMENTARIO_INSTAGRAM_PT =
-  '💬 Comenta MAPA (mapa grátis) ou VIP (acesso vitalício) — respondemos por DM.';
+  '💬 Comenta MAPA (mapa grátis) ou VIP (acesso vitalício) - respondemos por DM.';
 
 export const CTA_COMENTARIO_INSTAGRAM_EN =
-  '💬 Comment MAP (free chart) or VIP (lifetime access) — we reply in DM.';
+  '💬 Comment MAP (free chart) or VIP (lifetime access) - we reply in DM.';

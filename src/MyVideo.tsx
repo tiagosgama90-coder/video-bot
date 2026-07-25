@@ -11,29 +11,21 @@ import { EfeitosUniverso } from './components/EfeitosUniverso';
 import { FundoImagemZen } from './components/FundoImagemZen';
 import { FundoVideoMistico } from './components/FundoVideoMistico';
 import { OverlayLegibilidadeTexto } from './components/OverlayLegibilidadeTexto';
-import { ehGanchoViralLongo } from './lib/ganchos-virais';
 import { MarcaSidusAstro } from './components/OverlaysSidus';
 import { PALETA_SIDUS } from './lib/paleta-visual';
 import type { HoroscopoProps } from './types/horoscopo';
 
 export type { HoroscopoProps } from './types/horoscopo';
 
-function tamanhoFonteGancho(texto: string): number {
-  if (texto.length > 200) {
-    return 22;
-  }
-  if (texto.length > 140) {
-    return 24;
-  }
-  if (texto.length > 95) {
-    return 26;
-  }
-  return 30;
-}
-
 function tamanhoFonteCaixa(texto: string, base: number, ecraLink = false): number {
   if (ecraLink) {
     return 48;
+  }
+  if (texto.length > 200) {
+    return base - 10;
+  }
+  if (texto.length > 160) {
+    return base - 8;
   }
   if (texto.length > 130) {
     return base - 6;
@@ -115,12 +107,9 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   };
 
   const textoHook = hookTexto ?? '';
-  const ganchoViral = emFaseHook && ehGanchoViralLongo(textoHook);
   const textoPrincipal = emFaseHook ? textoHook : previsao;
   const opacidadeCaixaPrincipal = emFaseHook ? opacidadeHookCaixa : opacidadePrevisao;
-  const fontePrincipal = emFaseHook
-    ? tamanhoFonteGancho(textoHook)
-    : tamanhoFonteCaixa(textoPrincipal, modoProgressivo ? 24 : 28, ecraLink);
+  const fontePrincipal = tamanhoFonteCaixa(textoPrincipal, modoProgressivo ? 24 : 28, ecraLink);
 
   return (
     <AbsoluteFill style={{ backgroundColor: PALETA_SIDUS.fundo, fontFamily: 'system-ui, sans-serif' }}>
@@ -148,31 +137,24 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            marginBottom: emFaseHook ? 4 : 10,
-            opacity: emFaseHook ? 0.75 : 0.95,
-            transform: emFaseHook ? 'scale(0.72)' : 'none',
-            transformOrigin: 'top center',
+            marginBottom: 10,
+            opacity: 0.95,
           }}
         >
           <Img
             src={logoSidus}
-            style={{
-              width: emFaseHook ? 160 : 240,
-              height: emFaseHook ? 160 : 240,
-              marginBottom: emFaseHook ? 8 : 16,
-              objectFit: 'contain',
-            }}
+            style={{ width: 240, height: 240, marginBottom: 16, objectFit: 'contain' }}
           />
         </div>
 
         <div
           style={{
             color: PALETA_SIDUS.destaque,
-            fontSize: emFaseHook ? 56 : 80,
+            fontSize: 80,
             fontWeight: 900,
             letterSpacing: 2,
             textShadow: `0 0 25px ${PALETA_SIDUS.destaqueSombra}`,
-            marginBottom: emFaseHook ? 12 : 20,
+            marginBottom: 20,
           }}
         >
           {signo.toUpperCase()}
@@ -227,25 +209,20 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
             <div
               style={{
                 ...estiloCaixaBase,
-                backgroundColor: ganchoViral ? PALETA_SIDUS.marcaMedia : PALETA_SIDUS.marca,
+                backgroundColor: ecraLink ? PALETA_SIDUS.marcaMedia : PALETA_SIDUS.marca,
                 color: ecraLink ? PALETA_SIDUS.destaque : PALETA_SIDUS.textoCorpo,
                 fontSize: fontePrincipal,
-                fontWeight: emFaseHook ? 800 : ecraLink ? 800 : 400,
-                lineHeight: emFaseHook ? 1.38 : 1.45,
+                fontWeight: emFaseHook ? 700 : ecraLink ? 800 : 400,
+                lineHeight: 1.45,
                 textAlign: 'center',
-                border: ganchoViral
-                  ? `2px solid ${PALETA_SIDUS.destaqueForte}`
-                  : ecraLink
-                    ? `2px solid ${PALETA_SIDUS.destaqueBorda}`
-                    : `1px solid ${PALETA_SIDUS.marcaBorda}`,
-                maxHeight: emFaseHook ? 560 : 420,
+                border: ecraLink
+                  ? `2px solid ${PALETA_SIDUS.destaqueBorda}`
+                  : `1px solid ${PALETA_SIDUS.marcaBorda}`,
+                maxHeight: 420,
                 overflow: 'hidden',
                 opacity: opacidadeCaixaPrincipal,
                 transform: `translateY(${(1 - opacidadeCaixaPrincipal) * 10}px)`,
                 letterSpacing: ecraLink ? 1.5 : 0,
-                boxShadow: ganchoViral
-                  ? `0 14px 44px rgba(0,0,0,0.55), 0 0 28px ${PALETA_SIDUS.destaqueSombra}`
-                  : '0 10px 30px rgba(0,0,0,0.35)',
               }}
             >
               {emFaseHook ? (
