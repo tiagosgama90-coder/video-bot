@@ -6,8 +6,11 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { calcularDuracaoFrames } from '../src/lib/duracao-video';
+import { obterEtiquetaGanchoMotivacional } from '../src/lib/conteudo-especial';
+import { escolherGanchoEspecial } from '../src/lib/ganchos-especial';
 import { escolherFundoVideoZen } from '../src/lib/fundo-video';
 import { obterImagemFundoZenAstrologia } from '../src/lib/imagem-fundo';
+import { escolherFechoNarracao } from '../src/lib/legenda';
 import { prepararMusicaEspecial } from '../src/lib/musicas';
 import { obterVolumeMusica } from '../src/lib/project-config';
 
@@ -54,6 +57,8 @@ async function executar(): Promise<void> {
 
   console.log('🎬 A gerar vídeo de exemplo zen/reel...');
 
+  const hook = escolherGanchoEspecial('motivacao-quinta', DATA);
+  const fecho = escolherFechoNarracao();
   const imagemFundoUrl = await obterImagemFundoZenAstrologia(ID, DATA);
   const fundo = escolherFundoVideoZen(ID, DATA);
   const musicaFundoArquivo = await prepararMusicaEspecial(ID, DATA, 'zen');
@@ -62,9 +67,12 @@ async function executar(): Promise<void> {
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3', 22);
 
   const props = {
-    signo: 'MOTIVAÇÃO',
-    previsao: '"' + FRASE + '"',
-    fechoTexto: '',
+    signo: obterEtiquetaGanchoMotivacional(DATA, 'quinta'),
+    previsao: FRASE,
+    hookTexto: hook,
+    fechoTexto: fecho,
+    frameInicioPrevisao: Math.round(30 * 3),
+    frameInicioFecho: duracaoFrames - Math.round(30 * 4.8),
     fundoVideoSeed: fundo.seed,
     imagemFundoUrl,
     musicaFundoArquivo,

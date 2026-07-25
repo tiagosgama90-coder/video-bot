@@ -2,15 +2,16 @@ import dotenv from 'dotenv';
 import { gerarVideoEspecial } from './src/lib/gerar-video-especial';
 import {
   escolherFraseMotivacional,
+  obterEtiquetaGanchoMotivacional,
   obterLegendasMotivacional,
   obterSlotEspecial,
-  obterTituloMotivacional,
 } from './src/lib/conteudo-especial';
+import { exigirDiaSemana } from './src/lib/dia-semana';
+import { escolherGanchoEspecial } from './src/lib/ganchos-especial';
 import { isLocaleUS, sufixoIdVideoEspecial } from './src/lib/locale';
 import { SLOT_MUSICA } from './src/lib/musicas';
 import { obterDataPublicacao } from './src/lib/signos';
 import { inicializarFirebaseSeNecessario } from './src/lib/inicializar-app';
-import { exigirDiaSemana } from './src/lib/dia-semana';
 
 dotenv.config();
 inicializarFirebaseSeNecessario();
@@ -20,20 +21,25 @@ async function executar(): Promise<void> {
 
   const data = obterDataPublicacao();
   const frase = escolherFraseMotivacional(data, 'segunda');
-  const legendas = obterLegendasMotivacional();
+  const gancho = escolherGanchoEspecial('motivacao-segunda', data);
+  const etiqueta = obterEtiquetaGanchoMotivacional(data, 'segunda');
+  const legendas = obterLegendasMotivacional(gancho, frase);
   const id = sufixoIdVideoEspecial('motivacao-segunda');
   const mercado = isLocaleUS() ? 'US (@sidusastro_en)' : 'PT';
 
   console.log('✨ SidusAstro — Vídeo Motivacional (Segunda-feira) [' + mercado + ']');
   console.log('📅 Data: ' + data);
+  console.log('🪝 Gancho: "' + gancho + '"');
+  console.log('🏷️ Etiqueta ecrã: "' + etiqueta + '"');
   console.log('💬 Frase: "' + frase + '"');
   console.log('\n📋 Legenda TikTok:\n' + legendas.tiktok);
 
   await gerarVideoEspecial({
     id: 'motivacao-segunda',
-    titulo: obterTituloMotivacional(),
+    titulo: etiqueta,
     textoEcra: frase,
     textoNarracao: frase,
+    gancho,
     legendas,
     data,
     generoVoz: 'aleatoria',

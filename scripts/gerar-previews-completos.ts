@@ -7,6 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { escolherGanchoDiario } from '../src/lib/ganchos-diario';
 import { escolherGanchoEspecial } from '../src/lib/ganchos-especial';
+import { obterEtiquetaGanchoMotivacional } from '../src/lib/conteudo-especial';
 import { calcularDuracaoFrames } from '../src/lib/duracao-video';
 import { escolherFundoVideo } from '../src/lib/fundo-video';
 import { obterImagemFundoZenAstrologia } from '../src/lib/imagem-fundo';
@@ -109,7 +110,7 @@ async function previewMotivacionalZen(): Promise<string> {
   const musica = await prepararMusicaEspecial('preview-motivacional', DATA, 'zen');
 
   return renderizarPreview('preview-motivacional-zen', {
-    signo: 'MOTIVAÇÃO',
+    signo: obterEtiquetaGanchoMotivacional(DATA, 'quinta'),
     previsao: frase,
     hookTexto: hook,
     fechoTexto: fecho,

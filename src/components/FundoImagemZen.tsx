@@ -14,7 +14,7 @@ export interface FundoImagemZenProps {
 }
 
 /**
- * Reel 1080×1920 full bleed + desfoque suave para o texto destacar (sem barras).
+ * Reel 1080×1920 full bleed — imagem Pinterest visível, vinheta leve na zona do texto.
  */
 export function FundoImagemZen({ imagemFundoUrl }: FundoImagemZenProps): React.ReactElement {
   const { width, height } = useVideoConfig();
@@ -30,13 +30,13 @@ export function FundoImagemZen({ imagemFundoUrl }: FundoImagemZenProps): React.R
           width,
           height,
           display: 'block',
-          filter: 'blur(14px) brightness(0.4) saturate(0.88)',
-          transform: 'scale(1.04)',
+          filter: 'brightness(0.92) saturate(1.08)',
+          transform: 'scale(1.02)',
         }}
       />
       <AbsoluteFill
         style={{
-          background: `linear-gradient(180deg, ${PALETA_SIDUS.fundo}dd 0%, ${PALETA_SIDUS.fundo}70 40%, ${PALETA_SIDUS.fundo}cc 100%)`,
+          background: `linear-gradient(180deg, ${PALETA_SIDUS.fundo}55 0%, transparent 28%, ${PALETA_SIDUS.fundo}44 62%, ${PALETA_SIDUS.fundo}99 100%)`,
           pointerEvents: 'none',
         }}
       />

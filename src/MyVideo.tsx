@@ -19,6 +19,19 @@ export type { HoroscopoProps } from './types/horoscopo';
 
 const LOGO_SIDUS_PX = 280;
 
+function tamanhoFonteSigno(texto: string): number {
+  if (texto.length > 28) {
+    return 48;
+  }
+  if (texto.length > 22) {
+    return 56;
+  }
+  if (texto.length > 16) {
+    return 64;
+  }
+  return 80;
+}
+
 function tamanhoFonteCaixa(texto: string, base: number, ecraLink = false): number {
   if (ecraLink) {
     return 48;
@@ -169,7 +182,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
         <FundoVideoMistico tema={fundoVideoTema ?? 'zen_escuro'} seed={fundoVideoSeed ?? 0} />
       )}
 
-      <OverlayLegibilidadeTexto />
+      <OverlayLegibilidadeTexto modoImagemZen={usaImagemZen} />
 
       <EfeitosUniverso />
 
@@ -205,11 +218,14 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
         <div
           style={{
             color: PALETA_SIDUS.destaque,
-            fontSize: 80,
+            fontSize: tamanhoFonteSigno(signo),
             fontWeight: 900,
             letterSpacing: 2,
             textShadow: `0 0 25px ${PALETA_SIDUS.destaqueSombra}`,
             marginBottom: 20,
+            textAlign: 'center',
+            maxWidth: 980,
+            lineHeight: 1.1,
           }}
         >
           {signo.toUpperCase()}
