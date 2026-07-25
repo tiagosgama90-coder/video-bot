@@ -4,8 +4,10 @@ import { execSync } from 'child_process';
 import { publicarEmTodosOsCanais } from './buffer';
 import { horaFusoParaISO, resolverDueAtFuturo } from './buffer-agenda';
 import { calcularDuracaoFrames } from './duracao-video';
+import { escolherGanchoEspecial } from './ganchos-especial';
 import { escolherFundoVideo, escolherFundoVideoZen, deveUsarFundoAnimadoZen, type TemaFundoMistico } from './fundo-video';
 import { obterImagemFundoZenAstrologia } from './imagem-fundo';
+import { escolherFechoNarracao } from './legenda';
 import {
   isLocaleUS,
   obterFusoPublicacao,
@@ -14,6 +16,10 @@ import {
   urlSiteMarca,
 } from './locale';
 import { prepararMusicaEspecial } from './musicas';
+import {
+  calcularQuadrosNarracaoDiaria,
+  montarTextoNarracaoDiaria,
+} from './narracao-diario';
 import { calcularSegmentosProgressivos } from './texto-progressivo';
 import { obterVolumeMusica } from './project-config';
 import { sanitizarTextoPublico } from './texto-publico';
@@ -23,7 +29,10 @@ import type { SignoZodiaco } from './signos';
 interface PropsVideoEspecial {
   signo: string;
   previsao: string;
+  hookTexto: string;
   fechoTexto: string;
+  frameInicioPrevisao: number;
+  frameInicioFecho: number;
   fundoVideoTema?: TemaFundoMistico;
   fundoVideoSeed?: number;
   imagemFundoUrl?: string;
@@ -46,7 +55,8 @@ export interface OpcoesVideoEspecial {
   slotHorario?: string;
   segmentosEcra?: string[];
   fundoZenAstrologia?: boolean;
-  /** Slot de rotação musical (ver SLOT_MUSICA em musicas.ts) */
+  gancho?: string;
+  fecho?: string;
   slotMusica?: number;
 }
 
@@ -88,7 +98,7 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
       imagemFundoUrl = await obterImagemFundoZenAstrologia(idPublicacao, opcoes.data);
       const fundo = escolherFundoVideoZen(idPublicacao, opcoes.data);
       fundoVideoSeed = fundo.seed;
-      console.log('🎨 Fundo imagem zen Pinterest + overlay animado: ' + imagemFundoUrl);
+      console.log('🎨 Fundo imagem zen Pinterest: ' + imagemFundoUrl);
     }
   } else {
     const chaveFundo = signoChave;
@@ -97,6 +107,7 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
     fundoVideoSeed = fundo.seed;
     console.log('🎬 Fundo animado especial: ' + fundoVideoTema + ' (seed ' + fundoVideoSeed + ')');
   }
+
   const musicaFundoArquivo = await prepararMusicaEspecial(
     idPublicacao,
     opcoes.data,
@@ -104,16 +115,41 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
     opcoes.slotMusica,
   );
 
+  const hookTexto = sanitizarTextoPublico(opcoes.gancho ?? escolherGanchoEspecial(opcoes.id, opcoes.data));
+  const fechoTexto = sanitizarTextoPublico(opcoes.fecho ?? escolherFechoNarracao());
+  const segmentosLimpos = opcoes.segmentosEcra?.map(sanitizarTextoPublico);
+  const corpoNarracao = segmentosLimpos?.length
+    ? segmentosLimpos.join('. ')
+    : sanitizarTextoPublico(opcoes.textoNarracao);
+
+  const partesNarracao = {
+    hook: hookTexto,
+    previsao: corpoNarracao,
+    fecho: fechoTexto,
+  };
+  const textoNarracao = montarTextoNarracaoDiaria(partesNarracao);
+
   console.log('🎙️ Narração especial (' + opcoes.generoVoz + ') [' + (isLocaleUS() ? 'en-US' : 'pt-PT') + ']');
-  const textoNarracao = sanitizarTextoPublico(opcoes.textoNarracao);
+  console.log('   Gancho → corpo → fecho (voz completa)');
   await gerarNarracao(textoNarracao, './public/narracao.mp3', opcoes.generoVoz);
 
-  const maxSegundos = opcoes.segmentosEcra?.length ? 35 : 25;
+  const maxSegundos = opcoes.segmentosEcra?.length ? 38 : 28;
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3', maxSegundos);
+  const { frameInicioPrevisao, frameInicioFecho } = calcularQuadrosNarracaoDiaria(
+    partesNarracao,
+    duracaoFrames,
+  );
 
-  const segmentosLimpos = opcoes.segmentosEcra?.map(sanitizarTextoPublico);
-  const segmentosProgressivos = segmentosLimpos?.length
-    ? calcularSegmentosProgressivos(segmentosLimpos, duracaoFrames)
+  let segmentosProgressivos = segmentosLimpos?.length
+    ? calcularSegmentosProgressivos(
+        segmentosLimpos,
+        Math.max(frameInicioFecho - frameInicioPrevisao, 60),
+        0,
+        0,
+      ).map((s) => ({
+        ...s,
+        frameInicio: s.frameInicio + frameInicioPrevisao,
+      }))
     : undefined;
 
   if (segmentosProgressivos) {
@@ -133,7 +169,10 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
   const props: PropsVideoEspecial = {
     signo: sanitizarTextoPublico(opcoes.titulo),
     previsao: segmentosProgressivos ? '' : textoEcra,
-    fechoTexto: '',
+    hookTexto,
+    fechoTexto,
+    frameInicioPrevisao,
+    frameInicioFecho,
     fundoVideoTema,
     fundoVideoSeed,
     imagemFundoUrl,

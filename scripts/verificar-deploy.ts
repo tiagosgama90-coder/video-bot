@@ -51,6 +51,9 @@ exigirTexto('./gerar-e-publicar.ts', 'gerarAfiliadosDia', 'Diário: afiliados te
 exigirTexto('./gerar-e-publicar.ts', 'HOROSCOPOS_EM_DIA_AFILIADOS', 'Diário: 2 horóscopos em dia afiliados');
 exigirTexto('./gerar-e-publicar.ts', 'escolherFechoNarracao', 'Horóscopo: frase final');
 exigirTexto('./gerar-e-publicar.ts', 'montarTextoNarracaoDiaria', 'Diário: narração gancho + previsão + fecho');
+exigirTexto('./src/lib/gerar-video-especial.ts', 'montarTextoNarracaoDiaria', 'Especiais: narração gancho+corpo+fecho');
+exigirTexto('./src/lib/ganchos-especial.ts', 'escolherGanchoEspecial', 'Especiais: gancho de abertura');
+exigirTexto('./src/MyVideo.tsx', 'LOGO_SIDUS_PX', 'Vídeo: logo Sidus maior');
 exigirTexto('./gerar-e-publicar.ts', 'frameInicioPrevisao', 'Diário: ecrã sincronizado com voz');
 exigirTexto('./gerar-e-publicar.ts', 'fechoEcra', 'Horóscopo: fecho no ecrã');
 
