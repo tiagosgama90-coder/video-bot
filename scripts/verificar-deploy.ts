@@ -33,7 +33,8 @@ exigirTexto('./src/lib/ganchos-virais.ts', 'Casa tens a tua Vénus', 'Viral: gan
 exigirTexto('./src/lib/ganchos-virais.ts', 'verdadeira missão de vida', 'Viral: gancho ego');
 exigirTexto('./src/lib/ganchos-diario.ts', 'escolherGanchoViral', 'Diário: rotação ganchos virais');
 exigirTexto('./src/components/OverlayLegibilidadeTexto.tsx', 'OverlayLegibilidadeTexto', 'Vídeo: overlay legibilidade');
-exigirTexto('./src/components/FundoImagemZen.tsx', 'interpolate(frame', 'Vídeo: Ken Burns na imagem Pinterest');
+exigirTexto('./src/components/FundoCosmicoSidus.tsx', 'EstrelasAPassear', 'Vídeo: estrelas a passear');
+exigirTexto('./src/components/FundoCosmicoSidus.tsx', 'GeometriaSagradaSuave', 'Vídeo: geometria sagrada suave');
 exigirTexto('./src/components/OverlayLegibilidadeTexto.tsx', 'modoImagemZen', 'Vídeo: overlay leve com imagem zen');
 exigirTexto('./src/lib/legenda.ts', 'URGENTE - lê a legenda completa', 'Instagram: urgência gancho viral');
 exigirTexto('./src/lib/ganchos-diario.ts', 'escolherGanchoDiario', 'Diário: ganchos emocionais');
@@ -58,7 +59,8 @@ exigirTexto('./src/lib/gerar-video-especial.ts', 'montarTextoNarracaoDiaria', 'E
 exigirTexto('./src/lib/ganchos-especial.ts', 'escolherGanchoEspecial', 'Especiais: gancho de abertura');
 exigirTexto('./src/MyVideo.tsx', 'LOGO_SIDUS_LARGURA_PX', 'Vídeo: logo Sidus maior');
 exigirTexto('./src/MyVideo.tsx', 'LogoSidusVideo', 'Vídeo: novo logo PNG transparente');
-exigirTexto('./src/MyVideo.tsx', 'RodapeComercialSidus', 'Vídeo: CTA comercial no rodapé');
+exigirTexto('./src/MyVideo.tsx', 'FundoCosmicoSidus', 'Vídeo: fundo cósmico preto');
+exigirTexto('./src/MyVideo.tsx', 'BarraLinkSite', 'Vídeo: link no rodapé seguro');
 exigirFicheiro('./public/logo-sidus-vertical.png');
 exigirFicheiro('./public/logo-sidus-horizontal.png');
 exigirTexto('./gerar-e-publicar.ts', 'frameInicioPrevisao', 'Diário: ecrã sincronizado com voz');
@@ -106,29 +108,27 @@ exigirTexto('./src/lib/imagem-prompts.ts', 'escolherModoPaletaImagem', 'Imagem: 
 exigirTexto('./src/lib/imagem-prompts.ts', 'TEMAS_MONOCROMATICOS', 'Imagem: temas monocromáticos');
 exigirTexto('./src/lib/imagem-prompts.ts', 'TEMAS_COLOR', 'Imagem: temas coloridos');
 exigirTexto('./src/lib/imagem-fundo.ts', 'ImagemFundoGerada', 'Imagem: resultado com modo paleta');
-exigirTexto('./src/lib/gerar-video-especial.ts', 'deveUsarFundoAnimadoZen', 'Especiais: alternância fundo animado');
+exigirTexto('./src/lib/gerar-video-especial.ts', 'Fundo cósmico Sidus', 'Especiais: fundo cósmico');
 exigirTexto('./src/lib/gerar-video-especial.ts', 'escolherFundoVideoZen', 'Especiais: fundo zen animado');
 exigirTexto('./src/lib/fundo-video.ts', 'reiki_energia', 'Vídeo: tema reiki animado');
 exigirTexto('./src/lib/imagem-fundo.ts', 'validarImagemReel', 'Imagem: validação proporção reel 9:16');
 exigirTexto('./src/lib/imagem-fundo.ts', 'force_original_aspect_ratio=increase', 'Imagem: crop reel sem esticar');
 exigirTexto('./src/lib/imagem-fundo.ts', 'REEL_LARGURA', 'Imagem: 1080px largura reel');
-exigirTexto('./src/components/FundoImagemZen.tsx', 'objectFit="cover"', 'Vídeo: imagem cover sem esticar');
-exigirTexto('./src/components/ZenOverlayAnimado.tsx', 'ZenOverlayAnimado', 'Vídeo: overlay animado sobre imagem');
+exigirTexto('./src/components/FundoImagemZen.tsx', 'objectFit="cover"', 'Imagem: cover se usada');
 exigirTexto('./config/sidusastro.json', '#08060e', 'Imagem config: cor base 60%');
-exigirTexto('./src/lib/gerar-video-especial.ts', 'obterImagemFundoZenAstrologia', 'Especiais: imagem zen quando fundoZenAstrologia');
 exigirTexto('./gerar-video-quinta.ts', 'SLOT_MUSICA.MOTIVACIONAL_QUINTA', 'Quinta: slot música');
 exigirTexto('./gerar-video-quinta.ts', 'obterEtiquetaGanchoMotivacional', 'Quinta: etiqueta gancho ecrã');
 exigirTexto('./gerar-video-quinta.ts', 'obterLegendasMotivacional(gancho', 'Quinta: legenda com gancho');
 exigirTexto('./gerar-video-segunda.ts', 'obterEtiquetaGanchoMotivacional', 'Segunda: etiqueta gancho ecrã');
-exigirTexto('./src/lib/fundo-video.ts', 'return false', 'Zen: sempre imagem IA Pinterest');
+exigirTexto('./src/lib/fundo-video.ts', 'return true', 'Zen: fundo cósmico animado');
 
 exigirTexto('./config/sidusastro.json', '"femininaRate": "+4%"', 'Voz: prosódia feminina zen');
 exigirTexto('./src/lib/voz.ts', 'mstts:express-as', 'Voz: estilo Azure expressivo');
 exigirFicheiro('./src/lib/fundo-video.ts');
 exigirTexto('./src/lib/fundo-video.ts', 'mesa_tarot', 'Vídeo: tema mesa tarot');
 exigirTexto('./src/components/FundoVideoMistico.tsx', 'TemaVelas', 'Vídeo: velas animadas');
-exigirTexto('./gerar-e-publicar.ts', 'obterImagemFundo', 'Diário: fundo Pinterest IA por signo');
-exigirTexto('./src/MyVideo.tsx', 'ZenOverlayAnimado', 'Vídeo: movimento sobre imagem Pinterest');
+exigirTexto('./gerar-e-publicar.ts', 'Fundo cósmico Sidus', 'Diário: fundo cósmico sem IA esticada');
+exigirTexto('./src/MyVideo.tsx', 'LogoSidusVideo', 'Vídeo: logo Sidus destacado');
 
 exigirFicheiro('./.github/workflows/diario.yml');
 exigirTexto('./.github/workflows/diario.yml', 'workflow_dispatch', 'Diário: disparo externo');

@@ -1,5 +1,5 @@
 /**
- * Gera um MP4 de exemplo local (sem publicar) para rever o fundo zen/reel.
+ * Gera um MP4 de exemplo local (sem publicar) — fundo cósmico + logo Sidus.
  * Uso: SKIP_PUBLICAR=1 npx ts-node scripts/gerar-preview-exemplo.ts
  */
 import { execSync } from 'child_process';
@@ -7,13 +7,12 @@ import fs from 'fs';
 import path from 'path';
 import { calcularDuracaoFrames } from '../src/lib/duracao-video';
 import { escolherFundoVideoZen } from '../src/lib/fundo-video';
-import { obterImagemFundoZenAstrologia } from '../src/lib/imagem-fundo';
 import { prepararMusicaEspecial } from '../src/lib/musicas';
 import { obterVolumeMusica } from '../src/lib/project-config';
 
 const ID = 'preview-marketing';
 const DATA = '2026-07-27';
-const OUTPUT = './output/preview-novo-logo-marketing.mp4';
+const OUTPUT = './output/preview-cosmico-logo.mp4';
 
 function gerarNarracaoPreview(texto: string, destino: string): void {
   const wav = destino.replace(/\.mp3$/, '.wav');
@@ -50,7 +49,7 @@ async function executar(): Promise<void> {
     fs.mkdirSync('./output', { recursive: true });
   }
 
-  console.log('🎬 A gerar vídeo de exemplo zen/reel...');
+  console.log('🎬 A gerar vídeo de exemplo (fundo cósmico + logo Sidus)...');
 
   const textoNarracao =
     'Peixes, a pessoa em quem pensaste agora aparece nos astros. A tua intuição está aguçada hoje. Visite o SidusAstro em sidusastro.com';
@@ -58,8 +57,7 @@ async function executar(): Promise<void> {
   gerarNarracaoPreview(textoNarracao, './public/narracao.mp3');
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3', 22);
 
-  const { ficheiro: imagemFundoUrl, modo: imagemFundoModo } = await obterImagemFundoZenAstrologia(ID, DATA);
-  const fundo = escolherFundoVideoZen(ID, DATA);
+  const { seed: fundoVideoSeed } = escolherFundoVideoZen(ID, DATA);
   const musicaFundoArquivo = await prepararMusicaEspecial(ID, DATA, 'zen');
 
   const props = {
@@ -70,9 +68,7 @@ async function executar(): Promise<void> {
     fechoTexto: 'Visite o SidusAstro — mapa astral completo grátis em sidusastro.com',
     frameInicioPrevisao: Math.round(30 * 3),
     frameInicioFecho: duracaoFrames - Math.round(30 * 4.8),
-    fundoVideoSeed: fundo.seed,
-    imagemFundoUrl,
-    imagemFundoModo,
+    fundoVideoSeed,
     musicaFundoArquivo,
     duracaoFrames,
     siteMarca: 'sidusastro.com',
@@ -94,7 +90,7 @@ async function executar(): Promise<void> {
   if (!fs.existsSync(artefactos)) {
     fs.mkdirSync(artefactos, { recursive: true });
   }
-  const destinoArtefacto = path.join(artefactos, 'preview-novo-logo-marketing.mp4');
+  const destinoArtefacto = path.join(artefactos, 'preview-cosmico-logo.mp4');
   fs.copyFileSync(OUTPUT, destinoArtefacto);
 
   if (fs.existsSync(caminhoProps)) {

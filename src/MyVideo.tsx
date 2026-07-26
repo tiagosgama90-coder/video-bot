@@ -6,19 +6,15 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion';
-import { EfeitosUniverso } from './components/EfeitosUniverso';
-import { FundoImagemZen } from './components/FundoImagemZen';
-import { FundoVideoMistico } from './components/FundoVideoMistico';
-import { OverlayLegibilidadeTexto } from './components/OverlayLegibilidadeTexto';
-import { ZenOverlayAnimado } from './components/ZenOverlayAnimado';
+import { FundoCosmicoSidus } from './components/FundoCosmicoSidus';
 import { LogoSidusVideo } from './components/LogoSidusVideo';
-import { RodapeComercialSidus } from './components/OverlaysSidus';
+import { BarraLinkSite, RodapeComercialSidus } from './components/OverlaysSidus';
 import { PALETA_SIDUS } from './lib/paleta-visual';
 import type { HoroscopoProps } from './types/horoscopo';
 
 export type { HoroscopoProps } from './types/horoscopo';
 
-const LOGO_SIDUS_LARGURA_PX = 420;
+const LOGO_SIDUS_LARGURA_PX = 480;
 
 function tamanhoFonteSigno(texto: string): number {
   if (texto.length > 28) {
@@ -30,13 +26,10 @@ function tamanhoFonteSigno(texto: string): number {
   if (texto.length > 16) {
     return 64;
   }
-  return 80;
+  return 72;
 }
 
-function tamanhoFonteCaixa(texto: string, base: number, ecraLink = false): number {
-  if (ecraLink) {
-    return 48;
-  }
+function tamanhoFonteCaixa(texto: string, base: number): number {
   if (texto.length > 200) {
     return base - 10;
   }
@@ -52,8 +45,6 @@ function tamanhoFonteCaixa(texto: string, base: number, ecraLink = false): numbe
   return base;
 }
 
-// Logo em public/logo-sidus-vertical.png (componente LogoSidusVideo)
-
 export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   signo,
   previsao,
@@ -61,10 +52,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   fechoTexto,
   frameInicioPrevisao,
   frameInicioFecho,
-  fundoVideoTema,
   fundoVideoSeed,
-  imagemFundoUrl,
-  imagemFundoModo,
   musicaFundoArquivo,
   segmentosEcra,
   siteMarca,
@@ -87,12 +75,6 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   const emFaseHook = Boolean(hookTexto && frame < inicioCorpo);
   const emFaseFecho = Boolean(fechoTexto && frame >= inicioFecho);
 
-  const ecraLink =
-    !modoProgressivo &&
-    !emFaseHook &&
-    !emFaseFecho &&
-    /^[a-z0-9][-a-z0-9.]*\.[a-z]{2,}$/i.test(previsao.trim());
-
   const opacidadeHookCaixa = hookTexto
     ? interpolate(frame, [0, 8, inicioCorpo - 8, inicioCorpo], [0, 1, 1, 0], {
         extrapolateLeft: 'clamp',
@@ -114,17 +96,15 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
     extrapolateRight: 'clamp',
   });
 
-  const usaImagemZen = Boolean(imagemFundoUrl);
-
   const estiloCaixaBase = {
     backgroundColor: PALETA_SIDUS.marca,
     backdropFilter: 'blur(15px)',
     borderRadius: 24,
-    padding: modoProgressivo ? '18px 22px' : '28px 26px',
+    padding: modoProgressivo ? '18px 22px' : '26px 24px',
     border: `1px solid ${PALETA_SIDUS.marcaBorda}`,
-    boxShadow: '0 10px 30px rgba(0,0,0,0.35)',
+    boxShadow: '0 10px 30px rgba(0,0,0,0.45)',
     width: '100%',
-    minHeight: 120,
+    minHeight: 110,
   };
 
   const textoHook = hookTexto ?? '';
@@ -160,55 +140,28 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   } else if (modoProgressivo) {
     textoCaixa = '';
     opacidadeCaixa = 0;
-  } else if (ecraLink) {
-    pesoCaixa = 800;
-    corCaixa = PALETA_SIDUS.destaque;
-    fundoCaixa = PALETA_SIDUS.marcaMedia;
-    bordaCaixa = `2px solid ${PALETA_SIDUS.destaqueBorda}`;
-  } else if (!modoProgressivo && previsao) {
+  } else if (previsao) {
     textoCaixa = previsao;
   }
 
-  const fonteCaixa = tamanhoFonteCaixa(
-    textoCaixa,
-    modoProgressivo ? 24 : 28,
-    ecraLink && !emFaseHook && !emFaseFecho,
-  );
+  const fonteCaixa = tamanhoFonteCaixa(textoCaixa, modoProgressivo ? 24 : 28);
 
   return (
-    <AbsoluteFill style={{ backgroundColor: PALETA_SIDUS.fundo, fontFamily: 'system-ui, sans-serif' }}>
-      {usaImagemZen ? (
-        <FundoImagemZen imagemFundoUrl={imagemFundoUrl!} modoPaleta={imagemFundoModo} />
-      ) : (
-        <FundoVideoMistico tema={fundoVideoTema ?? 'zen_escuro'} seed={fundoVideoSeed ?? 0} />
-      )}
-
-      {usaImagemZen ? (
-        <ZenOverlayAnimado seed={fundoVideoSeed ?? 0} />
-      ) : (
-        <EfeitosUniverso />
-      )}
-
-      <OverlayLegibilidadeTexto modoImagemZen={usaImagemZen} />
+    <AbsoluteFill style={{ backgroundColor: '#000000', fontFamily: 'system-ui, sans-serif' }}>
+      <FundoCosmicoSidus seed={fundoVideoSeed ?? 0} />
 
       <AbsoluteFill
         style={{
-          padding: '70px 44px 160px',
+          padding: '88px 40px 300px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'flex-start',
+          zIndex: 10,
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            marginBottom: 6,
-          }}
-        >
-          <LogoSidusVideo larguraPx={LOGO_SIDUS_LARGURA_PX} opacidade={0.98} />
+        <div style={{ marginTop: 24, marginBottom: 8 }}>
+          <LogoSidusVideo larguraPx={LOGO_SIDUS_LARGURA_PX} />
         </div>
 
         <div
@@ -218,7 +171,8 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
             fontWeight: 900,
             letterSpacing: 2,
             textShadow: `0 0 25px ${PALETA_SIDUS.destaqueSombra}`,
-            marginBottom: 20,
+            marginBottom: 16,
+            marginTop: 4,
             textAlign: 'center',
             maxWidth: 980,
             lineHeight: 1.1,
@@ -227,7 +181,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
           {signo.toUpperCase()}
         </div>
 
-        <div style={{ width: '100%', maxWidth: 980, position: 'relative' }}>
+        <div style={{ width: '100%', maxWidth: 960, position: 'relative' }}>
           <div
             style={{
               ...estiloCaixaBase,
@@ -238,11 +192,10 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
               lineHeight: 1.45,
               textAlign: 'center',
               border: bordaCaixa,
-              maxHeight: 420,
+              maxHeight: 380,
               overflow: 'hidden',
               opacity: opacidadeCaixa,
               transform: `translateY(${(1 - opacidadeCaixa) * 10}px)`,
-              letterSpacing: ecraLink && !emFaseHook && !emFaseFecho ? 1.5 : 0,
               boxShadow: emFaseFecho
                 ? `0 12px 40px rgba(0,0,0,0.55), 0 0 32px ${PALETA_SIDUS.destaqueSombra}`
                 : '0 10px 30px rgba(0,0,0,0.35)',
@@ -261,6 +214,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
         </div>
       </AbsoluteFill>
 
+      <BarraLinkSite siteMarca={siteMarca} />
       <RodapeComercialSidus
         siteMarca={siteMarca}
         activo={emFaseFecho}

@@ -10,30 +10,46 @@ export interface LogoSidusVideoProps {
 }
 
 /**
- * Logo Sidus PNG transparente — sem filtros para preservar o brilho da estrela.
+ * Logo Sidus PNG transparente — halo escuro atrás preserva brilho da estrela.
  */
 export function LogoSidusVideo({
-  larguraPx = 420,
+  larguraPx = 480,
   opacidade = 1,
 }: LogoSidusVideoProps): React.ReactElement {
   return (
     <div
       style={{
+        position: 'relative',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         opacity: opacidade,
-        filter: 'drop-shadow(0 6px 28px rgba(0,0,0,0.65)) drop-shadow(0 0 18px rgba(243,204,99,0.35))',
+        zIndex: 12,
       }}
     >
+      {/* halo escuro — impede que estrelas/fundo "comam" o logo */}
+      <div
+        style={{
+          position: 'absolute',
+          width: larguraPx * 1.15,
+          height: larguraPx * 1.15,
+          borderRadius: '50%',
+          background:
+            'radial-gradient(circle, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.45) 45%, transparent 72%)',
+          filter: 'blur(8px)',
+        }}
+      />
       <Img
         src={logoVertical}
         style={{
+          position: 'relative',
           width: larguraPx,
           height: 'auto',
-          maxWidth: '92%',
+          maxWidth: '94%',
           objectFit: 'contain',
           display: 'block',
+          filter:
+            'drop-shadow(0 8px 32px rgba(0,0,0,0.85)) drop-shadow(0 0 28px rgba(243,204,99,0.55))',
         }}
       />
     </div>

@@ -44,12 +44,9 @@ function hashChave(chave: string): number {
   return digest.readUInt32BE(0);
 }
 
-/** Escolhe um tema animado único por signo + data — vídeo diferente a cada publicação */
+/** Diário: fundo cósmico espiritual (sem gótico/tarot pesado) */
 export function escolherFundoVideo(signo: string, data: string): ConfigFundoVideo {
-  const hash = hashChave(`${data}|${signo}|fundo-video-v2`);
-  const tema = TEMAS_FUNDO_MISTICO[hash % TEMAS_FUNDO_MISTICO.length];
-  const seed = hash % 9_999_999;
-  return { tema, seed };
+  return escolherFundoVideoZen(signo, data);
 }
 
 /** Fundo animado zen/espiritual — motivacional, VIP, afiliados (sem gótico/tarot pesado) */
@@ -60,7 +57,7 @@ export function escolherFundoVideoZen(id: string, data: string): ConfigFundoVide
   return { tema, seed };
 }
 
-/** Todos os vídeos com fundo zen usam imagem IA Pinterest + overlay animado */
+/** Vídeos zen usam fundo cósmico preto animado (sem imagens IA esticadas) */
 export function deveUsarFundoAnimadoZen(_id: string, _data: string): boolean {
-  return false;
+  return true;
 }
