@@ -58,6 +58,10 @@ async function executar(): Promise<void> {
   gerarNarracaoPreview(textoNarracao, './public/narracao.mp3');
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3', 22);
 
+  const { ficheiro: imagemFundoUrl, modo: imagemFundoModo } = await obterImagemFundoZenAstrologia(ID, DATA);
+  const fundo = escolherFundoVideoZen(ID, DATA);
+  const musicaFundoArquivo = await prepararMusicaEspecial(ID, DATA, 'zen');
+
   const props = {
     signo: 'PEIXES',
     previsao:
