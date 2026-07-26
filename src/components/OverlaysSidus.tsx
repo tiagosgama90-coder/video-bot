@@ -1,18 +1,51 @@
-import { Img, interpolate, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
+import { Img, interpolate, staticFile, useCurrentFrame } from 'remotion';
 import { PALETA_SIDUS } from '../lib/paleta-visual';
 
 const logoHorizontal = staticFile('logo-sidus-horizontal.png');
 
+/** Link do site — sempre visível, zona segura acima da barra TikTok */
+export function BarraLinkSite({ siteMarca = 'sidusastro.com' }: { siteMarca?: string }): React.ReactElement {
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: 198,
+        zIndex: 28,
+        display: 'flex',
+        justifyContent: 'center',
+        pointerEvents: 'none',
+      }}
+    >
+      <div
+        style={{
+          color: PALETA_SIDUS.destaque,
+          fontSize: 30,
+          fontWeight: 800,
+          letterSpacing: 1.4,
+          padding: '10px 28px',
+          borderRadius: 999,
+          background: 'rgba(0,0,0,0.55)',
+          border: `1px solid ${PALETA_SIDUS.destaqueBorda}`,
+          textShadow: `0 2px 14px rgba(0,0,0,0.9), 0 0 16px ${PALETA_SIDUS.destaqueSombra}`,
+          fontFamily: 'system-ui, sans-serif',
+          backdropFilter: 'blur(8px)',
+        }}
+      >
+        {siteMarca}
+      </div>
+    </div>
+  );
+}
+
 export interface RodapeComercialSidusProps {
   siteMarca?: string;
-  /** Fase comercial (fecho) — mostra CTA no rodapé seguro */
   activo: boolean;
   frameInicio: number;
 }
 
-/**
- * CTA comercial no rodapé — acima da barra TikTok/Instagram (~210px do fundo).
- */
+/** CTA comercial reforçado na fase final */
 export function RodapeComercialSidus({
   siteMarca = 'sidusastro.com',
   activo,
@@ -39,61 +72,47 @@ export function RodapeComercialSidus({
         position: 'absolute',
         left: 0,
         right: 0,
-        bottom: 210,
-        zIndex: 30,
+        bottom: 268,
+        zIndex: 32,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: 10,
-        padding: '0 48px',
+        gap: 8,
+        padding: '0 40px',
         opacity: opacidade,
-        transform: `translateY(${(1 - opacidade) * 16}px)`,
+        transform: `translateY(${(1 - opacidade) * 14}px)`,
         pointerEvents: 'none',
       }}
     >
       <Img
         src={logoHorizontal}
         style={{
-          width: 340,
-          maxWidth: '88%',
+          width: 300,
+          maxWidth: '86%',
           height: 'auto',
           objectFit: 'contain',
           display: 'block',
-          filter: 'drop-shadow(0 4px 20px rgba(0,0,0,0.7)) drop-shadow(0 0 14px rgba(243,204,99,0.3))',
+          filter: 'drop-shadow(0 4px 22px rgba(0,0,0,0.8)) drop-shadow(0 0 16px rgba(243,204,99,0.4))',
         }}
       />
       <div
         style={{
           color: PALETA_SIDUS.destaqueForte,
-          fontSize: 34,
+          fontSize: 32,
           fontWeight: 900,
-          letterSpacing: 1.2,
+          letterSpacing: 1,
           textAlign: 'center',
-          textShadow: '0 3px 16px rgba(0,0,0,0.9), 0 0 20px rgba(243,204,99,0.45)',
+          textShadow: '0 3px 18px rgba(0,0,0,0.95), 0 0 22px rgba(243,204,99,0.5)',
           fontFamily: 'system-ui, sans-serif',
         }}
       >
         {textoVisite}
       </div>
-      <div
-        style={{
-          color: PALETA_SIDUS.destaque,
-          fontSize: 26,
-          fontWeight: 700,
-          letterSpacing: 0.8,
-          textAlign: 'center',
-          textShadow: '0 2px 12px rgba(0,0,0,0.85)',
-          fontFamily: 'system-ui, sans-serif',
-        }}
-      >
-        {siteMarca}
-      </div>
     </div>
   );
 }
 
-/** @deprecated usar RodapeComercialSidus — mantido para imports antigos */
-export function MarcaSidusAstro({ siteMarca = 'sidusastro.com' }: { siteMarca?: string }): null {
-  void siteMarca;
-  return null;
+/** @deprecated usar BarraLinkSite */
+export function MarcaSidusAstro({ siteMarca = 'sidusastro.com' }: { siteMarca?: string }): React.ReactElement {
+  return <BarraLinkSite siteMarca={siteMarca} />;
 }
