@@ -40,7 +40,7 @@ exigirTexto('./src/lib/ganchos-diario.ts', 'escolherGanchoDiario', 'Diário: gan
 exigirTexto('./src/lib/ganchos-diario.ts', 'GANCHOS_PSICOLOGIA_PT', 'Diário: ganchos psicológicos PT');
 exigirTexto('./src/lib/ganchos-diario.ts', 'paraste o scroll', 'Diário: gancho psicológico PT');
 exigirTexto('./src/lib/ganchos-diario.ts', 'you stopped scrolling', 'Diário: gancho psicológico EN');
-exigirTexto('./src/lib/legenda.ts', 'Ninguém te mostra isto nas apps grátis', 'Diário: fecho curiosidade site');
+exigirTexto('./src/lib/legenda.ts', 'Visite o SidusAstro', 'Diário: fecho comercial SidusAstro');
 exigirTexto('./src/lib/paleta-visual.ts', 'PALETA_SIDUS', 'Visual: regra 60-30-10');
 exigirTexto('./config/sidusastro.json', 'estiloAzureMasculina', 'Voz: estilo masculino místico');
 exigirTexto('./config/sidusastro.json', 'estiloAzureFeminina', 'Voz: estilo feminino zen');
@@ -56,7 +56,11 @@ exigirTexto('./gerar-e-publicar.ts', 'escolherFechoNarracao', 'Horóscopo: frase
 exigirTexto('./gerar-e-publicar.ts', 'montarTextoNarracaoDiaria', 'Diário: narração gancho + previsão + fecho');
 exigirTexto('./src/lib/gerar-video-especial.ts', 'montarTextoNarracaoDiaria', 'Especiais: narração gancho+corpo+fecho');
 exigirTexto('./src/lib/ganchos-especial.ts', 'escolherGanchoEspecial', 'Especiais: gancho de abertura');
-exigirTexto('./src/MyVideo.tsx', 'LOGO_SIDUS_PX', 'Vídeo: logo Sidus maior');
+exigirTexto('./src/MyVideo.tsx', 'LOGO_SIDUS_LARGURA_PX', 'Vídeo: logo Sidus maior');
+exigirTexto('./src/MyVideo.tsx', 'LogoSidusVideo', 'Vídeo: novo logo PNG transparente');
+exigirTexto('./src/MyVideo.tsx', 'RodapeComercialSidus', 'Vídeo: CTA comercial no rodapé');
+exigirFicheiro('./public/logo-sidus-vertical.png');
+exigirFicheiro('./public/logo-sidus-horizontal.png');
 exigirTexto('./gerar-e-publicar.ts', 'frameInicioPrevisao', 'Diário: ecrã sincronizado com voz');
 exigirTexto('./gerar-e-publicar.ts', 'fechoEcra', 'Horóscopo: fecho no ecrã');
 
@@ -108,7 +112,7 @@ exigirTexto('./src/lib/fundo-video.ts', 'reiki_energia', 'Vídeo: tema reiki ani
 exigirTexto('./src/lib/imagem-fundo.ts', 'validarImagemReel', 'Imagem: validação proporção reel 9:16');
 exigirTexto('./src/lib/imagem-fundo.ts', 'force_original_aspect_ratio=increase', 'Imagem: crop reel sem esticar');
 exigirTexto('./src/lib/imagem-fundo.ts', 'REEL_LARGURA', 'Imagem: 1080px largura reel');
-exigirTexto('./src/components/FundoImagemZen.tsx', 'objectFit: \'cover\'', 'Vídeo: imagem full bleed reel sem esticar');
+exigirTexto('./src/components/FundoImagemZen.tsx', 'objectFit="cover"', 'Vídeo: imagem cover sem esticar');
 exigirTexto('./src/components/ZenOverlayAnimado.tsx', 'ZenOverlayAnimado', 'Vídeo: overlay animado sobre imagem');
 exigirTexto('./config/sidusastro.json', '#08060e', 'Imagem config: cor base 60%');
 exigirTexto('./src/lib/gerar-video-especial.ts', 'obterImagemFundoZenAstrologia', 'Especiais: imagem zen quando fundoZenAstrologia');

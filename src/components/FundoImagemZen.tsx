@@ -2,6 +2,9 @@ import React from 'react';
 import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { PALETA_SIDUS } from '../lib/paleta-visual';
 
+const REEL_LARGURA = 1080;
+const REEL_ALTURA = 1920;
+
 function resolverSrcImagem(url: string): string {
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url;
@@ -22,49 +25,52 @@ function filtroImagem(modoPaleta?: 'color' | 'mono'): string {
 }
 
 /**
- * Reel 1080×1920 full bleed — object-fit cover (nunca estica), Ken Burns suave.
+ * Reel 1080×1920 — cover simétrico (nunca estica), Ken Burns suave no centro.
  */
 export function FundoImagemZen({ imagemFundoUrl, modoPaleta }: FundoImagemZenProps): React.ReactElement {
   const frame = useCurrentFrame();
-  const { durationInFrames } = useVideoConfig();
+  const { width, height, durationInFrames } = useVideoConfig();
   const src = resolverSrcImagem(imagemFundoUrl);
 
-  const escala = interpolate(frame, [0, durationInFrames], [1.04, 1.12], {
+  const escala = interpolate(frame, [0, durationInFrames], [1.02, 1.08], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
-  const deslocamentoY = interpolate(frame, [0, durationInFrames], [0, -28], {
+  const deslocamentoY = interpolate(frame, [0, durationInFrames], [0, -20], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
-  const deslocamentoX = interpolate(frame, [0, durationInFrames], [0, 12], {
+  const deslocamentoX = interpolate(frame, [0, durationInFrames], [0, 8], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
+
+  const coverScale = Math.max(width / REEL_LARGURA, height / REEL_ALTURA) * escala;
+  const imgW = REEL_LARGURA * coverScale;
+  const imgH = REEL_ALTURA * coverScale;
 
   return (
     <AbsoluteFill style={{ overflow: 'hidden', backgroundColor: PALETA_SIDUS.fundo }}>
-      <AbsoluteFill
+      <Img
+        src={src}
+        width={imgW}
+        height={imgH}
+        objectFit="cover"
         style={{
-          transform: `scale(${escala}) translate(${deslocamentoX}px, ${deslocamentoY}px)`,
-          transformOrigin: 'center center',
+          position: 'absolute',
+          left: '50%',
+          top: '50%',
+          width: imgW,
+          height: imgH,
+          marginLeft: -imgW / 2 + deslocamentoX,
+          marginTop: -imgH / 2 + deslocamentoY,
+          display: 'block',
+          filter: filtroImagem(modoPaleta),
         }}
-      >
-        <Img
-          src={src}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: 'center center',
-            display: 'block',
-            filter: filtroImagem(modoPaleta),
-          }}
-        />
-      </AbsoluteFill>
+      />
       <AbsoluteFill
         style={{
-          background: `linear-gradient(180deg, ${PALETA_SIDUS.fundo}55 0%, transparent 28%, ${PALETA_SIDUS.fundo}44 62%, ${PALETA_SIDUS.fundo}99 100%)`,
+          background: `linear-gradient(180deg, ${PALETA_SIDUS.fundo}44 0%, transparent 22%, transparent 58%, ${PALETA_SIDUS.fundo}88 100%)`,
           pointerEvents: 'none',
         }}
       />

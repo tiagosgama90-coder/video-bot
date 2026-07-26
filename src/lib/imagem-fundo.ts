@@ -85,13 +85,8 @@ export function normalizarImagemReel(destino: string): void {
     return;
   }
 
-  const precisaRedimensionar =
-    dimensoes.width !== REEL_LARGURA ||
-    dimensoes.height !== REEL_ALTURA ||
-    !validarRatioReel(dimensoes.width, dimensoes.height);
-
-  if (!precisaRedimensionar) {
-    return;
+  if (dimensoes.width < 360 || dimensoes.height < 640) {
+    throw new Error('Imagem demasiado pequena para reel: ' + dimensoes.width + '×' + dimensoes.height);
   }
 
   const tmp = destino + '.reel.jpg';
@@ -218,17 +213,6 @@ async function descarregarFicheiro(url: string, destino: string): Promise<void> 
   if (!dimensoes) {
     throw new Error('Não foi possível ler dimensões JPEG');
   }
-  const ratio = dimensoes.width / dimensoes.height;
-  if (dimensoes.width < 360 || dimensoes.height < 640 || ratio < 0.45 || ratio > 0.65) {
-    throw new Error(
-      'Proporção inválida para reel: ' +
-        dimensoes.width +
-        '×' +
-        dimensoes.height +
-        ' (esperado vertical ~9:16)',
-    );
-  }
-
   fs.writeFileSync(destino, dados);
   normalizarImagemReel(destino);
   const finais = lerDimensoesJpeg(fs.readFileSync(destino));
