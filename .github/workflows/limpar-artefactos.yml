@@ -1,9 +1,13 @@
 name: Limpar artefactos GitHub
 
 # Apaga todos os artefactos guardados no repo (liberta quota 0.5 GB).
-# Uso: Actions → Limpar artefactos GitHub → Run workflow → Run workflow
+# Dispara manualmente (Actions → Run workflow) ou ao fazer push deste ficheiro.
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/limpar-artefactos.yml'
 
 permissions:
   actions: write
