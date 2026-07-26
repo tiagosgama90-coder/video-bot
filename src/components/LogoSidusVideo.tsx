@@ -10,7 +10,7 @@ export interface LogoSidusVideoProps {
 }
 
 /**
- * Logo Sidus PNG transparente — halo escuro atrás preserva brilho da estrela.
+ * Logo Sidus oficial (sidusastro.com) — PNG transparente HD, sem alterar o design.
  */
 export function LogoSidusVideo({
   larguraPx = 480,
