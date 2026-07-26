@@ -108,7 +108,7 @@ exigirTexto('./src/lib/imagem-prompts.ts', 'escolherModoPaletaImagem', 'Imagem: 
 exigirTexto('./src/lib/imagem-prompts.ts', 'TEMAS_MONOCROMATICOS', 'Imagem: temas monocromáticos');
 exigirTexto('./src/lib/imagem-prompts.ts', 'TEMAS_COLOR', 'Imagem: temas coloridos');
 exigirTexto('./src/lib/imagem-fundo.ts', 'ImagemFundoGerada', 'Imagem: resultado com modo paleta');
-exigirTexto('./src/lib/gerar-video-especial.ts', 'Fundo cósmico Sidus', 'Especiais: fundo cósmico');
+exigirTexto('./src/lib/gerar-video-especial.ts', 'Fundo cósmico animado', 'Especiais: cosmos em movimento');
 exigirTexto('./src/lib/gerar-video-especial.ts', 'escolherFundoVideoZen', 'Especiais: fundo zen animado');
 exigirTexto('./src/lib/fundo-video.ts', 'reiki_energia', 'Vídeo: tema reiki animado');
 exigirTexto('./src/lib/imagem-fundo.ts', 'validarImagemReel', 'Imagem: validação proporção reel 9:16');
@@ -127,7 +127,11 @@ exigirTexto('./src/lib/voz.ts', 'mstts:express-as', 'Voz: estilo Azure expressiv
 exigirFicheiro('./src/lib/fundo-video.ts');
 exigirTexto('./src/lib/fundo-video.ts', 'mesa_tarot', 'Vídeo: tema mesa tarot');
 exigirTexto('./src/components/FundoVideoMistico.tsx', 'TemaVelas', 'Vídeo: velas animadas');
-exigirTexto('./gerar-e-publicar.ts', 'Fundo cósmico Sidus', 'Diário: fundo cósmico sem IA esticada');
+exigirTexto('./src/components/FundoCosmicoAnimado.tsx', 'objectFit: \'cover\'', 'Vídeo: cosmos animado sem esticar');
+exigirTexto('./src/MyVideo.tsx', 'FundoCosmicoAnimado', 'Vídeo: nebulosa cósmica em movimento');
+exigirFicheiro('./src/lib/imagem-cosmica.ts');
+exigirTexto('./gerar-e-publicar.ts', 'obterImagemFundoCosmico', 'Diário: fundo cósmico IA animado');
+exigirTexto('./src/lib/gerar-video-especial.ts', 'obterImagemFundoCosmico', 'Especiais: fundo cósmico IA');
 exigirTexto('./src/MyVideo.tsx', 'LogoSidusVideo', 'Vídeo: logo Sidus destacado');
 
 exigirFicheiro('./.github/workflows/diario.yml');

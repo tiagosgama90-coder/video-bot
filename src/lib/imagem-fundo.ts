@@ -20,6 +20,13 @@ import {
 } from './imagem-prompts';
 import type { SignoZodiaco } from './signos';
 import { NOMES_SIGNOS } from './signos';
+import {
+  MODIFICADORES_COSMICOS,
+  PALETAS_COSMICAS,
+  PROMPTS_FALLBACK_COSMICOS,
+  SUFIXO_PROMPT_COSMICO,
+  TEMAS_COSMICOS,
+} from './imagem-cosmica';
 
 export type { ModoPaletaImagem } from './imagem-prompts';
 export { escolherModoPaletaImagem } from './imagem-prompts';
@@ -226,6 +233,61 @@ function escreverJpegMinimo(destino: string): void {
   fs.writeFileSync(destino, Buffer.from(JPEG_MINIMO_BASE64, 'base64'));
 }
 
+function montarPromptCosmico(chave: string, data: string): string {
+  let hash = 0;
+  const seed = data + '|' + chave + '|cosmos-v1';
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  }
+  const tema = TEMAS_COSMICOS[hash % TEMAS_COSMICOS.length];
+  const modificador = MODIFICADORES_COSMICOS[(hash >> 3) % MODIFICADORES_COSMICOS.length];
+  const paleta = PALETAS_COSMICAS[(hash >> 5) % PALETAS_COSMICAS.length];
+  return tema + ', ' + modificador + ', color palette ' + paleta + SUFIXO_PROMPT_COSMICO;
+}
+
+function urlsFallbackCosmicos(seed: number): string[] {
+  return PROMPTS_FALLBACK_COSMICOS.map((prompt, i) =>
+    montarUrlPollinations(prompt + SUFIXO_PROMPT_COSMICO, seed + i * 23),
+  );
+}
+
+async function gerarImagemCosmica(
+  chave: string,
+  data: string,
+  prefixoFicheiro: string,
+): Promise<ImagemFundoGerada> {
+  if (!fs.existsSync('./public')) {
+    fs.mkdirSync('./public', { recursive: true });
+  }
+
+  const prompt = montarPromptCosmico(chave, data);
+  const seed = gerarSeedUnico(chave + '-cosmos', data);
+  const sufixo = crypto.randomBytes(4).toString('hex');
+  const nomeFicheiro = prefixoFicheiro + '-' + sufixo + '.jpg';
+  const imagemLocal = './public/' + nomeFicheiro;
+  const urlPollinations = montarUrlPollinations(prompt, seed);
+
+  console.log('🌌 Prompt cosmos [' + chave + ']: ' + prompt.slice(0, 120) + '...');
+  console.log('🌌 Seed: ' + seed);
+
+  const fontes = [urlPollinations, ...urlsFallbackCosmicos(seed)];
+
+  for (const url of fontes) {
+    try {
+      await descarregarFicheiro(url, imagemLocal);
+      console.log('✅ Fundo cósmico guardado: ' + nomeFicheiro);
+      return { ficheiro: nomeFicheiro, modo: 'color' };
+    } catch (erro) {
+      console.log('⚠️ Fonte indisponível: ' + url.slice(0, 80) + '...');
+      console.log(String(erro));
+    }
+  }
+
+  console.log('⚠️ Cosmos IA falhou — fallback preto mínimo.');
+  escreverJpegMinimo(imagemLocal);
+  return { ficheiro: nomeFicheiro, modo: 'color' };
+}
+
 async function gerarImagemFundo(
   chave: string,
   data: string,
@@ -271,4 +333,8 @@ export async function obterImagemFundo(signo: SignoZodiaco, data: string): Promi
 
 export async function obterImagemFundoZenAstrologia(id: string, data: string): Promise<ImagemFundoGerada> {
   return gerarImagemFundo(id, data, 'fundo-zen-' + id);
+}
+
+export async function obterImagemFundoCosmico(chave: string, data: string): Promise<ImagemFundoGerada> {
+  return gerarImagemCosmica(chave, data, 'cosmos-' + chave);
 }

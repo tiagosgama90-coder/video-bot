@@ -2,7 +2,7 @@ import React from 'react';
 import { AbsoluteFill, interpolate, random, useCurrentFrame, useVideoConfig } from 'remotion';
 import { PALETA_SIDUS } from '../lib/paleta-visual';
 
-function EstrelasAPassear(): React.ReactElement {
+export function EstrelasAPassear(): React.ReactElement {
   const frame = useCurrentFrame();
   const { width, height, durationInFrames } = useVideoConfig();
 
@@ -48,7 +48,7 @@ function EstrelasAPassear(): React.ReactElement {
   );
 }
 
-function GeometriaSagradaSuave({ seed }: { seed: number }): React.ReactElement {
+export function GeometriaSagradaSuave({ seed }: { seed: number }): React.ReactElement {
   const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
   const cx = width / 2;
@@ -59,7 +59,7 @@ function GeometriaSagradaSuave({ seed }: { seed: number }): React.ReactElement {
   return (
     <AbsoluteFill
       style={{
-        opacity: 0.07,
+        opacity: 0.11,
         transform: `rotate(${rotacao}deg)`,
         transformOrigin: `${cx}px ${cy}px`,
         pointerEvents: 'none',

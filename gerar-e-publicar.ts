@@ -6,6 +6,7 @@ import { publicarEmTodosOsCanais } from './src/lib/buffer';
 import { obterTextoHoroscopo, extrairAteSegundoPontoFinal } from './src/lib/horoscopo';
 import { escolherFechoNarracao, gerarLegendas } from './src/lib/legenda';
 import { escolherFundoVideoZen } from './src/lib/fundo-video';
+import { obterImagemFundoCosmico } from './src/lib/imagem-fundo';
 import { calcularDuracaoFrames, DURACAO_MAXIMA_DIARIO_SEG } from './src/lib/duracao-video';
 import {
   calcularQuadrosNarracaoDiaria,
@@ -42,6 +43,7 @@ interface PropsVideo {
   previsao: string;
   hookTexto: string;
   fechoTexto: string;
+  imagemFundoUrl: string;
   fundoVideoSeed: number;
   musicaFundoArquivo: string;
   duracaoFrames: number;
@@ -103,7 +105,10 @@ async function processarSigno(
   console.log('✂️ Vídeo (1.ª + 2.ª frase por ponto final): "' + previsaoVideo + '"');
 
   const { seed: fundoVideoSeed } = escolherFundoVideoZen(signo, data);
-  console.log('🌌 Fundo cósmico Sidus (preto + estrelas + geometria sagrada, seed ' + fundoVideoSeed + ')');
+  const { ficheiro: imagemFundoUrl } = await obterImagemFundoCosmico(signo, data);
+  console.log(
+    '🌌 Fundo cósmico animado: ' + imagemFundoUrl + ' (Ken Burns + estrelas, seed ' + fundoVideoSeed + ')',
+  );
   const slotMusica =
     SLOTS_MUSICA_HOROSCOPO[indiceSlot] ??
     SLOTS_MUSICA_HOROSCOPO[indiceSlot % SLOTS_MUSICA_HOROSCOPO.length];
@@ -148,6 +153,7 @@ async function processarSigno(
     previsao: previsaoVideo,
     hookTexto,
     fechoTexto: fechoEcra,
+    imagemFundoUrl,
     fundoVideoSeed,
     musicaFundoArquivo,
     duracaoFrames,
