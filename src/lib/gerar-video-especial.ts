@@ -6,6 +6,7 @@ import { horaFusoParaISO, resolverDueAtFuturo } from './buffer-agenda';
 import { calcularDuracaoFrames } from './duracao-video';
 import { escolherGanchoEspecial } from './ganchos-especial';
 import { escolherFundoVideo, escolherFundoVideoZen, type TemaFundoMistico } from './fundo-video';
+import { obterImagemFundoCosmico } from './imagem-fundo';
 import { escolherFechoNarracao } from './legenda';
 import {
   isLocaleUS,
@@ -89,17 +90,16 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
   let imagemFundoUrl: string | undefined;
   let imagemFundoModo: 'color' | 'mono' | undefined;
 
-  if (opcoes.fundoZenAstrologia) {
-    const fundo = escolherFundoVideoZen(idPublicacao, opcoes.data);
-    fundoVideoTema = fundo.tema;
-    fundoVideoSeed = fundo.seed;
-    console.log('🌌 Fundo cósmico Sidus: ' + fundoVideoTema + ' (seed ' + fundoVideoSeed + ')');
-  } else {
-    const chaveFundo = signoChave;
-    const fundo = escolherFundoVideo(chaveFundo, opcoes.data);
-    fundoVideoTema = fundo.tema;
-    fundoVideoSeed = fundo.seed;
-    console.log('🎬 Fundo animado especial: ' + fundoVideoTema + ' (seed ' + fundoVideoSeed + ')');
+  const fundo = escolherFundoVideoZen(idPublicacao, opcoes.data);
+  fundoVideoSeed = fundo.seed;
+
+  const imagem = await obterImagemFundoCosmico(idPublicacao, opcoes.data);
+  imagemFundoUrl = imagem.ficheiro;
+  console.log('🌌 Fundo cósmico animado: ' + imagemFundoUrl + ' (seed ' + fundoVideoSeed + ')');
+
+  if (!opcoes.fundoZenAstrologia) {
+    const fundoLegacy = escolherFundoVideo(signoChave, opcoes.data);
+    fundoVideoTema = fundoLegacy.tema;
   }
 
   const musicaFundoArquivo = await prepararMusicaEspecial(

@@ -7,12 +7,13 @@ import fs from 'fs';
 import path from 'path';
 import { calcularDuracaoFrames } from '../src/lib/duracao-video';
 import { escolherFundoVideoZen } from '../src/lib/fundo-video';
+import { obterImagemFundoCosmico } from '../src/lib/imagem-fundo';
 import { prepararMusicaEspecial } from '../src/lib/musicas';
 import { obterVolumeMusica } from '../src/lib/project-config';
 
 const ID = 'preview-marketing';
 const DATA = '2026-07-27';
-const OUTPUT = './output/preview-cosmico-logo.mp4';
+const OUTPUT = './output/preview-cosmico-nebulosa.mp4';
 
 function gerarNarracaoPreview(texto: string, destino: string): void {
   const wav = destino.replace(/\.mp3$/, '.wav');
@@ -58,6 +59,7 @@ async function executar(): Promise<void> {
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3', 22);
 
   const { seed: fundoVideoSeed } = escolherFundoVideoZen(ID, DATA);
+  const { ficheiro: imagemFundoUrl } = await obterImagemFundoCosmico(ID, DATA);
   const musicaFundoArquivo = await prepararMusicaEspecial(ID, DATA, 'zen');
 
   const props = {
@@ -69,6 +71,7 @@ async function executar(): Promise<void> {
     frameInicioPrevisao: Math.round(30 * 3),
     frameInicioFecho: duracaoFrames - Math.round(30 * 4.8),
     fundoVideoSeed,
+    imagemFundoUrl,
     musicaFundoArquivo,
     duracaoFrames,
     siteMarca: 'sidusastro.com',
@@ -90,7 +93,7 @@ async function executar(): Promise<void> {
   if (!fs.existsSync(artefactos)) {
     fs.mkdirSync(artefactos, { recursive: true });
   }
-  const destinoArtefacto = path.join(artefactos, 'preview-cosmico-logo.mp4');
+  const destinoArtefacto = path.join(artefactos, 'preview-cosmico-nebulosa.mp4');
   fs.copyFileSync(OUTPUT, destinoArtefacto);
 
   if (fs.existsSync(caminhoProps)) {
