@@ -1,7 +1,6 @@
 import {
   AbsoluteFill,
   Audio,
-  Img,
   interpolate,
   staticFile,
   useCurrentFrame,
@@ -12,13 +11,14 @@ import { FundoImagemZen } from './components/FundoImagemZen';
 import { FundoVideoMistico } from './components/FundoVideoMistico';
 import { OverlayLegibilidadeTexto } from './components/OverlayLegibilidadeTexto';
 import { ZenOverlayAnimado } from './components/ZenOverlayAnimado';
-import { MarcaSidusAstro } from './components/OverlaysSidus';
+import { LogoSidusVideo } from './components/LogoSidusVideo';
+import { RodapeComercialSidus } from './components/OverlaysSidus';
 import { PALETA_SIDUS } from './lib/paleta-visual';
 import type { HoroscopoProps } from './types/horoscopo';
 
 export type { HoroscopoProps } from './types/horoscopo';
 
-const LOGO_SIDUS_PX = 280;
+const LOGO_SIDUS_LARGURA_PX = 420;
 
 function tamanhoFonteSigno(texto: string): number {
   if (texto.length > 28) {
@@ -52,8 +52,7 @@ function tamanhoFonteCaixa(texto: string, base: number, ecraLink = false): numbe
   return base;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports -- asset estático em public/
-const logoSidus = require('../public/logo-sidus.png') as string;
+// Logo em public/logo-sidus-vertical.png (componente LogoSidusVideo)
 
 export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   signo,
@@ -167,7 +166,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
     fundoCaixa = PALETA_SIDUS.marcaMedia;
     bordaCaixa = `2px solid ${PALETA_SIDUS.destaqueBorda}`;
   } else if (!modoProgressivo && previsao) {
-    textoCaixa = `"${previsao}"`;
+    textoCaixa = previsao;
   }
 
   const fonteCaixa = tamanhoFonteCaixa(
@@ -206,19 +205,10 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            marginBottom: 10,
-            opacity: 0.95,
+            marginBottom: 6,
           }}
         >
-          <Img
-            src={logoSidus}
-            style={{
-              width: LOGO_SIDUS_PX,
-              height: LOGO_SIDUS_PX,
-              marginBottom: 16,
-              objectFit: 'contain',
-            }}
-          />
+          <LogoSidusVideo larguraPx={LOGO_SIDUS_LARGURA_PX} opacidade={0.98} />
         </div>
 
         <div
@@ -271,7 +261,11 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
         </div>
       </AbsoluteFill>
 
-      <MarcaSidusAstro siteMarca={siteMarca} />
+      <RodapeComercialSidus
+        siteMarca={siteMarca}
+        activo={emFaseFecho}
+        frameInicio={inicioFecho}
+      />
 
       <Audio src={staticFile('narracao.mp3')} volume={1.0} />
       <Audio src={staticFile(musicaFundoArquivo)} volume={volumeMusica} loop />

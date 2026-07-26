@@ -98,9 +98,9 @@ export const PROMPTS_FALLBACK_BRUTAL = PROMPTS_FALLBACK_ZEN;
 
 export function escolherModoPaletaImagem(chave: string, data: string): ModoPaletaImagem {
   let hash = 0;
-  const seed = data + '|' + chave + '|modo-cor-mono-v1';
+  const seed = data + '|' + chave + '|modo-cor-mono-v2';
   for (let i = 0; i < seed.length; i++) {
     hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
   }
-  return hash % 2 === 0 ? 'color' : 'mono';
+  return hash % 4 === 0 ? 'mono' : 'color';
 }

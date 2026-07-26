@@ -6,19 +6,14 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { calcularDuracaoFrames } from '../src/lib/duracao-video';
-import { obterEtiquetaGanchoMotivacional } from '../src/lib/conteudo-especial';
-import { escolherGanchoEspecial } from '../src/lib/ganchos-especial';
 import { escolherFundoVideoZen } from '../src/lib/fundo-video';
 import { obterImagemFundoZenAstrologia } from '../src/lib/imagem-fundo';
-import { escolherFechoNarracao } from '../src/lib/legenda';
 import { prepararMusicaEspecial } from '../src/lib/musicas';
 import { obterVolumeMusica } from '../src/lib/project-config';
 
-const ID = 'preview-exemplo';
-const DATA = '2026-07-26';
-const FRASE =
-  'Hoje o universo conspira a teu favor. Respira fundo e confia no teu caminho espiritual.';
-const OUTPUT = './output/preview-exemplo-zen.mp4';
+const ID = 'preview-marketing';
+const DATA = '2026-07-27';
+const OUTPUT = './output/preview-novo-logo-marketing.mp4';
 
 function gerarNarracaoPreview(texto: string, destino: string): void {
   const wav = destino.replace(/\.mp3$/, '.wav');
@@ -57,20 +52,22 @@ async function executar(): Promise<void> {
 
   console.log('🎬 A gerar vídeo de exemplo zen/reel...');
 
-  const hook = escolherGanchoEspecial('motivacao-quinta', DATA);
-  const fecho = escolherFechoNarracao();
+  const textoNarracao =
+    'Peixes, a pessoa em quem pensaste agora aparece nos astros. A tua intuição está aguçada hoje. Visite o SidusAstro em sidusastro.com';
+
+  gerarNarracaoPreview(textoNarracao, './public/narracao.mp3');
+  const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3', 22);
+
   const { ficheiro: imagemFundoUrl, modo: imagemFundoModo } = await obterImagemFundoZenAstrologia(ID, DATA);
   const fundo = escolherFundoVideoZen(ID, DATA);
   const musicaFundoArquivo = await prepararMusicaEspecial(ID, DATA, 'zen');
 
-  gerarNarracaoPreview(FRASE, './public/narracao.mp3');
-  const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3', 22);
-
   const props = {
-    signo: obterEtiquetaGanchoMotivacional(DATA, 'quinta'),
-    previsao: FRASE,
-    hookTexto: hook,
-    fechoTexto: fecho,
+    signo: 'PEIXES',
+    previsao:
+      'A tua intuição está aguçada hoje. Confia nos sinais que o universo te envia e segue o teu coração com serenidade.',
+    hookTexto: 'Peixes, a pessoa em quem pensaste agora aparece nos astros',
+    fechoTexto: 'Visite o SidusAstro — mapa astral completo grátis em sidusastro.com',
     frameInicioPrevisao: Math.round(30 * 3),
     frameInicioFecho: duracaoFrames - Math.round(30 * 4.8),
     fundoVideoSeed: fundo.seed,
@@ -97,7 +94,7 @@ async function executar(): Promise<void> {
   if (!fs.existsSync(artefactos)) {
     fs.mkdirSync(artefactos, { recursive: true });
   }
-  const destinoArtefacto = path.join(artefactos, 'preview-exemplo-zen.mp4');
+  const destinoArtefacto = path.join(artefactos, 'preview-novo-logo-marketing.mp4');
   fs.copyFileSync(OUTPUT, destinoArtefacto);
 
   if (fs.existsSync(caminhoProps)) {
