@@ -1,0 +1,50 @@
+name: Limpar artefactos GitHub
+
+# Apaga todos os artefactos guardados no repo (liberta quota 0.5 GB).
+# Uso: Actions → Limpar artefactos GitHub → Run workflow → Run workflow
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  limpar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apagar todos os artefactos
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let totalBytes = 0;
+            let apagados = 0;
+
+            for await (const res of github.paginate.iterator(
+              github.rest.actions.listArtifactsForRepo,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                per_page: 100,
+              }
+            )) {
+              for (const artifact of res.data) {
+                await github.rest.actions.deleteArtifact({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  artifact_id: artifact.id,
+                });
+                totalBytes += artifact.size_in_bytes;
+                apagados += 1;
+                const mb = (artifact.size_in_bytes / 1024 / 1024).toFixed(1);
+                core.info(`Apagado: ${artifact.name} (${mb} MB)`);
+              }
+            }
+
+            const totalMb = (totalBytes / 1024 / 1024).toFixed(1);
+            core.summary.addHeading('Artefactos apagados');
+            core.summary.addRaw(
+              `**${apagados}** artefacto(s), **${totalMb} MB** libertados.\n\n` +
+                'A quota de armazenamento deve actualizar em alguns minutos.'
+            );
+            await core.summary.write();
