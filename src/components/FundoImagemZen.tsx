@@ -22,11 +22,11 @@ function filtroImagem(modoPaleta?: 'color' | 'mono'): string {
 }
 
 /**
- * Reel 1080×1920 full bleed — imagem Pinterest visível, vinheta leve na zona do texto.
+ * Reel 1080×1920 full bleed — object-fit cover (nunca estica), Ken Burns suave.
  */
 export function FundoImagemZen({ imagemFundoUrl, modoPaleta }: FundoImagemZenProps): React.ReactElement {
   const frame = useCurrentFrame();
-  const { width, height, durationInFrames } = useVideoConfig();
+  const { durationInFrames } = useVideoConfig();
   const src = resolverSrcImagem(imagemFundoUrl);
 
   const escala = interpolate(frame, [0, durationInFrames], [1.04, 1.12], {
@@ -44,19 +44,24 @@ export function FundoImagemZen({ imagemFundoUrl, modoPaleta }: FundoImagemZenPro
 
   return (
     <AbsoluteFill style={{ overflow: 'hidden', backgroundColor: PALETA_SIDUS.fundo }}>
-      <Img
-        src={src}
-        width={width}
-        height={height}
+      <AbsoluteFill
         style={{
-          width,
-          height,
-          display: 'block',
-          filter: filtroImagem(modoPaleta),
           transform: `scale(${escala}) translate(${deslocamentoX}px, ${deslocamentoY}px)`,
           transformOrigin: 'center center',
         }}
-      />
+      >
+        <Img
+          src={src}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'center center',
+            display: 'block',
+            filter: filtroImagem(modoPaleta),
+          }}
+        />
+      </AbsoluteFill>
       <AbsoluteFill
         style={{
           background: `linear-gradient(180deg, ${PALETA_SIDUS.fundo}55 0%, transparent 28%, ${PALETA_SIDUS.fundo}44 62%, ${PALETA_SIDUS.fundo}99 100%)`,

@@ -81,21 +81,34 @@ export function validarImagemReel(largura: number, altura: number): boolean {
 export function normalizarImagemReel(destino: string): void {
   const dados = fs.readFileSync(destino);
   const dimensoes = lerDimensoesJpeg(dados);
-  if (!dimensoes || !validarRatioReel(dimensoes.width, dimensoes.height)) {
+  if (!dimensoes) {
     return;
   }
-  if (dimensoes.width === REEL_LARGURA && dimensoes.height === REEL_ALTURA) {
+
+  const precisaRedimensionar =
+    dimensoes.width !== REEL_LARGURA ||
+    dimensoes.height !== REEL_ALTURA ||
+    !validarRatioReel(dimensoes.width, dimensoes.height);
+
+  if (!precisaRedimensionar) {
     return;
   }
 
   const tmp = destino + '.reel.jpg';
+  const filtro =
+    'scale=' +
+    REEL_LARGURA +
+    ':' +
+    REEL_ALTURA +
+    ':force_original_aspect_ratio=increase,crop=' +
+    REEL_LARGURA +
+    ':' +
+    REEL_ALTURA;
   execSync(
     'ffmpeg -y -i "' +
       destino.replace(/"/g, '\\"') +
-      '" -vf "scale=' +
-      REEL_LARGURA +
-      ':' +
-      REEL_ALTURA +
+      '" -vf "' +
+      filtro +
       '" -q:v 2 "' +
       tmp.replace(/"/g, '\\"') +
       '"',
@@ -103,7 +116,7 @@ export function normalizarImagemReel(destino: string): void {
   );
   fs.renameSync(tmp, destino);
   console.log(
-    '📐 Imagem normalizada para reel: ' +
+    '📐 Imagem recortada para reel (sem esticar): ' +
       dimensoes.width +
       '×' +
       dimensoes.height +
@@ -205,13 +218,14 @@ async function descarregarFicheiro(url: string, destino: string): Promise<void> 
   if (!dimensoes) {
     throw new Error('Não foi possível ler dimensões JPEG');
   }
-  if (!validarImagemReel(dimensoes.width, dimensoes.height)) {
+  const ratio = dimensoes.width / dimensoes.height;
+  if (dimensoes.width < 360 || dimensoes.height < 640 || ratio < 0.45 || ratio > 0.65) {
     throw new Error(
       'Proporção inválida para reel: ' +
         dimensoes.width +
         '×' +
         dimensoes.height +
-        ' (esperado 9:16 vertical)',
+        ' (esperado vertical ~9:16)',
     );
   }
 

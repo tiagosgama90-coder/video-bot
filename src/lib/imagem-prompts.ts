@@ -22,29 +22,29 @@ export const PALETAS_MONOCROMATICAS = [
 export const PALETAS_60_30_10 = PALETAS_COLOR;
 
 export const TEMAS_COLOR = [
-  'vertical tarot card ornate golden frame, mystical hands holding colorful sun moon stars, alchemy symbols rich violet teal rose gold, pinterest spiritual art',
-  'moon phases vertical column fine gold geometric lines, constellation teal violet stars, lunar cycle rich indigo purple gold pinterest',
-  'antique astrolabe engraving brass gold emerald ruby jewel accents, zodiac ring colorful vintage mysticism vertical pinterest',
-  'deep cosmic nebula galaxy swirl rich colors violet teal magenta gold stardust, colorful spiritual deep space vertical pinterest',
+  'vertical tarot card ornate golden frame sun moon stars alchemy symbols rich violet teal rose gold, pinterest spiritual art no hands',
+  'moon phases vertical column fine gold geometric lines constellation teal violet stars, lunar cycle rich indigo purple gold pinterest',
+  'soft cosmic nebula galaxy swirl rich colors violet teal magenta gold stardust, colorful spiritual deep space vertical pinterest',
   'colorful aurora spiritual sky green magenta violet gold light rays, stardust dreamy pinterest wallpaper vertical',
   'sacred geometry flower of life metatron cube glowing gold violet teal lines, reiki energy orbs colorful spiritual healing pinterest',
   'sri yantra mandala radiant golden purple rose energy, soft colorful aurora portal meditation spiritual pinterest',
   'reiki healing light streams chakra colors violet emerald rose gold, mandala lotus aura ethereal spiritual pinterest art',
   'chakra alignment lotus mandala colorful energy orbs teal violet gold rose, spiritual healing luminous pinterest vertical',
   'zen lotus pond twilight colorful mandala sky violet gold teal mist, reiki ripples spiritual pinterest',
+  'ethereal crystal healing grid colorful amethyst rose quartz aura, soft bokeh spiritual pinterest vertical wallpaper',
 ] as const;
 
 export const TEMAS_MONOCROMATICOS = [
-  'vertical tarot card ornate frame monochrome silver gold line art on black charcoal, mystical hands holding moon sun symbols greyscale engraving, alchemy icons white gold only no color pinterest spiritual',
-  'moon phases vertical column fine white silver geometric lines on deep black, lunar cycle charcoal engraving antique manuscript look pinterest spiritual',
-  'antique astrolabe engraving monochrome brass gold on black white, zodiac ring vintage scientific mysticism greyscale vertical pinterest',
-  'ancient celestial mechanics map planetary orbits heliocentric diagram sepia black white woodcut engraving aged gold lines only pinterest',
-  'vintage zodiac wheel chart antique engraving black white silver gold linework, astrolabe overlay greyscale manuscript pinterest astrology vertical',
+  'moon phases vertical column fine white silver geometric lines on deep black, lunar cycle soft glow greyscale pinterest spiritual',
   'deep cosmic nebula charcoal greyscale silver white stardust on black void, monochrome spiritual deep space texture vertical pinterest',
   'sacred geometry flower of life metatron cube white gold thin lines on black, reiki energy monochrome spiritual engraving pinterest',
   'sri yantra mandala silver gold linework on charcoal black, soft moonlight glow greyscale meditation spiritual pinterest',
   'reiki healing light streams monochrome silver beams on dark void, mandala lotus greyscale aura spiritual pinterest art',
-  'angelic light beams through sacred geometry window monochrome white gold dust on black, healing sanctuary greyscale pinterest spiritual',
+  'zen lotus mandala soft silver gold lines on charcoal, moonlight mist greyscale healing spiritual pinterest vertical',
+  'chakra lotus mandala greyscale silver violet tint on black, soft ethereal reiki glow monochrome pinterest spiritual',
+  'soft aurora borealis greyscale silver white beams on deep void, dreamy stardust spiritual pinterest vertical wallpaper',
+  'crystal healing grid monochrome amethyst silhouette silver lines, bokeh moonlight spiritual pinterest vertical',
+  'ethereal smoke sacred geometry portal silver gold dust on black, meditative zen greyscale pinterest spiritual',
 ] as const;
 
 export const TEMAS_IMAGEM_ZEN_ESPIRITUAL = [...TEMAS_COLOR, ...TEMAS_MONOCROMATICOS] as const;
@@ -71,26 +71,26 @@ export const MODIFICADORES_IMAGEM_ZEN = [...MODIFICADORES_COLOR, ...MODIFICADORE
 export const MODIFICADORES_IMAGEM_BRUTAL = MODIFICADORES_IMAGEM_ZEN;
 
 export const SUFIXO_PROMPT_COLOR =
-  ', pinterest spiritual mystical illustration colorful vibrant saturated jewel tones, alchemy tarot moon phases astrolabe reiki mandala chakra, native instagram reel wallpaper 1080x1920 full bleed vertical 9:16, rich colors violet teal emerald rose gold aurora on deep cosmic base, dreamy luminous spiritual glow, ornate frame when tarot theme, illustrated mystical hands allowed, decorative ornamental band abstract glyphs only no readable words, no watermark, no photorealistic faces, masterpiece';
+  ', pinterest spiritual mystical illustration colorful vibrant saturated jewel tones, reiki mandala chakra sacred geometry moon phases, native instagram reel wallpaper composed for vertical 9:16 full bleed edge to edge 1080x1920, rich colors violet teal emerald rose gold aurora on deep cosmic base, dreamy luminous spiritual glow, no antique maps no astrolabe charts no pointing hands no human figures, decorative ornamental abstract glyphs only no readable words, no watermark, no photorealistic faces, masterpiece';
 
 export const SUFIXO_PROMPT_MONO =
-  ', pinterest spiritual mystical illustration monochrome greyscale sepia charcoal aesthetic, alchemy tarot moon phases astrolabe reiki mandala sacred geometry, native instagram reel wallpaper 1080x1920 full bleed vertical 9:16, black charcoal deep void with silver white and aged gold line art only no color no chroma, antique engraving woodcut moody spiritual glow, ornate frame when tarot theme, illustrated mystical hands allowed greyscale, decorative ornamental band abstract glyphs only no readable words, no watermark, no photorealistic faces, masterpiece';
+  ', pinterest spiritual mystical illustration soft monochrome greyscale silver gold on charcoal, reiki mandala chakra sacred geometry moon phases aurora, native instagram reel wallpaper composed for vertical 9:16 full bleed edge to edge 1080x1920, soft moonlight glow no sepia antique no vintage manuscript, no antique maps no astrolabe charts no pointing hands no human figures, decorative ornamental abstract glyphs only no readable words, no watermark, no photorealistic faces, masterpiece';
 
 /** @deprecated alias — cor por omissão em imports antigos */
 export const SUFIXO_PROMPT_IMAGEM = SUFIXO_PROMPT_COLOR;
 
 export const PROMPTS_FALLBACK_COLOR = [
-  'colorful vertical tarot card ornate frame mystical hands sun moon alchemy violet teal rose gold pinterest spiritual',
+  'colorful vertical ornate frame sun moon alchemy violet teal rose gold pinterest spiritual no hands',
   'vertical moon phases column colorful geometric lines constellation gold purple teal pinterest spiritual',
   'rich colorful cosmic nebula galaxy violet teal magenta gold stardust spiritual vertical pinterest',
   'reiki mandala sacred geometry chakra colors violet emerald rose gold healing spiritual pinterest vertical',
 ] as const;
 
 export const PROMPTS_FALLBACK_MONO = [
-  'monochrome vertical tarot card ornate frame silver gold line art on black charcoal pinterest spiritual',
   'vertical moon phases column white silver geometric lines on deep black greyscale pinterest spiritual',
-  'antique astrolabe engraving zodiac monochrome sepia gold lines on black pinterest',
   'reiki mandala sacred geometry white gold lines charcoal black greyscale spiritual pinterest vertical',
+  'soft aurora greyscale silver beams deep void stardust spiritual pinterest vertical wallpaper',
+  'lotus mandala silver gold linework charcoal moonlight greyscale healing spiritual pinterest',
 ] as const;
 
 export const PROMPTS_FALLBACK_ZEN = [...PROMPTS_FALLBACK_COLOR, ...PROMPTS_FALLBACK_MONO] as const;
