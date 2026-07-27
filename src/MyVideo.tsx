@@ -59,7 +59,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   musicaFundoArquivo,
   segmentosEcra,
   siteMarca,
-  volumeMusica = 0.22,
+  volumeMusica = 0.09,
 }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();

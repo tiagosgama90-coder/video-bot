@@ -80,6 +80,18 @@ const GANCHOS_AMOR_PT: GanchoViralFn[] = [
   (n) =>
     n +
     ', o teu coração não está partido - o teu mapa está a pedir um ajuste na Casa 7. Relacionamentos mudam quando vês isto. Urgente 🚨',
+  () =>
+    'Descobre já a afinidade do teu parceiro com o teu em sidusastro.com - o mapa mostra o que a conversa não diz. Comenta MAPA 🚨',
+  (n) =>
+    n +
+    ', se sentes que te traem em silêncio, a Casa 7 e Marte no teu mapa contam a verdade. Legenda urgente 🚨',
+  (n) =>
+    n +
+    ': traição não é sempre óbvia - Vénus e Plutão no teu mapa revelam quem joga a dois jogos. sidusastro.com 🚨',
+  (n) =>
+    'Relacionamento a travar, ' +
+    n +
+    '? A compatibilidade real do casal está no mapa de sinastria em sidusastro.com - grátis 🚨',
 ];
 
 const GANCHOS_EGO_PT: GanchoViralFn[] = [
@@ -129,6 +141,14 @@ const GANCHOS_AMOR_EN: GanchoViralFn[] = [
   (n) =>
     n +
     ", your Venus House explains why you repeated the same love story. Comment MAP to find out which one 🚨",
+  () =>
+    'Discover your partner affinity with yours at sidusastro.com/en - the chart shows what the talk does not. Comment MAP 🚨',
+  (n) =>
+    n +
+    ', if you feel betrayed in silence, House 7 and Mars on your chart tell the truth. Urgent caption 🚨',
+  (n) =>
+    n +
+    ': betrayal is not always obvious - Venus and Pluto on your chart reveal who plays two games. sidusastro.com/en 🚨',
 ];
 
 const GANCHOS_EGO_EN: GanchoViralFn[] = [

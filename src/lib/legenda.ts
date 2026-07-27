@@ -27,6 +27,8 @@ export const FINAL_CLOSINGS = [
   'Mapa astral grátis em sidusastro.com - o que lá está não está nas apps',
   'A verdade completa do teu dia está em sidusastro.com',
   'Última peça do puzzle: mapa astral grátis em sidusastro.com',
+  'Descobre já a afinidade do teu parceiro com o teu em sidusastro.com',
+  'Se a relação te consome ou a traição te ronda, o mapa em sidusastro.com esclarece',
 ] as const;
 
 export const FINAL_CLOSINGS_EN = [
@@ -40,6 +42,8 @@ export const FINAL_CLOSINGS_EN = [
   'Free birth chart at sidusastro.com/en - not in the apps',
   'The full truth of your day is at sidusastro.com/en',
   'Last piece of the puzzle: free chart at sidusastro.com/en',
+  'Discover your partner affinity with yours at sidusastro.com/en',
+  'If the relationship drains you or betrayal haunts you, the chart at sidusastro.com/en clarifies',
 ] as const;
 
 function normalizarHashtag(texto: string): string {

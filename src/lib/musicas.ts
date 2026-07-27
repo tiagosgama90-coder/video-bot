@@ -190,7 +190,7 @@ function prepararMusicaZen(destino: string): void {
   execSync(
     'ffmpeg -y -i "' +
       destinoWin +
-      '" -af "silenceremove=start_periods=1:start_duration=0.1:start_threshold=-40dB,afade=t=in:st=0:d=1.5" -ar 44100 -ac 2 -b:a 192k "' +
+      '" -af "silenceremove=start_periods=1:start_duration=0.1:start_threshold=-40dB,volume=0.55,afade=t=in:st=0:d=1.5" -ar 44100 -ac 2 -b:a 192k "' +
       tempWin +
       '"',
     { stdio: 'ignore' },

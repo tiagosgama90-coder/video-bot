@@ -44,7 +44,13 @@ exigirTexto('./src/lib/legenda.ts', 'URGENTE - lê a legenda completa', 'Instagr
 exigirTexto('./src/lib/ganchos-diario.ts', 'escolherGanchoDiario', 'Diário: ganchos emocionais');
 exigirTexto('./src/lib/ganchos-diario.ts', 'GANCHOS_PSICOLOGIA_PT', 'Diário: ganchos psicológicos PT');
 exigirTexto('./src/lib/ganchos-diario.ts', 'paraste o scroll', 'Diário: gancho psicológico PT');
-exigirTexto('./src/lib/ganchos-diario.ts', 'you stopped scrolling', 'Diário: gancho psicológico EN');
+exigirTexto('./src/lib/ganchos-diario.ts', 'depressao em voz alta', 'Diário: gancho depressão PT');
+exigirTexto('./src/lib/ganchos-diario.ts', 'afinidade do teu parceiro', 'Diário: gancho afinidade parceiro PT');
+exigirTexto('./src/lib/ganchos-virais.ts', 'afinidade do teu parceiro', 'Viral: gancho afinidade parceiro');
+exigirTexto('./src/lib/ganchos-virais.ts', 'traem em silêncio', 'Viral: gancho traição');
+exigirTexto('./config/sidusastro.json', '"volume": 0.09', 'Música: volume baixo para destacar voz');
+exigirTexto('./config/sidusastro.json', '"volume": "+12.00%"', 'Voz: volume reforçado');
+exigirTexto('./src/lib/musicas.ts', 'volume=0.55', 'Música: normalizar volume no download');
 exigirTexto('./src/lib/legenda.ts', 'mapa astral grátis em sidusastro.com', 'Diário: fecho curiosidade + sidusastro.com');
 exigirTexto('./src/lib/paleta-visual.ts', 'PALETA_SIDUS', 'Visual: regra 60-30-10');
 exigirTexto('./config/sidusastro.json', 'estiloAzureMasculina', 'Voz: estilo masculino místico');

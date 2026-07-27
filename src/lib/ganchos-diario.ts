@@ -52,6 +52,21 @@ const GANCHOS_PSICOLOGIA_PT: GanchoFn[] = [
   (n) => 'O que ninguém te diz sobre ' + n + ' está na previsão de hoje',
   (n) => n + ': se sentes que o tempo aperta, os astros concordam',
   (n) => 'Fica mais 20 segundos, ' + n + ' - vale a pena',
+  (n) => n + ', se hoje acordaste vazio por dentro, o horoscopo explica sem te julgar',
+  (n) => n + ': a tristeza que carregas nao e fraqueza - os astros veem a causa',
+  (n) => 'Se es ' + n + ' e sentes que ninguem percebe, esta mensagem e para ti',
+  (n) => n + ', quando a mente nao desliga a noite, o mapa de hoje traduz o porquê',
+  (n) => n + ': nao estas sozinho nesta fase pesada - o ceu descreve o que sentes',
+  (n) => 'Pouca gente fala de depressao em voz alta, ' + n + ' - o teu signo fala por ti',
+  (n) => n + ', se o peito aperta sem motivo claro, le isto antes de te culpares',
+  (n) => n + ': a relacao que te consome aparece nos astros de hoje',
+  (n) => 'Se es ' + n + ', alguem que amas pode estar a esconder algo - fica ate ao fim',
+  (n) => n + ', a sensacao de traicao no ar pode nao ser paranoia - o horoscopo confirma',
+  (n) => n + ': o parceiro que pensaste agora tem mais a dizer do que mostra',
+  (n) => 'Descobre ja a afinidade do teu parceiro com o teu em sidusastro.com - ' + n + ', isto muda tudo',
+  (n) => n + ', o amor que procuras e o que te bloqueia podem ser a mesma pessoa - le isto',
+  (n) => 'Se es ' + n + ' e repetiste a mesma historia amorosa, o padrao tem nome no mapa',
+  (n) => n + ': quem te desleal nao aparece de cara - os planetas mostram o sinal',
 ];
 
 const GANCHOS_PSICOLOGIA_EN: GanchoFn[] = [
@@ -95,6 +110,21 @@ const GANCHOS_PSICOLOGIA_EN: GanchoFn[] = [
   (n) => 'What nobody tells ' + n + ' is in today\'s forecast',
   (n) => n + ': if you feel time is tight, the stars agree',
   (n) => 'Stay 20 more seconds, ' + n + ' - worth it',
+  (n) => n + ', if you woke up empty inside today, your horoscope explains without judging',
+  (n) => n + ': the sadness you carry is not weakness - the stars see the cause',
+  (n) => "If you're " + n + ' and feel nobody understands, this message is for you',
+  (n) => n + ', when your mind will not shut off at night, today chart explains why',
+  (n) => n + ': you are not alone in this heavy phase - the sky describes what you feel',
+  (n) => 'Few people say depression out loud, ' + n + ' - your sign speaks for you',
+  (n) => n + ', if your chest tightens with no clear reason, read this before blaming yourself',
+  (n) => n + ': the relationship draining you shows in today stars',
+  (n) => "If you're " + n + ', someone you love may be hiding something - stay until the end',
+  (n) => n + ', that betrayal feeling in the air may not be paranoia - the horoscope confirms',
+  (n) => n + ': the partner you just thought of has more to say than they show',
+  (n) => 'Discover your partner affinity with yours at sidusastro.com/en - ' + n + ', this changes everything',
+  (n) => n + ', the love you seek and what blocks you might be the same person - read this',
+  (n) => "If you're " + n + ' and repeated the same love story, the pattern has a name in your chart',
+  (n) => n + ': who is disloyal does not show their face - the planets show the sign',
 ];
 
 const GANCHOS_HOROSCOPO_PT: GanchoFn[] = [
