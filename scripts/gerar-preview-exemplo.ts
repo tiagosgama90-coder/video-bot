@@ -10,37 +10,11 @@ import { escolherFundoVideoZen } from '../src/lib/fundo-video';
 import { obterImagemFundoCosmico } from '../src/lib/imagem-fundo';
 import { prepararMusicaEspecial } from '../src/lib/musicas';
 import { obterVolumeMusica } from '../src/lib/project-config';
+import { gerarNarracao } from '../src/lib/voz';
 
 const ID = 'preview-marketing';
 const DATA = '2026-07-27';
-const OUTPUT = './output/preview-cosmico-nebulosa.mp4';
-
-function gerarNarracaoPreview(texto: string, destino: string): void {
-  const wav = destino.replace(/\.mp3$/, '.wav');
-  const textoSeguro = texto.replace(/"/g, '').replace(/'/g, '');
-
-  try {
-    execSync('espeak-ng -v pt -s 148 "' + textoSeguro + '" -w "' + wav + '"', {
-      stdio: 'pipe',
-    });
-    execSync(
-      'ffmpeg -y -i "' + wav + '" -codec:a libmp3lame -qscale:a 4 "' + destino + '"',
-      { stdio: 'pipe' },
-    );
-    if (fs.existsSync(wav)) {
-      fs.unlinkSync(wav);
-    }
-    console.log('🎙️ Narração preview (espeak-ng)');
-    return;
-  } catch {
-    console.log('⚠️ espeak-ng indisponível — narração silenciosa de 18s');
-  }
-
-  execSync(
-    'ffmpeg -y -f lavfi -i anullsrc=r=44100:cl=mono -t 18 -q:a 9 "' + destino + '"',
-    { stdio: 'pipe' },
-  );
-}
+const OUTPUT = './output/preview-logo-voz-masculina.mp4';
 
 async function executar(): Promise<void> {
   if (!fs.existsSync('./public')) {
@@ -55,7 +29,15 @@ async function executar(): Promise<void> {
   const textoNarracao =
     'Peixes, a pessoa em quem pensaste agora aparece nos astros. A tua intuição está aguçada hoje. Visite o SidusAstro em sidusastro.com';
 
-  gerarNarracaoPreview(textoNarracao, './public/narracao.mp3');
+  try {
+    await gerarNarracao(textoNarracao, './public/narracao.mp3', 'masculina');
+  } catch (erro) {
+    console.log('⚠️ Azure indisponível — narração silenciosa: ' + String(erro));
+    execSync(
+      'ffmpeg -y -f lavfi -i anullsrc=r=44100:cl=mono -t 18 -q:a 9 "./public/narracao.mp3"',
+      { stdio: 'pipe' },
+    );
+  }
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3', 22);
 
   const { seed: fundoVideoSeed } = escolherFundoVideoZen(ID, DATA);
@@ -93,7 +75,7 @@ async function executar(): Promise<void> {
   if (!fs.existsSync(artefactos)) {
     fs.mkdirSync(artefactos, { recursive: true });
   }
-  const destinoArtefacto = path.join(artefactos, 'preview-cosmico-nebulosa.mp4');
+  const destinoArtefacto = path.join(artefactos, 'preview-logo-voz-masculina.mp4');
   fs.copyFileSync(OUTPUT, destinoArtefacto);
 
   if (fs.existsSync(caminhoProps)) {

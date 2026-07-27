@@ -1,9 +1,11 @@
-import { Img, interpolate, staticFile, useCurrentFrame } from 'remotion';
+import { interpolate, useCurrentFrame } from 'remotion';
 import { PALETA_SIDUS } from '../lib/paleta-visual';
 
-const logoHorizontal = staticFile('logo-sidus-horizontal.png');
+/** Zona segura: acima das legendas TikTok/Instagram (UI ~250–400px do fundo) */
+const BARRA_LINK_BOTTOM_PX = 480;
+const RODAPE_CTA_BOTTOM_PX = 560;
 
-/** Link do site — sempre visível, zona segura acima da barra TikTok */
+/** Link do site — sempre visível, acima das legendas das redes */
 export function BarraLinkSite({ siteMarca = 'sidusastro.com' }: { siteMarca?: string }): React.ReactElement {
   return (
     <div
@@ -11,7 +13,7 @@ export function BarraLinkSite({ siteMarca = 'sidusastro.com' }: { siteMarca?: st
         position: 'absolute',
         left: 0,
         right: 0,
-        bottom: 198,
+        bottom: BARRA_LINK_BOTTOM_PX,
         zIndex: 28,
         display: 'flex',
         justifyContent: 'center',
@@ -72,7 +74,7 @@ export function RodapeComercialSidus({
         position: 'absolute',
         left: 0,
         right: 0,
-        bottom: 268,
+        bottom: RODAPE_CTA_BOTTOM_PX,
         zIndex: 32,
         display: 'flex',
         flexDirection: 'column',
@@ -84,17 +86,6 @@ export function RodapeComercialSidus({
         pointerEvents: 'none',
       }}
     >
-      <Img
-        src={logoHorizontal}
-        style={{
-          width: 300,
-          maxWidth: '86%',
-          height: 'auto',
-          objectFit: 'contain',
-          display: 'block',
-          filter: 'drop-shadow(0 4px 22px rgba(0,0,0,0.8)) drop-shadow(0 0 16px rgba(243,204,99,0.4))',
-        }}
-      />
       <div
         style={{
           color: PALETA_SIDUS.destaqueForte,

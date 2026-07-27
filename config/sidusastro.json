@@ -9,13 +9,13 @@
       "masculina": "pt-PT-DuarteNeural",
       "femininaRate": "+4%",
       "femininaPitch": "+14%",
-      "masculinaRate": "-2%",
-      "masculinaPitch": "-12%",
-      "volume": "medium",
+      "masculinaRate": "-10%",
+      "masculinaPitch": "-6%",
+      "volume": "soft",
       "estiloAzureFeminina": "",
-      "estiloAzureMasculina": "",
+      "estiloAzureMasculina": "friendly",
       "grauEstiloFeminina": 1.1,
-      "grauEstiloMasculina": 1.2
+      "grauEstiloMasculina": 0.85
     },
     "en": {
       "femininaId": "en-US-JennyNeural",
@@ -32,8 +32,8 @@
       "grauEstiloFeminina": 1.15,
       "grauEstiloMasculina": 1.45
     },
-    "pausaFraseMs": 380,
-    "pausaVirgulaMs": 170
+    "pausaFraseMs": 460,
+    "pausaVirgulaMs": 210
   },
   "musica": {
     "volume": 0.22,

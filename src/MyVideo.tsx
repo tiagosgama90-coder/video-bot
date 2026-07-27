@@ -158,7 +158,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
 
       <AbsoluteFill
         style={{
-          padding: '88px 40px 300px',
+          padding: '80px 40px 540px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -198,7 +198,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
               lineHeight: 1.45,
               textAlign: 'center',
               border: bordaCaixa,
-              maxHeight: 380,
+              maxHeight: 300,
               overflow: 'hidden',
               opacity: opacidadeCaixa,
               transform: `translateY(${(1 - opacidadeCaixa) * 10}px)`,
