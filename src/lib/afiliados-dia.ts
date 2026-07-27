@@ -43,6 +43,7 @@ export async function gerarAfiliadosDia(data: string): Promise<void> {
     titulo: conteudo.titulo,
     textoEcra: conteudo.textoEcra,
     textoNarracao: conteudo.textoNarracao,
+    fundoZenAstrologia: true,
     legendas: conteudo.legendas,
     data,
     generoVoz: 'feminina',

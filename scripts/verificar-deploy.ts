@@ -92,7 +92,8 @@ exigirTexto('./src/lib/conteudo-especial.ts', 'SLOT_ESPECIAL_LISBOA', 'Slot espe
 exigirFicheiro('./gerar-video-quarta.ts');
 exigirTexto('./gerar-video-quarta.ts', 'obterConteudoQuarta', 'Quarta: alternância afiliados/VIP');
 exigirTexto('./gerar-video-quarta.ts', 'obterVarianteQuarta', 'Quarta: variante por semana');
-exigirTexto('./gerar-video-quarta.ts', "fundoZenAstrologia: variante === 'vip'", 'Quarta: fundo zen só na variante VIP');
+exigirTexto('./gerar-video-quarta.ts', 'fundoZenAstrologia: true', 'Quarta: fundo zen Pinterest');
+exigirTexto('./src/lib/afiliados-dia.ts', 'fundoZenAstrologia: true', 'Afiliados: fundo zen Pinterest');
 exigirTexto('./gerar-video-quarta.ts', 'SLOT_MUSICA.VIP_DIVULGACAO_QUARTA', 'Quarta: slot música');
 exigirTexto('./src/lib/conteudo-especial.ts', "export const TITULO_VIP_DIVULGACAO = 'O TEU VIP VITALÍCIO'", 'VIP: título marketing');
 exigirTexto('./src/lib/conteudo-especial.ts', 'obterConteudoAfiliados', 'Quarta: conteúdo afiliados');
