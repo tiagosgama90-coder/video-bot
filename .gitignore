@@ -10,6 +10,8 @@ output/
 public/narracao.mp3
 public/fundo-ia.jpg
 public/fundo-*.jpg
+public/cosmos-preview-*.jpg
+public/fundo-cosmico-*.jpg
 public/props-temporarias.json
 public/musica-*.mp3
 public/preview-voz.mp3

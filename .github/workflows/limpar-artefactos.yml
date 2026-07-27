@@ -2,6 +2,7 @@ name: Limpar artefactos GitHub
 
 # Apaga todos os artefactos guardados no repo (liberta quota 0.5 GB).
 # Dispara manualmente (Actions → Run workflow) ou ao fazer push deste ficheiro.
+# Última limpeza automática: 2026-07-27
 on:
   workflow_dispatch:
   push:
