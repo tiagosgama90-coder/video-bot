@@ -1,12 +1,16 @@
 /**
- * Texto visto pelo público (legendas Buffer + overlay no vídeo).
- * Proibido traço tipográfico longo (em dash). Usar sempre hífen simples "-".
+ * Texto visto pelo público (legendas Buffer + overlay no vídeo + narração).
+ * Proibido: aspas e traços tipográficos longos. Usar sempre hífen simples "-".
  */
 export function sanitizarTextoPublico(texto: string): string {
   return String(texto || '')
     .replace(/\u2014/g, '-') // —
     .replace(/\u2013/g, '-') // –
     .replace(/\u2212/g, '-') // −
+    .replace(/\u2015/g, '-') // ―
+    .replace(/[\u201C\u201D\u00AB\u00BB\u2039\u203A\u0022]/g, '') // aspas duplas / guillemets
+    .replace(/[\u2018\u2019\u0060\u00B4\u0027]/g, '') // aspas simples / apóstrofos
+    .replace(/\s+-\s+/g, ' - ')
     .replace(/ {2,}/g, ' ')
     .trim();
 }

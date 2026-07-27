@@ -32,13 +32,13 @@ export const TITULO_VIP_DIVULGACAO_EN = 'YOUR LIFETIME VIP';
 /** Texto no ecrã - curto e natural */
 export const SEGMENTOS_VIP_ECRA = [
   'VIP vitalício? Mais simples do que pensas',
-  'Mapa astral + tarot + oráculo — só partilhares',
+  'Mapa astral + tarot + oráculo - só partilhares',
   'Marca @sidusastro → sidusastro.com/pt/divulgacao-vip',
 ];
 
 export const SEGMENTOS_VIP_ECRA_EN = [
   'Lifetime VIP? Easier than you think',
-  'Birth chart + tarot + oracle — just share',
+  'Birth chart + tarot + oracle - just share',
   'Tag @sidusastro → sidusastro.com/en/divulgacao-vip',
 ];
 

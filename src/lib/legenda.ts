@@ -108,7 +108,7 @@ function sufixoInstagram(signo: SignoZodiaco, hook: string): string {
   );
 }
 
-/** Frase final de despedimento — narrada em voz e sincronizada no ecrã (sem «Visite o SidusAstro») */
+/** Frase final de despedimento - narrada em voz e sincronizada no ecrã */
 export function escolherFechoNarracao(): string {
   const fechos = isLocaleUS() ? FINAL_CLOSINGS_EN : FINAL_CLOSINGS;
   const indice = crypto.randomInt(0, fechos.length);
