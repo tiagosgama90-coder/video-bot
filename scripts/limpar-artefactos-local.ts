@@ -9,9 +9,10 @@ const ROOT = path.resolve(__dirname, '..');
 const ARTEFACTOS = '/opt/cursor/artifacts';
 
 const PADROES_PUBLIC = [
+  /^cosmos-.*\.jpg$/i,
   /^cosmos-preview-.*\.jpg$/i,
+  /^fundo-.*\.jpg$/i,
   /^fundo-zen-preview-.*\.jpg$/i,
-  /^fundo-cosmico-.*\.jpg$/i,
   /^musica-preview-.*\.mp3$/i,
   /^narracao.*\.mp3$/i,
   /^preview-voz\.mp3$/i,

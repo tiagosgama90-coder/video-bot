@@ -6,15 +6,24 @@ import { ImagemReelCover } from './ImagemReelCover';
 
 export interface FundoCosmicoAnimadoProps {
   imagemFundoUrl: string;
+  imagemFundoModo?: 'color' | 'mono';
   seed?: number;
 }
 
+function filtroPinterest(modo?: 'color' | 'mono'): string {
+  if (modo === 'mono') {
+    return 'brightness(0.9) saturate(0.18) grayscale(0.82) contrast(1.1)';
+  }
+  return 'brightness(0.94) saturate(1.28) contrast(1.04)';
+}
+
 /**
- * Nebulosa cósmica IA em movimento (Ken Burns + reel 1080×1920, nunca estica)
- * + estrelas + geometria sagrada suave por cima.
+ * Fundo Pinterest IA em movimento (Ken Burns + reel 1080×1920, PROIBIDO esticar)
+ * + estrelas + geometria sagrada variada por seed.
  */
 export function FundoCosmicoAnimado({
   imagemFundoUrl,
+  imagemFundoModo,
   seed = 0,
 }: FundoCosmicoAnimadoProps): React.ReactElement {
   const frame = useCurrentFrame();
@@ -40,7 +49,7 @@ export function FundoCosmicoAnimado({
         escala={escala}
         deslocamentoX={deslocamentoX}
         deslocamentoY={deslocamentoY}
-        filtro="brightness(0.92) saturate(1.22) contrast(1.05)"
+        filtro={filtroPinterest(imagemFundoModo)}
       />
 
       <AbsoluteFill

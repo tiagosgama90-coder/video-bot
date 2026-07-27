@@ -18,7 +18,7 @@ export const MODIFICADORES_COSMICOS = [
   'pinterest spiritual wallpaper vertical 9:16 highly detailed dreamy luminous 8k',
   'meditative cosmic background rich jewel tones violet purple gold teal stardust',
   'soft bokeh nebula healing energy reiki mandala aurora spiritual deep space',
-  'symmetrical balanced composition dark cosmos with colorful nebula clouds and stars',
+  'symmetrical balanced flat sacred geometry mandala lines, no planets no spheres',
   'perfect round spherical planets moons stars circles not oval not egg shaped not stretched',
 ] as const;
 

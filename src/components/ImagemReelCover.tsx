@@ -18,8 +18,8 @@ export interface ImagemReelCoverProps {
 }
 
 /**
- * Fundo reel 1080×1920 — imagem normalizada 1:1, Ken Burns só com scale uniforme.
- * Nunca usa objectFit CSS (evita esticar planetas/círculos no Remotion).
+ * Fundo reel 1080×1920 — ficheiro normalizado, pixels 1:1.
+ * PROIBIDO esticar: dimensões fixas REEL_LARGURA×REEL_ALTURA, sem objectFit CSS.
  */
 export function ImagemReelCover({
   src,
@@ -38,19 +38,29 @@ export function ImagemReelCover({
   }
 
   return (
-    <AbsoluteFill style={{ overflow: 'hidden' }}>
+    <AbsoluteFill style={{ overflow: 'hidden', backgroundColor: '#000000' }}>
       <AbsoluteFill
         style={{
+          left: '50%',
+          top: '50%',
+          width: REEL_LARGURA,
+          height: REEL_ALTURA,
+          marginLeft: -REEL_LARGURA / 2,
+          marginTop: -REEL_ALTURA / 2,
           transform: `scale(${escala}) translate(${deslocamentoX}px, ${deslocamentoY}px)`,
           transformOrigin: 'center center',
         }}
       >
         <Img
           src={resolved}
-          width={width}
-          height={height}
+          width={REEL_LARGURA}
+          height={REEL_ALTURA}
           style={{
             display: 'block',
+            width: REEL_LARGURA,
+            height: REEL_ALTURA,
+            maxWidth: REEL_LARGURA,
+            maxHeight: REEL_ALTURA,
             ...(filtro ? { filter: filtro } : {}),
           }}
         />

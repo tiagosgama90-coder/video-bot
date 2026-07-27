@@ -6,7 +6,7 @@ import { publicarEmTodosOsCanais } from './src/lib/buffer';
 import { obterTextoHoroscopo, extrairAteSegundoPontoFinal } from './src/lib/horoscopo';
 import { escolherFechoNarracao, gerarLegendas } from './src/lib/legenda';
 import { escolherFundoVideoZen } from './src/lib/fundo-video';
-import { obterImagemFundoCosmico } from './src/lib/imagem-fundo';
+import { obterImagemFundo } from './src/lib/imagem-fundo';
 import { calcularDuracaoFrames, DURACAO_MAXIMA_DIARIO_SEG } from './src/lib/duracao-video';
 import {
   calcularQuadrosNarracaoDiaria,
@@ -44,6 +44,7 @@ interface PropsVideo {
   hookTexto: string;
   fechoTexto: string;
   imagemFundoUrl: string;
+  imagemFundoModo: 'color' | 'mono';
   fundoVideoSeed: number;
   musicaFundoArquivo: string;
   duracaoFrames: number;
@@ -105,9 +106,9 @@ async function processarSigno(
   console.log('✂️ Vídeo (1.ª + 2.ª frase por ponto final): "' + previsaoVideo + '"');
 
   const { seed: fundoVideoSeed } = escolherFundoVideoZen(signo, data);
-  const { ficheiro: imagemFundoUrl } = await obterImagemFundoCosmico(signo, data);
+  const { ficheiro: imagemFundoUrl, modo: imagemFundoModo } = await obterImagemFundo(signo, data);
   console.log(
-    '🌌 Fundo cósmico animado: ' + imagemFundoUrl + ' (Ken Burns + estrelas, seed ' + fundoVideoSeed + ')',
+    '🎨 Fundo Pinterest IA: ' + imagemFundoUrl + ' (' + imagemFundoModo + ', 1080×1920, seed ' + fundoVideoSeed + ')',
   );
   const slotMusica =
     SLOTS_MUSICA_HOROSCOPO[indiceSlot] ??
@@ -154,6 +155,7 @@ async function processarSigno(
     hookTexto,
     fechoTexto: fechoEcra,
     imagemFundoUrl,
+    imagemFundoModo,
     fundoVideoSeed,
     musicaFundoArquivo,
     duracaoFrames,

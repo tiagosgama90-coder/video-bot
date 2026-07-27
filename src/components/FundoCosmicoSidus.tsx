@@ -1,6 +1,9 @@
 import React from 'react';
 import { AbsoluteFill, interpolate, random, useCurrentFrame, useVideoConfig } from 'remotion';
 import { PALETA_SIDUS } from '../lib/paleta-visual';
+import { GeometriaSagradaSuave } from './GeometriaSagradaPinterest';
+
+export { GeometriaSagradaSuave } from './GeometriaSagradaPinterest';
 
 export function EstrelasAPassear(): React.ReactElement {
   const frame = useCurrentFrame();
@@ -48,73 +51,6 @@ export function EstrelasAPassear(): React.ReactElement {
   );
 }
 
-export function GeometriaSagradaSuave({ seed }: { seed: number }): React.ReactElement {
-  const frame = useCurrentFrame();
-  const { width, height } = useVideoConfig();
-  const cx = width / 2;
-  const cy = height / 2;
-  const rotacao = frame * 0.035;
-  const tamanho = Math.min(width, height) * 0.95;
-
-  return (
-    <AbsoluteFill
-      style={{
-        opacity: 0.58,
-        transform: `rotate(${rotacao}deg)`,
-        transformOrigin: `${cx}px ${cy}px`,
-        pointerEvents: 'none',
-      }}
-    >
-      {Array.from({ length: 4 }, (_, i) => (
-        <div
-          key={`anel-${i}`}
-          style={{
-            position: 'absolute',
-            left: cx - (tamanho * 0.42 - i * 36),
-            top: cy - (tamanho * 0.42 - i * 36),
-            width: (tamanho * 0.84 - i * 72),
-            height: (tamanho * 0.84 - i * 72),
-            borderRadius: '50%',
-            border: `2px solid ${PALETA_SIDUS.destaque}`,
-            boxShadow: `0 0 36px ${PALETA_SIDUS.destaqueSombra}`,
-          }}
-        />
-      ))}
-      {Array.from({ length: 6 }, (_, i) => {
-        const ang = (i / 6) * Math.PI * 2;
-        const r = tamanho * 0.38;
-        return (
-          <div
-            key={`linha-${i}`}
-            style={{
-              position: 'absolute',
-              left: cx,
-              top: cy,
-              width: 3,
-              height: r,
-              transformOrigin: 'top center',
-              transform: `rotate(${(ang * 180) / Math.PI}deg)`,
-              background: `linear-gradient(180deg, ${PALETA_SIDUS.destaque}cc, transparent)`,
-            }}
-          />
-        );
-      })}
-      <div
-        style={{
-          position: 'absolute',
-          left: cx - tamanho * 0.12,
-          top: cy - tamanho * 0.12,
-          width: tamanho * 0.24,
-          height: tamanho * 0.24,
-          borderRadius: '50%',
-          border: `2px solid ${PALETA_SIDUS.destaque}aa`,
-          boxShadow: `inset 0 0 40px ${PALETA_SIDUS.destaque}44`,
-        }}
-      />
-    </AbsoluteFill>
-  );
-}
-
 function NebulosaSuave({ seed }: { seed: number }): React.ReactElement {
   const frame = useCurrentFrame();
   const { width, height, fps } = useVideoConfig();
@@ -131,6 +67,7 @@ function NebulosaSuave({ seed }: { seed: number }): React.ReactElement {
     <AbsoluteFill style={{ pointerEvents: 'none' }}>
       {blobs.map((b, i) => {
         const drift = Math.sin(t * 0.25 + i + seed * 0.001) * 12;
+        const lado = 420 * b.s;
         return (
           <div
             key={`blob-${i}`}
@@ -138,8 +75,8 @@ function NebulosaSuave({ seed }: { seed: number }): React.ReactElement {
               position: 'absolute',
               left: `${b.x + drift * 0.15}%`,
               top: `${b.y}%`,
-              width: 420 * b.s,
-              height: 420 * b.s,
+              width: lado,
+              height: lado,
               transform: 'translate(-50%, -50%)',
               borderRadius: '50%',
               background: `radial-gradient(circle, ${b.cor}99 0%, transparent 68%)`,
@@ -171,8 +108,7 @@ export interface FundoCosmicoSidusProps {
 }
 
 /**
- * Fundo preto cósmico limpo — estrelas, nebulosa suave e geometria sagrada discreta.
- * Centro livre para o logo Sidus destacar (sem imagens IA esticadas).
+ * Fundo preto cósmico limpo — estrelas, nebulosa suave e geometria Pinterest variada.
  */
 export function FundoCosmicoSidus({ seed = 0 }: FundoCosmicoSidusProps): React.ReactElement {
   return (

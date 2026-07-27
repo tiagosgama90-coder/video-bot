@@ -7,7 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { calcularDuracaoFrames } from '../src/lib/duracao-video';
 import { escolherFundoVideoZen } from '../src/lib/fundo-video';
-import { obterImagemFundoCosmico } from '../src/lib/imagem-fundo';
+import { obterImagemFundoZenAstrologia } from '../src/lib/imagem-fundo';
 import { prepararMusicaEspecial } from '../src/lib/musicas';
 import { obterVolumeMusica } from '../src/lib/project-config';
 
@@ -59,7 +59,7 @@ async function executar(): Promise<void> {
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3', 22);
 
   const { seed: fundoVideoSeed } = escolherFundoVideoZen(ID, DATA);
-  const { ficheiro: imagemFundoUrl } = await obterImagemFundoCosmico(ID, DATA);
+  const { ficheiro: imagemFundoUrl, modo: imagemFundoModo } = await obterImagemFundoZenAstrologia(ID, DATA);
   const musicaFundoArquivo = await prepararMusicaEspecial(ID, DATA, 'zen');
 
   const props = {
@@ -72,6 +72,7 @@ async function executar(): Promise<void> {
     frameInicioFecho: duracaoFrames - Math.round(30 * 4.8),
     fundoVideoSeed,
     imagemFundoUrl,
+    imagemFundoModo,
     musicaFundoArquivo,
     duracaoFrames,
     siteMarca: 'sidusastro.com',

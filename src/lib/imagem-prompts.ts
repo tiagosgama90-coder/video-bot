@@ -24,12 +24,10 @@ export const PALETAS_60_30_10 = PALETAS_COLOR;
 export const TEMAS_COLOR = [
   'vertical tarot card ornate golden frame sun moon stars alchemy symbols rich violet teal rose gold, pinterest spiritual art no hands',
   'moon phases vertical column fine gold geometric lines constellation teal violet stars, lunar cycle rich indigo purple gold pinterest',
-  'soft cosmic nebula galaxy swirl rich colors violet teal magenta gold stardust, colorful spiritual deep space vertical pinterest',
-  'colorful aurora spiritual sky green magenta violet gold light rays, stardust dreamy pinterest wallpaper vertical',
-  'sacred geometry flower of life metatron cube glowing gold violet teal lines, reiki energy orbs colorful spiritual healing pinterest',
+  'sacred geometry flower of life metatron cube glowing gold violet teal lines, reiki mandala lotus aura colorful spiritual healing pinterest',
   'sri yantra mandala radiant golden purple rose energy, soft colorful aurora portal meditation spiritual pinterest',
   'reiki healing light streams chakra colors violet emerald rose gold, mandala lotus aura ethereal spiritual pinterest art',
-  'chakra alignment lotus mandala colorful energy orbs teal violet gold rose, spiritual healing luminous pinterest vertical',
+  'chakra alignment lotus mandala colorful energy rays teal violet gold rose, spiritual healing luminous pinterest vertical',
   'zen lotus pond twilight colorful mandala sky violet gold teal mist, reiki ripples spiritual pinterest',
   'ethereal crystal healing grid colorful amethyst rose quartz aura, soft bokeh spiritual pinterest vertical wallpaper',
 ] as const;
@@ -71,10 +69,10 @@ export const MODIFICADORES_IMAGEM_ZEN = [...MODIFICADORES_COLOR, ...MODIFICADORE
 export const MODIFICADORES_IMAGEM_BRUTAL = MODIFICADORES_IMAGEM_ZEN;
 
 export const SUFIXO_PROMPT_COLOR =
-  ', pinterest spiritual mystical illustration colorful vibrant saturated jewel tones, reiki mandala chakra sacred geometry moon phases, native instagram reel wallpaper composed for vertical 9:16 full bleed edge to edge 1080x1920, rich colors violet teal emerald rose gold aurora on deep cosmic base, dreamy luminous spiritual glow, no antique maps no astrolabe charts no pointing hands no human figures, decorative ornamental abstract glyphs only no readable words, no watermark, no photorealistic faces, masterpiece';
+  ', pinterest spiritual mystical flat illustration colorful vibrant saturated jewel tones, reiki mandala chakra sacred geometry moon phases tarot frame, native instagram reel wallpaper vertical 9:16 exactly 1080x1920 pixels full bleed, no planets no moons no globes no spheres no orbs no 3d celestial bodies, perfect circles round not oval not egg not vertically stretched, rich colors violet teal emerald rose gold aurora on deep cosmic base, dreamy luminous spiritual glow, no antique maps no pointing hands no human faces, decorative ornamental abstract glyphs only no readable words, no watermark, no photorealistic faces, masterpiece';
 
 export const SUFIXO_PROMPT_MONO =
-  ', pinterest spiritual mystical illustration soft monochrome greyscale silver gold on charcoal, reiki mandala chakra sacred geometry moon phases aurora, native instagram reel wallpaper composed for vertical 9:16 full bleed edge to edge 1080x1920, soft moonlight glow no sepia antique no vintage manuscript, no antique maps no astrolabe charts no pointing hands no human figures, decorative ornamental abstract glyphs only no readable words, no watermark, no photorealistic faces, masterpiece';
+  ', pinterest spiritual mystical flat illustration soft monochrome greyscale silver gold on charcoal, reiki mandala chakra sacred geometry moon phases aurora, native instagram reel wallpaper vertical 9:16 exactly 1080x1920 pixels full bleed, no planets no moons no globes no spheres no orbs no 3d celestial bodies, perfect circles round not oval not egg not vertically stretched, soft moonlight glow, no antique maps no pointing hands no human figures, decorative ornamental abstract glyphs only no readable words, no watermark, no photorealistic faces, masterpiece';
 
 /** @deprecated alias — cor por omissão em imports antigos */
 export const SUFIXO_PROMPT_IMAGEM = SUFIXO_PROMPT_COLOR;

@@ -36,6 +36,7 @@ exigirTexto('./src/lib/ganchos-diario.ts', 'escolherGanchoViral', 'Diário: rota
 exigirTexto('./src/components/OverlayLegibilidadeTexto.tsx', 'OverlayLegibilidadeTexto', 'Vídeo: overlay legibilidade');
 exigirTexto('./src/components/FundoCosmicoSidus.tsx', 'EstrelasAPassear', 'Vídeo: estrelas a passear');
 exigirTexto('./src/components/FundoCosmicoSidus.tsx', 'GeometriaSagradaSuave', 'Vídeo: geometria sagrada suave');
+exigirTexto('./src/components/GeometriaSagradaPinterest.tsx', 'flor-da-vida', 'Vídeo: geometria Pinterest variada');
 exigirTexto('./src/components/OverlayLegibilidadeTexto.tsx', 'modoImagemZen', 'Vídeo: overlay leve com imagem zen');
 exigirTexto('./src/lib/legenda.ts', 'URGENTE - lê a legenda completa', 'Instagram: urgência gancho viral');
 exigirTexto('./src/lib/ganchos-diario.ts', 'escolherGanchoDiario', 'Diário: ganchos emocionais');
@@ -110,7 +111,7 @@ exigirTexto('./src/lib/imagem-prompts.ts', 'escolherModoPaletaImagem', 'Imagem: 
 exigirTexto('./src/lib/imagem-prompts.ts', 'TEMAS_MONOCROMATICOS', 'Imagem: temas monocromáticos');
 exigirTexto('./src/lib/imagem-prompts.ts', 'TEMAS_COLOR', 'Imagem: temas coloridos');
 exigirTexto('./src/lib/imagem-fundo.ts', 'ImagemFundoGerada', 'Imagem: resultado com modo paleta');
-exigirTexto('./src/lib/gerar-video-especial.ts', 'Fundo cósmico animado', 'Especiais: cosmos em movimento');
+exigirTexto('./src/lib/gerar-video-especial.ts', 'Fundo Pinterest IA', 'Especiais: fundo Pinterest IA animado');
 exigirTexto('./src/lib/gerar-video-especial.ts', 'escolherFundoVideoZen', 'Especiais: fundo zen animado');
 exigirTexto('./src/lib/fundo-video.ts', 'reiki_energia', 'Vídeo: tema reiki animado');
 exigirTexto('./src/lib/imagem-fundo.ts', 'validarImagemReel', 'Imagem: validação proporção reel 9:16');
@@ -132,10 +133,13 @@ exigirFicheiro('./src/lib/fundo-video.ts');
 exigirTexto('./src/lib/fundo-video.ts', 'mesa_tarot', 'Vídeo: tema mesa tarot');
 exigirTexto('./src/components/FundoVideoMistico.tsx', 'TemaVelas', 'Vídeo: velas animadas');
 exigirTexto('./src/components/FundoCosmicoAnimado.tsx', 'ImagemReelCover', 'Vídeo: cosmos animado sem esticar');
-exigirTexto('./src/MyVideo.tsx', 'FundoCosmicoAnimado', 'Vídeo: nebulosa cósmica em movimento');
+exigirTexto('./src/MyVideo.tsx', 'FundoCosmicoAnimado', 'Vídeo: fundo Pinterest IA em movimento');
+exigirTexto('./src/components/GeometriaSagradaPinterest.tsx', 'GeometriaSagradaSuave', 'Vídeo: geometria Pinterest variada por seed');
+exigirTexto('./src/components/GeometriaSagradaPinterest.tsx', 'VarianteFlorDaVida', 'Vídeo: variantes geometria sagrada');
 exigirFicheiro('./src/lib/imagem-cosmica.ts');
-exigirTexto('./gerar-e-publicar.ts', 'obterImagemFundoCosmico', 'Diário: fundo cósmico IA animado');
-exigirTexto('./src/lib/gerar-video-especial.ts', 'obterImagemFundoCosmico', 'Especiais: fundo cósmico IA');
+exigirTexto('./src/lib/imagem-prompts.ts', 'no planets no moons', 'Imagem: proibir planetas ovais');
+exigirTexto('./gerar-e-publicar.ts', 'obterImagemFundo', 'Diário: fundo Pinterest IA animado');
+exigirTexto('./src/lib/gerar-video-especial.ts', 'obterImagemFundoZenAstrologia', 'Especiais: fundo Pinterest IA');
 exigirTexto('./src/MyVideo.tsx', 'LogoSidusVideo', 'Vídeo: logo Sidus destacado');
 
 exigirFicheiro('./.github/workflows/diario.yml');
