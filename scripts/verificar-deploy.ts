@@ -92,7 +92,7 @@ exigirTexto('./src/lib/conteudo-especial.ts', 'SLOT_ESPECIAL_LISBOA', 'Slot espe
 exigirFicheiro('./gerar-video-quarta.ts');
 exigirTexto('./gerar-video-quarta.ts', 'obterConteudoQuarta', 'Quarta: alternância afiliados/VIP');
 exigirTexto('./gerar-video-quarta.ts', 'obterVarianteQuarta', 'Quarta: variante por semana');
-exigirTexto('./gerar-video-quarta.ts', 'fundoZenAstrologia: true', 'Quarta: fundo zen');
+exigirTexto('./gerar-video-quarta.ts', "fundoZenAstrologia: variante === 'vip'", 'Quarta: fundo zen só na variante VIP');
 exigirTexto('./gerar-video-quarta.ts', 'SLOT_MUSICA.VIP_DIVULGACAO_QUARTA', 'Quarta: slot música');
 exigirTexto('./src/lib/conteudo-especial.ts', "export const TITULO_VIP_DIVULGACAO = 'O TEU VIP VITALÍCIO'", 'VIP: título marketing');
 exigirTexto('./src/lib/conteudo-especial.ts', 'obterConteudoAfiliados', 'Quarta: conteúdo afiliados');
@@ -120,7 +120,9 @@ exigirTexto('./src/lib/imagem-prompts.ts', 'TEMAS_MONOCROMATICOS', 'Imagem: tema
 exigirTexto('./src/lib/imagem-prompts.ts', 'TEMAS_COLOR', 'Imagem: temas coloridos');
 exigirTexto('./src/lib/imagem-fundo.ts', 'ImagemFundoGerada', 'Imagem: resultado com modo paleta');
 exigirTexto('./src/lib/gerar-video-especial.ts', 'Fundo cosmos animado', 'Especiais: fundo cosmos animado');
+exigirTexto('./src/lib/gerar-video-especial.ts', 'obterImagemFundoZenAstrologia', 'Especiais: imagem zen IA quando fundoZenAstrologia');
 exigirTexto('./src/lib/gerar-video-especial.ts', 'escolherFundoVideoZen', 'Especiais: fundo zen animado');
+exigirTexto('./src/MyVideo.tsx', 'FundoCosmicoAnimado', 'Vídeo: imagem zen IA nos especiais');
 exigirTexto('./src/lib/fundo-video.ts', 'reiki_energia', 'Vídeo: tema reiki animado');
 exigirTexto('./src/lib/imagem-fundo.ts', 'validarImagemReel', 'Imagem: validação proporção reel 9:16');
 exigirTexto('./src/lib/imagem-fundo.ts', 'force_original_aspect_ratio=increase', 'Imagem: crop reel sem esticar');

@@ -11,12 +11,21 @@ const ARTEFACTOS = '/opt/cursor/artifacts';
 const PADROES_PUBLIC = [
   /^cosmos-.*\.jpg$/i,
   /^cosmos-preview-.*\.jpg$/i,
+  /^preview-cosmos-.*\.jpg$/i,
   /^fundo-.*\.jpg$/i,
+  /^fundo-zen-.*\.jpg$/i,
   /^fundo-zen-preview-.*\.jpg$/i,
   /^musica-preview-.*\.mp3$/i,
+  /^musica-preview-cosmos-.*\.mp3$/i,
   /^narracao.*\.mp3$/i,
   /^preview-voz\.mp3$/i,
   /^props-temporarias\.json$/i,
+];
+
+const PASTAS_ARTEFACTOS = [
+  'previews-cosmos',
+  'previews-pinterest-reel',
+  'preview-cosmos',
 ];
 
 function apagarFicheiro(ficheiro: string): number {
@@ -96,10 +105,20 @@ function executar(): void {
   totalFicheiros += output.ficheiros;
   totalBytes += output.bytes;
 
+  for (const pasta of PASTAS_ARTEFACTOS) {
+    const sub = limparPasta(path.join(ARTEFACTOS, pasta));
+    totalFicheiros += sub.ficheiros;
+    totalBytes += sub.bytes;
+    const dir = path.join(ARTEFACTOS, pasta);
+    if (fs.existsSync(dir) && fs.readdirSync(dir).length === 0) {
+      fs.rmdirSync(dir);
+    }
+  }
+
   const artefactos = limparPasta(
     ARTEFACTOS,
-    () => true,
-    new Set(['.cursor']),
+    (nome) => /^preview-cosmos-/i.test(nome) || /^musica-preview-cosmos-/i.test(nome),
+    new Set(['.cursor', ...PASTAS_ARTEFACTOS]),
   );
   totalFicheiros += artefactos.ficheiros;
   totalBytes += artefactos.bytes;

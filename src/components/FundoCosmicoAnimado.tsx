@@ -1,7 +1,7 @@
 import React from 'react';
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
 import { PALETA_SIDUS } from '../lib/paleta-visual';
-import { EstrelasAPassear, GeometriaSagradaSuave } from './FundoCosmicoSidus';
+import { EstrelasRealistas, GeometriaCosmicaCentro } from './FundoCosmicoSidus';
 import { ImagemReelCover } from './ImagemReelCover';
 
 export interface FundoCosmicoAnimadoProps {
@@ -18,8 +18,7 @@ function filtroPinterest(modo?: 'color' | 'mono'): string {
 }
 
 /**
- * Fundo Pinterest IA em movimento (Ken Burns + reel 1080×1920, PROIBIDO esticar)
- * + estrelas + geometria sagrada variada por seed.
+ * Fundo zen IA 9:16 (Ken Burns, sem esticar) + geometria cósmica + estrelas subtis.
  */
 export function FundoCosmicoAnimado({
   imagemFundoUrl,
@@ -66,8 +65,8 @@ export function FundoCosmicoAnimado({
         }}
       />
 
-      <GeometriaSagradaSuave seed={seed} />
-      <EstrelasAPassear />
+      <GeometriaCosmicaCentro seed={seed} />
+      <EstrelasRealistas seed={seed} camada="frente" />
     </AbsoluteFill>
   );
 }

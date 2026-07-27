@@ -49,7 +49,7 @@ async function executar(): Promise<void> {
     textoEcra: conteudo.textoEcra,
     textoNarracao: conteudo.textoNarracao,
     segmentosEcra: conteudo.segmentosEcra,
-    fundoZenAstrologia: true,
+    fundoZenAstrologia: variante === 'vip',
     legendas: conteudo.legendas,
     data,
     generoVoz: 'feminina',
