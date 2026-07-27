@@ -6,7 +6,6 @@ import { horaFusoParaISO, resolverDueAtFuturo } from './buffer-agenda';
 import { calcularDuracaoFrames } from './duracao-video';
 import { escolherGanchoEspecial } from './ganchos-especial';
 import { escolherFundoVideo, escolherFundoVideoZen, type TemaFundoMistico } from './fundo-video';
-import { obterImagemFundoZenAstrologia } from './imagem-fundo';
 import { escolherFechoNarracao } from './legenda';
 import {
   isLocaleUS,
@@ -87,18 +86,10 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
 
   let fundoVideoTema: TemaFundoMistico | undefined;
   let fundoVideoSeed: number | undefined;
-  let imagemFundoUrl: string | undefined;
-  let imagemFundoModo: 'color' | 'mono' | undefined;
 
   const fundo = escolherFundoVideoZen(idPublicacao, opcoes.data);
   fundoVideoSeed = fundo.seed;
-
-  const imagem = await obterImagemFundoZenAstrologia(idPublicacao, opcoes.data);
-  imagemFundoUrl = imagem.ficheiro;
-  imagemFundoModo = imagem.modo;
-  console.log(
-    '🎨 Fundo Pinterest reel 9:16: ' + imagemFundoUrl + ' (' + imagem.modo + ', seed ' + fundoVideoSeed + ')',
-  );
+  console.log('🌌 Fundo cosmos animado (seed ' + fundoVideoSeed + ')');
 
   if (!opcoes.fundoZenAstrologia) {
     const fundoLegacy = escolherFundoVideo(signoChave, opcoes.data);
@@ -172,8 +163,6 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
     frameInicioFecho,
     fundoVideoTema,
     fundoVideoSeed,
-    imagemFundoUrl,
-    imagemFundoModo,
     musicaFundoArquivo,
     duracaoFrames,
     siteMarca: urlSiteMarca(),

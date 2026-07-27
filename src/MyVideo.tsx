@@ -6,7 +6,6 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion';
-import { FundoCosmicoAnimado } from './components/FundoCosmicoAnimado';
 import { FundoCosmicoSidus } from './components/FundoCosmicoSidus';
 import { LogoSidusVideo } from './components/LogoSidusVideo';
 import { BarraLinkSite } from './components/OverlaysSidus';
@@ -54,8 +53,6 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   frameInicioPrevisao,
   frameInicioFecho,
   fundoVideoSeed,
-  imagemFundoUrl,
-  imagemFundoModo,
   musicaFundoArquivo,
   segmentosEcra,
   siteMarca,
@@ -151,15 +148,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
 
   return (
     <AbsoluteFill style={{ backgroundColor: '#000000', fontFamily: 'system-ui, sans-serif' }}>
-      {imagemFundoUrl ? (
-        <FundoCosmicoAnimado
-          imagemFundoUrl={imagemFundoUrl}
-          imagemFundoModo={imagemFundoModo}
-          seed={fundoVideoSeed ?? 0}
-        />
-      ) : (
-        <FundoCosmicoSidus seed={fundoVideoSeed ?? 0} />
-      )}
+      <FundoCosmicoSidus seed={fundoVideoSeed ?? 0} />
 
       <AbsoluteFill
         style={{
