@@ -5,15 +5,6 @@ import { PALETA_SIDUS } from '../lib/paleta-visual';
 const COR = PALETA_SIDUS.destaque;
 const BRILHO = PALETA_SIDUS.destaqueSombra;
 
-function baseEstilo(cx: number, cy: number, rotacao: number, opacidade: number): React.CSSProperties {
-  return {
-    opacity: opacidade,
-    transform: `rotate(${rotacao}deg)`,
-    transformOrigin: `${cx}px ${cy}px`,
-    pointerEvents: 'none',
-  };
-}
-
 function Anel({
   cx,
   cy,
@@ -230,19 +221,34 @@ export function nomeGeometriaPinterest(seed: number): string {
   return NOMES_VARIANTES[indiceGeometriaPinterest(seed)];
 }
 
-/** Geometria sagrada Pinterest — alterna por seed (não é sempre o mesmo círculo). */
+/** Geometria sagrada Pinterest — viewport quadrado centrado, simétrico, sem deformar. */
 export function GeometriaSagradaSuave({ seed }: { seed: number }): React.ReactElement {
   const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
-  const cx = width / 2;
-  const cy = height / 2;
-  const tamanho = Math.min(width, height) * 0.95;
+  const quadrado = Math.min(width, height);
+  const cx = quadrado / 2;
+  const cy = quadrado / 2;
   const rotacao = frame * 0.028 + seed * 0.17;
   const Variante = VARIANTES[indiceGeometriaPinterest(seed)];
 
   return (
-    <AbsoluteFill style={baseEstilo(cx, cy, rotacao, 0.58)}>
-      <Variante cx={cx} cy={cy} tamanho={tamanho} />
+    <AbsoluteFill style={{ pointerEvents: 'none' }}>
+      <div
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: '50%',
+          width: quadrado,
+          height: quadrado,
+          marginLeft: -quadrado / 2,
+          marginTop: -quadrado / 2,
+          opacity: 0.58,
+          transform: `rotate(${rotacao}deg)`,
+          transformOrigin: 'center center',
+        }}
+      >
+        <Variante cx={cx} cy={cy} tamanho={quadrado * 0.95} />
+      </div>
     </AbsoluteFill>
   );
 }

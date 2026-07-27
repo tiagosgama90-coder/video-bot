@@ -137,7 +137,11 @@ exigirTexto('./src/MyVideo.tsx', 'FundoCosmicoAnimado', 'Vídeo: fundo Pinterest
 exigirTexto('./src/components/GeometriaSagradaPinterest.tsx', 'GeometriaSagradaSuave', 'Vídeo: geometria Pinterest variada por seed');
 exigirTexto('./src/components/GeometriaSagradaPinterest.tsx', 'VarianteFlorDaVida', 'Vídeo: variantes geometria sagrada');
 exigirFicheiro('./src/lib/imagem-cosmica.ts');
-exigirTexto('./src/lib/imagem-prompts.ts', 'no planets no moons', 'Imagem: proibir planetas ovais');
+exigirTexto('./src/lib/imagem-prompts.ts', 'perfect round not oval', 'Imagem: círculos redondos não ovais');
+exigirTexto('./src/lib/imagem-prompts.ts', 'perfectly symmetrical', 'Imagem: composição simétrica');
+exigirTexto('./src/components/ImagemReelCover.tsx', "objectFit: 'cover'", 'Vídeo: cover reel sem esticar');
+exigirTexto('./src/components/FundoCosmicoAnimado.tsx', 'radial-gradient(circle', 'Vídeo: vinheta circular simétrica');
+exigirTexto('./src/components/GeometriaSagradaPinterest.tsx', 'quadrado = Math.min', 'Vídeo: geometria em viewport quadrado');
 exigirTexto('./gerar-e-publicar.ts', 'obterImagemFundo', 'Diário: fundo Pinterest IA animado');
 exigirTexto('./src/lib/gerar-video-especial.ts', 'obterImagemFundoZenAstrologia', 'Especiais: fundo Pinterest IA');
 exigirTexto('./src/MyVideo.tsx', 'LogoSidusVideo', 'Vídeo: logo Sidus destacado');

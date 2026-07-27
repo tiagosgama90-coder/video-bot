@@ -117,7 +117,7 @@ export function FundoCosmicoSidus({ seed = 0 }: FundoCosmicoSidusProps): React.R
       <AbsoluteFill
         style={{
           background:
-            'radial-gradient(ellipse 75% 55% at 50% 50%, transparent 0%, transparent 48%, rgba(0,0,0,0.28) 78%, rgba(0,0,0,0.65) 100%)',
+            'radial-gradient(circle at 50% 50%, transparent 0%, transparent 48%, rgba(0,0,0,0.28) 78%, rgba(0,0,0,0.65) 100%)',
           pointerEvents: 'none',
         }}
       />

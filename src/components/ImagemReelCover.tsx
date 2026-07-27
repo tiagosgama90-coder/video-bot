@@ -18,8 +18,8 @@ export interface ImagemReelCoverProps {
 }
 
 /**
- * Fundo reel 1080×1920 — ficheiro normalizado, pixels 1:1.
- * PROIBIDO esticar: dimensões fixas REEL_LARGURA×REEL_ALTURA, sem objectFit CSS.
+ * Fundo reel 1080×1920 — proporção fixa, simétrico, PROIBIDO esticar.
+ * objectFit cover recorta em excesso mas nunca deforma (círculos ficam redondos).
  */
 export function ImagemReelCover({
   src,
@@ -39,15 +39,14 @@ export function ImagemReelCover({
 
   return (
     <AbsoluteFill style={{ overflow: 'hidden', backgroundColor: '#000000' }}>
-      <AbsoluteFill
+      <div
         style={{
+          position: 'absolute',
           left: '50%',
           top: '50%',
           width: REEL_LARGURA,
           height: REEL_ALTURA,
-          marginLeft: -REEL_LARGURA / 2,
-          marginTop: -REEL_ALTURA / 2,
-          transform: `scale(${escala}) translate(${deslocamentoX}px, ${deslocamentoY}px)`,
+          transform: `translate(calc(-50% + ${deslocamentoX}px), calc(-50% + ${deslocamentoY}px)) scale(${escala})`,
           transformOrigin: 'center center',
         }}
       >
@@ -59,12 +58,12 @@ export function ImagemReelCover({
             display: 'block',
             width: REEL_LARGURA,
             height: REEL_ALTURA,
-            maxWidth: REEL_LARGURA,
-            maxHeight: REEL_ALTURA,
+            objectFit: 'cover',
+            objectPosition: 'center center',
             ...(filtro ? { filter: filtro } : {}),
           }}
         />
-      </AbsoluteFill>
+      </div>
     </AbsoluteFill>
   );
 }

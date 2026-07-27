@@ -55,7 +55,7 @@ export function FundoCosmicoAnimado({
       <AbsoluteFill
         style={{
           background:
-            'radial-gradient(ellipse 70% 50% at 50% 50%, transparent 0%, transparent 45%, rgba(0,0,0,0.22) 72%, rgba(0,0,0,0.55) 100%)',
+            'radial-gradient(circle at 50% 50%, transparent 0%, transparent 45%, rgba(0,0,0,0.22) 72%, rgba(0,0,0,0.55) 100%)',
           pointerEvents: 'none',
         }}
       />
