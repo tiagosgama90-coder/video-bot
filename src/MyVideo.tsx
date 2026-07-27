@@ -158,15 +158,15 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
 
       <AbsoluteFill
         style={{
-          padding: '88px 40px 300px',
+          padding: '72px 40px 290px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'flex-start',
+          justifyContent: 'center',
           zIndex: 10,
         }}
       >
-        <div style={{ marginTop: 24, marginBottom: 8 }}>
+        <div style={{ marginBottom: 12 }}>
           <LogoSidusVideo larguraPx={LOGO_SIDUS_LARGURA_PX} />
         </div>
 
