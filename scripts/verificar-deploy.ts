@@ -61,6 +61,7 @@ exigirTexto('./src/MyVideo.tsx', 'LOGO_SIDUS_LARGURA_PX', 'Vídeo: logo Sidus ma
 exigirTexto('./src/MyVideo.tsx', 'LogoSidusVideo', 'Vídeo: novo logo PNG transparente');
 exigirTexto('./src/MyVideo.tsx', 'FundoCosmicoSidus', 'Vídeo: fundo cósmico preto');
 exigirTexto('./src/MyVideo.tsx', 'BarraLinkSite', 'Vídeo: link no rodapé seguro');
+exigirFicheiro('./public/logo-sidus-fonte.png');
 exigirFicheiro('./public/logo-sidus-vertical.png');
 exigirFicheiro('./public/logo-sidus-horizontal.png');
 exigirTexto('./gerar-e-publicar.ts', 'frameInicioPrevisao', 'Diário: ecrã sincronizado com voz');

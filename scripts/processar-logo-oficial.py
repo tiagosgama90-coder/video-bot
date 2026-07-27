@@ -1,110 +1,49 @@
 #!/usr/bin/env python3
-"""Processa o logo oficial Sidus — HD/4K + transparência, unidade intacta."""
+"""
+Upscale do logo Sidus — APENAS LANCZOS, zero alterações ao design.
+Coloca o PNG original (já transparente) em public/logo-sidus-fonte.png
+"""
 
 from __future__ import annotations
 
-import urllib.request
+import sys
 from pathlib import Path
 
-import numpy as np
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / 'public'
-FONTE_URL = 'https://sidusastro.com/apple-touch-icon.png?v=6'
-BG_CORES = [
-    np.array([11, 7, 30], dtype=np.float32),
-    np.array([0, 0, 0], dtype=np.float32),
-]
+FONTE = PUBLIC / 'logo-sidus-fonte.png'
 
 
-def mascara_dourada(rgb: np.ndarray) -> np.ndarray:
-    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
-    luminancia = 0.299 * r + 0.587 * g + 0.114 * b
-    dourado = (r > 65) & (g > 50) & (b < 155) & (r >= g * 0.72)
-    brilho = luminancia > 42
-    return dourado | brilho
-
-
-def dilatar(mascara: np.ndarray, raio: int) -> np.ndarray:
-    h, w = mascara.shape
-    out = mascara.copy()
-    ys, xs = np.where(mascara)
-    for y, x in zip(ys, xs, strict=False):
-        y0, y1 = max(0, y - raio), min(h, y + raio + 1)
-        x0, x1 = max(0, x - raio), min(w, x + raio + 1)
-        out[y0:y1, x0:x1] = True
-    return out
-
-
-def remover_fundo_unidade(im: Image.Image) -> Image.Image:
-    """
-    Remove só o fundo EXTERNO ao logo.
-    Mantém opaco tudo dentro da caixa do logo (símbolo + espaço + SIDUS) —
-    evita que o símbolo e o texto pareçam duas peças separadas.
-    """
-    rgba = im.convert('RGBA')
-    arr = np.array(rgba, dtype=np.float32)
-    rgb = arr[..., :3]
-    h, w = rgb.shape[:2]
-
-    conteudo = dilatar(mascara_dourada(rgb), raio=6)
-    if not conteudo.any():
-        return rgba
-
-    ys, xs = np.where(conteudo)
-    margem = max(4, int(min(h, w) * 0.02))
-    y0 = max(0, int(ys.min()) - margem)
-    y1 = min(h, int(ys.max()) + margem + 1)
-    x0 = max(0, int(xs.min()) - margem)
-    x1 = min(w, int(xs.max()) + margem + 1)
-
-    dist_bg = np.min([np.linalg.norm(rgb - bg, axis=-1) for bg in BG_CORES], axis=0)
-    dentro = np.zeros((h, w), dtype=bool)
-    dentro[y0:y1, x0:x1] = True
-
-    alpha = np.zeros((h, w), dtype=np.float32)
-    # Toda a unidade do logo fica opaca (símbolo + espaço + SIDUS = uma peça)
-    alpha[dentro] = 255.0
-
-    # Só o exterior vira transparente
-    fora_fundo = (~dentro) & (dist_bg < 24)
-    alpha[fora_fundo] = 0.0
-
-    # Anti-aliasing na borda exterior
-    fora_quase = (~dentro) & (dist_bg < 42) & ~fora_fundo
-    alpha[fora_quase] = np.clip((dist_bg[fora_quase] - 16) / 22, 0, 1) * 255
-
-    arr[..., 3] = alpha.astype(np.uint8)
-    return Image.fromarray(arr.astype(np.uint8), 'RGBA')
+def upscale_max(im: Image.Image, lado_max: int) -> Image.Image:
+    w, h = im.size
+    escala = lado_max / max(w, h)
+    novo_w = max(1, round(w * escala))
+    novo_h = max(1, round(h * escala))
+    return im.resize((novo_w, novo_h), Image.Resampling.LANCZOS)
 
 
 def main() -> None:
-    PUBLIC.mkdir(parents=True, exist_ok=True)
-    fonte = PUBLIC / 'logo-sidus-fonte-oficial.png'
-    print(f'⬇️  A descarregar logo oficial: {FONTE_URL}')
-    urllib.request.urlretrieve(FONTE_URL, fonte)
+    if not FONTE.exists():
+        print('❌ Falta public/logo-sidus-fonte.png — o PNG original do utilizador (transparente).')
+        sys.exit(1)
 
-    original = Image.open(fonte)
-    print(f'   Fonte: {original.size[0]}×{original.size[1]}')
+    original = Image.open(FONTE)
+    if original.mode != 'RGBA':
+        original = original.convert('RGBA')
 
-    transparente = remover_fundo_unidade(original)
-    vertical_hd = transparente.resize((2048, 2048), Image.Resampling.LANCZOS)
-    vertical_4k = transparente.resize((4096, 4096), Image.Resampling.LANCZOS)
+    print(f'📄 Fonte: {FONTE.name} — {original.size[0]}×{original.size[1]} (sem alterações)')
 
-    destino_vertical = PUBLIC / 'logo-sidus-vertical.png'
-    destino_horizontal = PUBLIC / 'logo-sidus-horizontal.png'
-    destino_4k = PUBLIC / 'logo-sidus-vertical-4k.png'
+    hd = upscale_max(original, 2048)
+    k4 = upscale_max(original, 4096)
 
-    vertical_hd.save(destino_vertical, optimize=True)
-    vertical_4k.save(destino_4k, optimize=True)
-    vertical_hd.save(destino_horizontal, optimize=True)
+    hd.save(PUBLIC / 'logo-sidus-vertical.png', optimize=True)
+    k4.save(PUBLIC / 'logo-sidus-vertical-4k.png', optimize=True)
+    hd.save(PUBLIC / 'logo-sidus-horizontal.png', optimize=True)
 
-    print(f'✅ Vertical HD:  {destino_vertical} ({vertical_hd.width}×{vertical_hd.height})')
-    print(f'✅ Vertical 4K:  {destino_4k} ({vertical_4k.width}×{vertical_4k.height})')
-    print(f'✅ Horizontal (= vertical intacto): {destino_horizontal}')
-
-    fonte.unlink(missing_ok=True)
+    print(f'✅ HD:  logo-sidus-vertical.png ({hd.width}×{hd.height})')
+    print(f'✅ 4K:  logo-sidus-vertical-4k.png ({k4.width}×{k4.height})')
 
 
 if __name__ == '__main__':
