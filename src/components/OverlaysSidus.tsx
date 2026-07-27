@@ -1,7 +1,4 @@
-import { Img, interpolate, staticFile, useCurrentFrame } from 'remotion';
 import { PALETA_SIDUS } from '../lib/paleta-visual';
-
-const logoHorizontal = staticFile('logo-sidus-horizontal.png');
 
 /** Link do site — sempre visível, zona segura acima da barra TikTok */
 export function BarraLinkSite({ siteMarca = 'sidusastro.com' }: { siteMarca?: string }): React.ReactElement {
@@ -34,79 +31,6 @@ export function BarraLinkSite({ siteMarca = 'sidusastro.com' }: { siteMarca?: st
         }}
       >
         {siteMarca}
-      </div>
-    </div>
-  );
-}
-
-export interface RodapeComercialSidusProps {
-  siteMarca?: string;
-  activo: boolean;
-  frameInicio: number;
-}
-
-/** CTA comercial reforçado na fase final */
-export function RodapeComercialSidus({
-  siteMarca = 'sidusastro.com',
-  activo,
-  frameInicio,
-}: RodapeComercialSidusProps): React.ReactElement | null {
-  const frame = useCurrentFrame();
-
-  if (!activo) {
-    return null;
-  }
-
-  const opacidade = interpolate(frame, [frameInicio, frameInicio + 14], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  });
-
-  const textoVisite = siteMarca.includes('.com/en')
-    ? 'Visit SidusAstro'
-    : 'Visite o SidusAstro';
-
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom: 268,
-        zIndex: 32,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 8,
-        padding: '0 40px',
-        opacity: opacidade,
-        transform: `translateY(${(1 - opacidade) * 14}px)`,
-        pointerEvents: 'none',
-      }}
-    >
-      <Img
-        src={logoHorizontal}
-        style={{
-          width: 300,
-          maxWidth: '86%',
-          height: 'auto',
-          objectFit: 'contain',
-          display: 'block',
-          filter: 'drop-shadow(0 4px 22px rgba(0,0,0,0.8)) drop-shadow(0 0 16px rgba(243,204,99,0.4))',
-        }}
-      />
-      <div
-        style={{
-          color: PALETA_SIDUS.destaqueForte,
-          fontSize: 32,
-          fontWeight: 900,
-          letterSpacing: 1,
-          textAlign: 'center',
-          textShadow: '0 3px 18px rgba(0,0,0,0.95), 0 0 22px rgba(243,204,99,0.5)',
-          fontFamily: 'system-ui, sans-serif',
-        }}
-      >
-        {textoVisite}
       </div>
     </div>
   );

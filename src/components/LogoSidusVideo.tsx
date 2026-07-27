@@ -9,7 +9,7 @@ export interface LogoSidusVideoProps {
 }
 
 /** Logo Sidus — PNG do utilizador (logo-sidus-fonte1.png), sem filtros nem alterações. */
-export function LogoSidusVideo({ larguraPx = 300 }: LogoSidusVideoProps): React.ReactElement {
+export function LogoSidusVideo({ larguraPx = 340 }: LogoSidusVideoProps): React.ReactElement {
   return (
     <Img
       src={logoVertical}

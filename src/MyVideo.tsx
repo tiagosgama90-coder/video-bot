@@ -9,13 +9,13 @@ import {
 import { FundoCosmicoAnimado } from './components/FundoCosmicoAnimado';
 import { FundoCosmicoSidus } from './components/FundoCosmicoSidus';
 import { LogoSidusVideo } from './components/LogoSidusVideo';
-import { BarraLinkSite, RodapeComercialSidus } from './components/OverlaysSidus';
+import { BarraLinkSite } from './components/OverlaysSidus';
 import { PALETA_SIDUS } from './lib/paleta-visual';
 import type { HoroscopoProps } from './types/horoscopo';
 
 export type { HoroscopoProps } from './types/horoscopo';
 
-const LOGO_SIDUS_LARGURA_PX = 300;
+const LOGO_SIDUS_LARGURA_PX = 340;
 
 function tamanhoFonteSigno(texto: string): number {
   if (texto.length > 28) {
@@ -221,11 +221,6 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
       </AbsoluteFill>
 
       <BarraLinkSite siteMarca={siteMarca} />
-      <RodapeComercialSidus
-        siteMarca={siteMarca}
-        activo={emFaseFecho}
-        frameInicio={inicioFecho}
-      />
 
       <Audio src={staticFile('narracao.mp3')} volume={1.0} />
       <Audio src={staticFile(musicaFundoArquivo)} volume={volumeMusica} loop />
