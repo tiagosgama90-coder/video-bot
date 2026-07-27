@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Processa o logo oficial Sidus — HD/4K + transparência, sem alterar nem dividir o design."""
+"""Processa o logo oficial Sidus — HD/4K + transparência, unidade intacta."""
 
 from __future__ import annotations
 
@@ -12,32 +12,70 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / 'public'
 FONTE_URL = 'https://sidusastro.com/apple-touch-icon.png?v=6'
-# Fundos oficiais: site (#0B071E) e PNG do utilizador (#000000)
 BG_CORES = [
     np.array([11, 7, 30], dtype=np.float32),
     np.array([0, 0, 0], dtype=np.float32),
 ]
 
 
-def remover_fundo(im: Image.Image) -> Image.Image:
-    """Remove fundo escuro preservando brilho dourado da estrela superior."""
+def mascara_dourada(rgb: np.ndarray) -> np.ndarray:
+    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    luminancia = 0.299 * r + 0.587 * g + 0.114 * b
+    dourado = (r > 65) & (g > 50) & (b < 155) & (r >= g * 0.72)
+    brilho = luminancia > 42
+    return dourado | brilho
+
+
+def dilatar(mascara: np.ndarray, raio: int) -> np.ndarray:
+    h, w = mascara.shape
+    out = mascara.copy()
+    ys, xs = np.where(mascara)
+    for y, x in zip(ys, xs, strict=False):
+        y0, y1 = max(0, y - raio), min(h, y + raio + 1)
+        x0, x1 = max(0, x - raio), min(w, x + raio + 1)
+        out[y0:y1, x0:x1] = True
+    return out
+
+
+def remover_fundo_unidade(im: Image.Image) -> Image.Image:
+    """
+    Remove só o fundo EXTERNO ao logo.
+    Mantém opaco tudo dentro da caixa do logo (símbolo + espaço + SIDUS) —
+    evita que o símbolo e o texto pareçam duas peças separadas.
+    """
     rgba = im.convert('RGBA')
     arr = np.array(rgba, dtype=np.float32)
     rgb = arr[..., :3]
-    dist_bg = np.min(
-        [np.linalg.norm(rgb - bg, axis=-1) for bg in BG_CORES],
-        axis=0,
-    )
+    h, w = rgb.shape[:2]
 
-    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
-    luminancia = 0.299 * r + 0.587 * g + 0.114 * b
-    dourado = (r > 70) & (g > 55) & (b < 150) & (r >= g * 0.75)
+    conteudo = dilatar(mascara_dourada(rgb), raio=6)
+    if not conteudo.any():
+        return rgba
 
-    alpha = np.clip((luminancia - 18) / 42 + (dist_bg / 28) + dourado.astype(np.float32) * 0.55, 0, 1)
-    alpha = np.where(dourado | (luminancia > 55), np.maximum(alpha, 0.92), alpha)
-    alpha = np.where((dist_bg < 12) & (luminancia < 35) & ~dourado, 0, alpha)
+    ys, xs = np.where(conteudo)
+    margem = max(4, int(min(h, w) * 0.02))
+    y0 = max(0, int(ys.min()) - margem)
+    y1 = min(h, int(ys.max()) + margem + 1)
+    x0 = max(0, int(xs.min()) - margem)
+    x1 = min(w, int(xs.max()) + margem + 1)
 
-    arr[..., 3] = (alpha * 255).astype(np.uint8)
+    dist_bg = np.min([np.linalg.norm(rgb - bg, axis=-1) for bg in BG_CORES], axis=0)
+    dentro = np.zeros((h, w), dtype=bool)
+    dentro[y0:y1, x0:x1] = True
+
+    alpha = np.zeros((h, w), dtype=np.float32)
+    # Toda a unidade do logo fica opaca (símbolo + espaço + SIDUS = uma peça)
+    alpha[dentro] = 255.0
+
+    # Só o exterior vira transparente
+    fora_fundo = (~dentro) & (dist_bg < 24)
+    alpha[fora_fundo] = 0.0
+
+    # Anti-aliasing na borda exterior
+    fora_quase = (~dentro) & (dist_bg < 42) & ~fora_fundo
+    alpha[fora_quase] = np.clip((dist_bg[fora_quase] - 16) / 22, 0, 1) * 255
+
+    arr[..., 3] = alpha.astype(np.uint8)
     return Image.fromarray(arr.astype(np.uint8), 'RGBA')
 
 
@@ -50,8 +88,7 @@ def main() -> None:
     original = Image.open(fonte)
     print(f'   Fonte: {original.size[0]}×{original.size[1]}')
 
-    transparente = remover_fundo(original)
-    # Manter canvas quadrado original — NÃO recortar (preserva posição símbolo + SIDUS)
+    transparente = remover_fundo_unidade(original)
     vertical_hd = transparente.resize((2048, 2048), Image.Resampling.LANCZOS)
     vertical_4k = transparente.resize((4096, 4096), Image.Resampling.LANCZOS)
 
@@ -61,7 +98,6 @@ def main() -> None:
 
     vertical_hd.save(destino_vertical, optimize=True)
     vertical_4k.save(destino_4k, optimize=True)
-    # horizontal = mesmo logo vertical intacto (não dividir símbolo do texto)
     vertical_hd.save(destino_horizontal, optimize=True)
 
     print(f'✅ Vertical HD:  {destino_vertical} ({vertical_hd.width}×{vertical_hd.height})')
