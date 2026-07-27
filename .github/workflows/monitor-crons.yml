@@ -1,10 +1,11 @@
 name: Monitor crons diários
 
 # Verifica se PT/US já correram hoje; dispara recuperação se o cron externo falhou.
-# Horário: 09:30 Lisboa (PT) e 14:00 UTC (~10:00 NY) — depois dos crons principais.
+# Horário: 09:30 Lisboa (PT) e 11:45 UTC (~07:45 NY) + 14:00 UTC (~10:00 NY) — US.
 on:
   schedule:
     - cron: '30 8 * * *'   # ~09:30 Lisboa (verão) — verificar PT
+    - cron: '45 11 * * *'   # ~07:45 America/New_York (verão) — recuperar US cedo
     - cron: '0 14 * * *'    # ~10:00 NY (verão) — verificar US
   workflow_dispatch:
 
@@ -46,7 +47,7 @@ jobs:
             });
 
   verificar-us:
-    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 14 * * *'
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '45 11 * * *' || github.event.schedule == '0 14 * * *'
     runs-on: ubuntu-latest
     steps:
       - name: Recuperar diário US se em falta

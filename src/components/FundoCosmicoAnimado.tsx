@@ -1,14 +1,8 @@
 import React from 'react';
-import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
+import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
 import { PALETA_SIDUS } from '../lib/paleta-visual';
 import { EstrelasAPassear, GeometriaSagradaSuave } from './FundoCosmicoSidus';
-
-function resolverSrcImagem(url: string): string {
-  if (url.startsWith('http://') || url.startsWith('https://')) {
-    return url;
-  }
-  return staticFile(url);
-}
+import { ImagemReelCover } from './ImagemReelCover';
 
 export interface FundoCosmicoAnimadoProps {
   imagemFundoUrl: string;
@@ -16,7 +10,7 @@ export interface FundoCosmicoAnimadoProps {
 }
 
 /**
- * Nebulosa cósmica IA em movimento (Ken Burns + cover, nunca estica)
+ * Nebulosa cósmica IA em movimento (Ken Burns + reel 1080×1920, nunca estica)
  * + estrelas + geometria sagrada suave por cima.
  */
 export function FundoCosmicoAnimado({
@@ -25,41 +19,29 @@ export function FundoCosmicoAnimado({
 }: FundoCosmicoAnimadoProps): React.ReactElement {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
-  const src = resolverSrcImagem(imagemFundoUrl);
 
-  const escala = interpolate(frame, [0, durationInFrames], [1.06, 1.16], {
+  const escala = interpolate(frame, [0, durationInFrames], [1.04, 1.1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
-  const deslocamentoY = interpolate(frame, [0, durationInFrames], [0, -32], {
+  const deslocamentoY = interpolate(frame, [0, durationInFrames], [0, -24], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
-  const deslocamentoX = interpolate(frame, [0, durationInFrames], [0, 14], {
+  const deslocamentoX = interpolate(frame, [0, durationInFrames], [0, 10], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
 
   return (
     <AbsoluteFill style={{ overflow: 'hidden', backgroundColor: '#000000' }}>
-      <AbsoluteFill
-        style={{
-          transform: `scale(${escala}) translate(${deslocamentoX}px, ${deslocamentoY}px)`,
-          transformOrigin: 'center center',
-        }}
-      >
-        <Img
-          src={src}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: 'center center',
-            display: 'block',
-            filter: 'brightness(0.92) saturate(1.22) contrast(1.05)',
-          }}
-        />
-      </AbsoluteFill>
+      <ImagemReelCover
+        src={imagemFundoUrl}
+        escala={escala}
+        deslocamentoX={deslocamentoX}
+        deslocamentoY={deslocamentoY}
+        filtro="brightness(0.92) saturate(1.22) contrast(1.05)"
+      />
 
       <AbsoluteFill
         style={{

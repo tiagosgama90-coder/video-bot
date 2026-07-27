@@ -116,7 +116,9 @@ exigirTexto('./src/lib/fundo-video.ts', 'reiki_energia', 'Vídeo: tema reiki ani
 exigirTexto('./src/lib/imagem-fundo.ts', 'validarImagemReel', 'Imagem: validação proporção reel 9:16');
 exigirTexto('./src/lib/imagem-fundo.ts', 'force_original_aspect_ratio=increase', 'Imagem: crop reel sem esticar');
 exigirTexto('./src/lib/imagem-fundo.ts', 'REEL_LARGURA', 'Imagem: 1080px largura reel');
-exigirTexto('./src/components/FundoImagemZen.tsx', 'objectFit="cover"', 'Imagem: cover se usada');
+exigirTexto('./src/lib/imagem-fundo.ts', 'validarRatioReel', 'Imagem: validar ratio 9:16');
+exigirTexto('./src/components/ImagemReelCover.tsx', 'ImagemReelCover', 'Vídeo: fundo reel sem esticar');
+exigirTexto('./src/components/FundoImagemZen.tsx', 'ImagemReelCover', 'Imagem: cover reel sem esticar');
 exigirTexto('./config/sidusastro.json', '#08060e', 'Imagem config: cor base 60%');
 exigirTexto('./gerar-video-quinta.ts', 'SLOT_MUSICA.MOTIVACIONAL_QUINTA', 'Quinta: slot música');
 exigirTexto('./gerar-video-quinta.ts', 'obterEtiquetaGanchoMotivacional', 'Quinta: etiqueta gancho ecrã');
@@ -129,7 +131,7 @@ exigirTexto('./src/lib/voz.ts', 'mstts:express-as', 'Voz: estilo Azure expressiv
 exigirFicheiro('./src/lib/fundo-video.ts');
 exigirTexto('./src/lib/fundo-video.ts', 'mesa_tarot', 'Vídeo: tema mesa tarot');
 exigirTexto('./src/components/FundoVideoMistico.tsx', 'TemaVelas', 'Vídeo: velas animadas');
-exigirTexto('./src/components/FundoCosmicoAnimado.tsx', 'objectFit: \'cover\'', 'Vídeo: cosmos animado sem esticar');
+exigirTexto('./src/components/FundoCosmicoAnimado.tsx', 'ImagemReelCover', 'Vídeo: cosmos animado sem esticar');
 exigirTexto('./src/MyVideo.tsx', 'FundoCosmicoAnimado', 'Vídeo: nebulosa cósmica em movimento');
 exigirFicheiro('./src/lib/imagem-cosmica.ts');
 exigirTexto('./gerar-e-publicar.ts', 'obterImagemFundoCosmico', 'Diário: fundo cósmico IA animado');

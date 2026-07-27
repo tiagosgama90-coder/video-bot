@@ -89,11 +89,23 @@ export function normalizarImagemReel(destino: string): void {
   const dados = fs.readFileSync(destino);
   const dimensoes = lerDimensoesJpeg(dados);
   if (!dimensoes) {
-    return;
+    throw new Error('Não foi possível ler dimensões JPEG para normalizar reel');
   }
 
   if (dimensoes.width < 360 || dimensoes.height < 640) {
     throw new Error('Imagem demasiado pequena para reel: ' + dimensoes.width + '×' + dimensoes.height);
+  }
+
+  if (!validarRatioReel(dimensoes.width, dimensoes.height)) {
+    throw new Error(
+      'Aspect ratio inválido para reel 9:16: ' +
+        dimensoes.width +
+        '×' +
+        dimensoes.height +
+        ' (ratio ' +
+        (dimensoes.width / dimensoes.height).toFixed(3) +
+        ')',
+    );
   }
 
   const tmp = destino + '.reel.jpg';
@@ -117,6 +129,19 @@ export function normalizarImagemReel(destino: string): void {
     { stdio: 'pipe' },
   );
   fs.renameSync(tmp, destino);
+
+  const finais = lerDimensoesJpeg(fs.readFileSync(destino));
+  if (!finais || finais.width !== REEL_LARGURA || finais.height !== REEL_ALTURA) {
+    throw new Error(
+      'Normalização reel falhou: esperado ' +
+        REEL_LARGURA +
+        '×' +
+        REEL_ALTURA +
+        ', obtido ' +
+        (finais ? finais.width + '×' + finais.height : 'desconhecido'),
+    );
+  }
+
   console.log(
     '📐 Imagem recortada para reel (sem esticar): ' +
       dimensoes.width +
@@ -220,13 +245,18 @@ async function descarregarFicheiro(url: string, destino: string): Promise<void> 
   if (!dimensoes) {
     throw new Error('Não foi possível ler dimensões JPEG');
   }
+  if (!validarRatioReel(dimensoes.width, dimensoes.height)) {
+    throw new Error(
+      'Imagem IA fora do ratio 9:16: ' + dimensoes.width + '×' + dimensoes.height,
+    );
+  }
   fs.writeFileSync(destino, dados);
   normalizarImagemReel(destino);
   const finais = lerDimensoesJpeg(fs.readFileSync(destino));
-  console.log(
-    '📐 Imagem reel validada: ' +
-      (finais ? finais.width + '×' + finais.height : dimensoes.width + '×' + dimensoes.height),
-  );
+  if (!finais || finais.width !== REEL_LARGURA || finais.height !== REEL_ALTURA) {
+    throw new Error('Imagem reel inválida após normalização');
+  }
+  console.log('📐 Imagem reel validada: ' + finais.width + '×' + finais.height);
 }
 
 function escreverJpegMinimo(destino: string): void {

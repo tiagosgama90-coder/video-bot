@@ -1,16 +1,7 @@
 import React from 'react';
-import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
+import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
 import { PALETA_SIDUS } from '../lib/paleta-visual';
-
-const REEL_LARGURA = 1080;
-const REEL_ALTURA = 1920;
-
-function resolverSrcImagem(url: string): string {
-  if (url.startsWith('http://') || url.startsWith('https://')) {
-    return url;
-  }
-  return staticFile(url);
-}
+import { ImagemReelCover } from './ImagemReelCover';
 
 export interface FundoImagemZenProps {
   imagemFundoUrl: string;
@@ -25,12 +16,11 @@ function filtroImagem(modoPaleta?: 'color' | 'mono'): string {
 }
 
 /**
- * Reel 1080×1920 — cover simétrico (nunca estica), Ken Burns suave no centro.
+ * Reel 1080×1920 — imagem normalizada, Ken Burns suave no centro (sem esticar).
  */
 export function FundoImagemZen({ imagemFundoUrl, modoPaleta }: FundoImagemZenProps): React.ReactElement {
   const frame = useCurrentFrame();
-  const { width, height, durationInFrames } = useVideoConfig();
-  const src = resolverSrcImagem(imagemFundoUrl);
+  const { durationInFrames } = useVideoConfig();
 
   const escala = interpolate(frame, [0, durationInFrames], [1.02, 1.08], {
     extrapolateLeft: 'clamp',
@@ -45,28 +35,14 @@ export function FundoImagemZen({ imagemFundoUrl, modoPaleta }: FundoImagemZenPro
     extrapolateRight: 'clamp',
   });
 
-  const coverScale = Math.max(width / REEL_LARGURA, height / REEL_ALTURA) * escala;
-  const imgW = REEL_LARGURA * coverScale;
-  const imgH = REEL_ALTURA * coverScale;
-
   return (
     <AbsoluteFill style={{ overflow: 'hidden', backgroundColor: PALETA_SIDUS.fundo }}>
-      <Img
-        src={src}
-        width={imgW}
-        height={imgH}
-        objectFit="cover"
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: '50%',
-          width: imgW,
-          height: imgH,
-          marginLeft: -imgW / 2 + deslocamentoX,
-          marginTop: -imgH / 2 + deslocamentoY,
-          display: 'block',
-          filter: filtroImagem(modoPaleta),
-        }}
+      <ImagemReelCover
+        src={imagemFundoUrl}
+        escala={escala}
+        deslocamentoX={deslocamentoX}
+        deslocamentoY={deslocamentoY}
+        filtro={filtroImagem(modoPaleta)}
       />
       <AbsoluteFill
         style={{

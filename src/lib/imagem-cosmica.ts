@@ -19,6 +19,7 @@ export const MODIFICADORES_COSMICOS = [
   'meditative cosmic background rich jewel tones violet purple gold teal stardust',
   'soft bokeh nebula healing energy reiki mandala aurora spiritual deep space',
   'symmetrical balanced composition dark cosmos with colorful nebula clouds and stars',
+  'perfect round spherical planets moons stars circles not oval not egg shaped not stretched',
 ] as const;
 
 export const PALETAS_COSMICAS = [
@@ -29,7 +30,7 @@ export const PALETAS_COSMICAS = [
 ] as const;
 
 export const SUFIXO_PROMPT_COSMICO =
-  ', pinterest spiritual meditative wallpaper background only, native vertical 9:16 full bleed 1080x1920, deep black cosmos with nebula clouds stars aurora sacred geometry hints, dreamy luminous soft focus bokeh, rich violet purple gold teal rose colors, symmetrical balanced composition, abstract cosmic art no text no logo no watermark no people no hands no faces, masterpiece 8k';
+  ', pinterest spiritual meditative wallpaper background only, native vertical 9:16 full bleed exactly 1080x1920 pixels reel portrait, perfect round spheres planets moons circles not oval not egg not vertically stretched correct proportions, deep black cosmos with nebula clouds stars aurora sacred geometry hints, dreamy luminous soft focus bokeh, rich violet purple gold teal rose colors, symmetrical balanced composition, abstract cosmic art no text no logo no watermark no people no hands no faces, masterpiece 8k';
 
 export const PROMPTS_FALLBACK_COSMICOS = [
   'deep space nebula purple violet gold stars cosmic dust dark void vertical pinterest spiritual',
