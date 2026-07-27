@@ -108,7 +108,7 @@ async function processarSigno(
   const { seed: fundoVideoSeed } = escolherFundoVideoZen(signo, data);
   const { ficheiro: imagemFundoUrl, modo: imagemFundoModo } = await obterImagemFundo(signo, data);
   console.log(
-    '🎨 Fundo Pinterest IA: ' + imagemFundoUrl + ' (' + imagemFundoModo + ', 1080×1920, seed ' + fundoVideoSeed + ')',
+    '🎨 Fundo Pinterest reel 9:16: ' + imagemFundoUrl + ' (' + imagemFundoModo + ', 1080×1920, seed ' + fundoVideoSeed + ')',
   );
   const slotMusica =
     SLOTS_MUSICA_HOROSCOPO[indiceSlot] ??

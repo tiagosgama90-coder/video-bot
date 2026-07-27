@@ -10,6 +10,7 @@ import {
   MODIFICADORES_MONO,
   PALETAS_COLOR,
   PALETAS_MONOCROMATICAS,
+  PREFIXO_PROMPT_REEL_PINTEREST,
   PROMPTS_FALLBACK_COLOR,
   PROMPTS_FALLBACK_MONO,
   SUFIXO_PROMPT_COLOR,
@@ -36,7 +37,11 @@ export interface ImagemFundoGerada {
   modo: ModoPaletaImagem;
 }
 
-/** Dimensões nativas do reel Instagram/TikTok (9:16) */
+/** Pollinations gera nativamente 576×1024 (9:16) — depois upscale para 1080×1920 */
+export const REEL_GERACAO_LARGURA = 576;
+export const REEL_GERACAO_ALTURA = 1024;
+
+/** Dimensões finais do reel Instagram/TikTok (9:16) */
 export const REEL_LARGURA = 1080;
 export const REEL_ALTURA = 1920;
 const RATIO_REEL = REEL_LARGURA / REEL_ALTURA;
@@ -79,6 +84,18 @@ export function validarRatioReel(largura: number, altura: number): boolean {
   return Math.abs(ratio - RATIO_REEL) < 0.012;
 }
 
+/** Aceita qualquer retrato vertical que possa ser cortado para 9:16 sem esticar */
+export function podeCortarParaReel(largura: number, altura: number): boolean {
+  if (largura < 360 || altura < 640) {
+    return false;
+  }
+  if (altura <= largura) {
+    return false;
+  }
+  const ratio = largura / altura;
+  return ratio >= 0.42 && ratio <= 0.68;
+}
+
 export function validarImagemReel(largura: number, altura: number): boolean {
   const ratioOk = validarRatioReel(largura, altura);
   const tamanhoMinimo = largura >= 360 && altura >= 640;
@@ -96,15 +113,12 @@ export function normalizarImagemReel(destino: string): void {
     throw new Error('Imagem demasiado pequena para reel: ' + dimensoes.width + '×' + dimensoes.height);
   }
 
-  if (!validarRatioReel(dimensoes.width, dimensoes.height)) {
+  if (!podeCortarParaReel(dimensoes.width, dimensoes.height)) {
     throw new Error(
-      'Aspect ratio inválido para reel 9:16: ' +
+      'Imagem não é retrato vertical para reel 9:16: ' +
         dimensoes.width +
         '×' +
-        dimensoes.height +
-        ' (ratio ' +
-        (dimensoes.width / dimensoes.height).toFixed(3) +
-        ')',
+        dimensoes.height,
     );
   }
 
@@ -159,9 +173,9 @@ function montarUrlPollinations(prompt: string, seed: number): string {
     'https://image.pollinations.ai/prompt/' +
     encodeURIComponent(prompt) +
     '?width=' +
-    REEL_LARGURA +
+    REEL_GERACAO_LARGURA +
     '&height=' +
-    REEL_ALTURA +
+    REEL_GERACAO_ALTURA +
     '&nologo=true&seed=' +
     seed +
     '&model=flux'
@@ -212,6 +226,8 @@ function montarPrompt(chave: string, data: string, extraSigno?: string): { promp
   const paleta = escolher(paletas);
 
   const prompt =
+    PREFIXO_PROMPT_REEL_PINTEREST +
+    ', ' +
     tema +
     ', ' +
     modificador +
@@ -245,9 +261,9 @@ async function descarregarFicheiro(url: string, destino: string): Promise<void> 
   if (!dimensoes) {
     throw new Error('Não foi possível ler dimensões JPEG');
   }
-  if (!validarRatioReel(dimensoes.width, dimensoes.height)) {
+  if (!podeCortarParaReel(dimensoes.width, dimensoes.height)) {
     throw new Error(
-      'Imagem IA fora do ratio 9:16: ' + dimensoes.width + '×' + dimensoes.height,
+      'Imagem IA não é retrato reel: ' + dimensoes.width + '×' + dimensoes.height,
     );
   }
   fs.writeFileSync(destino, dados);
@@ -336,7 +352,7 @@ async function gerarImagemFundo(
   const urlPollinations = montarUrlPollinations(prompt, seed);
 
   const etiquetaModo = modo === 'mono' ? 'monocromático' : 'colorido';
-  console.log('🎨 Prompt IA [' + chave + '] (' + etiquetaModo + '): ' + prompt.slice(0, 120) + '...');
+  console.log('📌 Prompt Pinterest reel [' + chave + '] (' + etiquetaModo + '): ' + prompt.slice(0, 140) + '...');
   console.log('🎨 Seed único: ' + seed);
 
   const fontes = [urlPollinations, ...urlsFallback(modo, seed)];

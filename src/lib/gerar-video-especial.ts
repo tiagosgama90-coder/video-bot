@@ -97,7 +97,7 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
   imagemFundoUrl = imagem.ficheiro;
   imagemFundoModo = imagem.modo;
   console.log(
-    '🎨 Fundo Pinterest IA: ' + imagemFundoUrl + ' (' + imagem.modo + ', seed ' + fundoVideoSeed + ')',
+    '🎨 Fundo Pinterest reel 9:16: ' + imagemFundoUrl + ' (' + imagem.modo + ', seed ' + fundoVideoSeed + ')',
   );
 
   if (!opcoes.fundoZenAstrologia) {
