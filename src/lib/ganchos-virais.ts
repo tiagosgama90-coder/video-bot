@@ -1,5 +1,6 @@
 import { isLocaleUS } from './locale';
 import { obterNomeSigno, type SignoZodiaco } from './signos';
+import type { GanchoComTema, TemaNarracao } from './fechos-narracao';
 import { sanitizarTextoPublico } from './texto-publico';
 
 export type CategoriaGanchoViral = 'financas' | 'amor' | 'ego';
@@ -184,12 +185,19 @@ function poolPorCategoria(categoria: CategoriaGanchoViral): GanchoViralFn[] {
 }
 
 /** Gancho viral estilo Reels - dinheiro, amor/Vénus ou ego/missão */
-export function escolherGanchoViral(signo: SignoZodiaco, data: string): string {
+export function escolherGanchoViralComTema(signo: SignoZodiaco, data: string): GanchoComTema {
   const nomeSigno = obterNomeSigno(signo);
   const categoria = escolherCategoria(signo, data);
   const pool = poolPorCategoria(categoria);
   const indice = hashGancho('viral-' + signo + '-' + data + '-' + categoria) % pool.length;
-  return sanitizarTextoPublico(pool[indice](nomeSigno, signo));
+  return {
+    texto: sanitizarTextoPublico(pool[indice](nomeSigno, signo)),
+    tema: categoria as TemaNarracao,
+  };
+}
+
+export function escolherGanchoViral(signo: SignoZodiaco, data: string): string {
+  return escolherGanchoViralComTema(signo, data).texto;
 }
 
 export function ehGanchoViralLongo(texto: string): boolean {

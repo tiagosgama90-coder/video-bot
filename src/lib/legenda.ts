@@ -1,5 +1,4 @@
 /* eslint-disable @remotion/deterministic-randomness -- usado apenas no script Node, não no render Remotion */
-import crypto from 'crypto';
 import {
   CTA_COMENTARIO_INSTAGRAM_EN,
   CTA_COMENTARIO_INSTAGRAM_PT,
@@ -12,39 +11,12 @@ import {
 } from './legendas-marketing';
 import { escolherGanchoDiario } from './ganchos-diario';
 import { ehGanchoViralLongo } from './ganchos-virais';
+import { escolherFechoNarracao, type TemaNarracao } from './fechos-narracao';
 import { isLocaleUS } from './locale';
 import { obterNomeSigno, type SignoZodiaco } from './signos';
 import { sanitizarTextoPublico } from './texto-publico';
 
-export const FINAL_CLOSINGS = [
-  'Ninguém te mostra isto nas apps grátis - mapa astral completo em sidusastro.com',
-  'O que o teu signo esconde está em sidusastro.com - vê antes que tires isto do feed',
-  'Parece mentira, mas o teu mapa astral grátis está em sidusastro.com',
-  'Eu não devia dizer-te isto, mas o resto da previsão está em sidusastro.com',
-  'O segredo que falta no vídeo está no teu mapa em sidusastro.com',
-  'Não pares aqui - descobre tudo no mapa astral grátis em sidusastro.com',
-  'O que vais ler a seguir no site muda tudo - sidusastro.com',
-  'Mapa astral grátis em sidusastro.com - o que lá está não está nas apps',
-  'A verdade completa do teu dia está em sidusastro.com',
-  'Última peça do puzzle: mapa astral grátis em sidusastro.com',
-  'Descobre já a afinidade do teu parceiro com o teu em sidusastro.com',
-  'Se a relação te consome ou a traição te ronda, o mapa em sidusastro.com esclarece',
-] as const;
-
-export const FINAL_CLOSINGS_EN = [
-  'Nobody shows you this in free apps - full birth chart at sidusastro.com/en',
-  'What your sign hides is at sidusastro.com/en - see it before you scroll away',
-  'Sounds crazy, but your free birth chart is at sidusastro.com/en',
-  "I shouldn't tell you this, but the rest is at sidusastro.com/en",
-  'The missing piece of this video is on your chart at sidusastro.com/en',
-  "Don't stop here - discover everything free at sidusastro.com/en",
-  'What you read next on the site changes everything - sidusastro.com/en',
-  'Free birth chart at sidusastro.com/en - not in the apps',
-  'The full truth of your day is at sidusastro.com/en',
-  'Last piece of the puzzle: free chart at sidusastro.com/en',
-  'Discover your partner affinity with yours at sidusastro.com/en',
-  'If the relationship drains you or betrayal haunts you, the chart at sidusastro.com/en clarifies',
-] as const;
+export { escolherFechoNarracao, type TemaNarracao } from './fechos-narracao';
 
 function normalizarHashtag(texto: string): string {
   return texto
@@ -112,20 +84,13 @@ function sufixoInstagram(signo: SignoZodiaco, hook: string): string {
   );
 }
 
-/** Frase final de despedimento - narrada em voz e sincronizada no ecrã */
-export function escolherFechoNarracao(): string {
-  const fechos = isLocaleUS() ? FINAL_CLOSINGS_EN : FINAL_CLOSINGS;
-  const indice = crypto.randomInt(0, fechos.length);
-  return sanitizarTextoPublico(fechos[indice]);
-}
-
 /** Legenda TikTok - gancho emocional + previsão + CTA */
 export function gerarLegendaTikTok(
   signo: SignoZodiaco,
   previsao: string,
   data?: string,
 ): string {
-  const hook = escolherGanchoDiario(signo, previsao, data);
+  const { texto: hook } = escolherGanchoDiario(signo, previsao, data);
   return sanitizarTextoPublico(
     gerarCorpoLegenda(previsao, hook) + '\n\n' + sufixoTikTok(signo),
   );
@@ -137,7 +102,7 @@ export function gerarLegendaInstagram(
   previsao: string,
   data?: string,
 ): string {
-  const hook = escolherGanchoDiario(signo, previsao, data);
+  const { texto: hook } = escolherGanchoDiario(signo, previsao, data);
   return sanitizarTextoPublico(
     gerarCorpoLegenda(previsao, hook) + '\n\n' + sufixoInstagram(signo, hook),
   );
@@ -148,11 +113,12 @@ export function gerarLegendas(
   signo: SignoZodiaco,
   previsao: string,
   data?: string,
-): { tiktok: string; instagram: string; hook: string } {
-  const hook = escolherGanchoDiario(signo, previsao, data);
+): { tiktok: string; instagram: string; hook: string; tema: TemaNarracao } {
+  const { texto: hook, tema } = escolherGanchoDiario(signo, previsao, data);
   const corpo = gerarCorpoLegenda(previsao, hook);
   return {
     hook,
+    tema,
     tiktok: sanitizarTextoPublico(corpo + '\n\n' + sufixoTikTok(signo)),
     instagram: sanitizarTextoPublico(corpo + '\n\n' + sufixoInstagram(signo, hook)),
   };

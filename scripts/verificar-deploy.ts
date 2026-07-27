@@ -51,7 +51,12 @@ exigirTexto('./src/lib/ganchos-virais.ts', 'traem em silêncio', 'Viral: gancho 
 exigirTexto('./config/sidusastro.json', '"volume": 0.09', 'Música: volume baixo para destacar voz');
 exigirTexto('./config/sidusastro.json', '"volume": "+12.00%"', 'Voz: volume reforçado');
 exigirTexto('./src/lib/musicas.ts', 'volume=0.55', 'Música: normalizar volume no download');
-exigirTexto('./src/lib/legenda.ts', 'mapa astral grátis em sidusastro.com', 'Diário: fecho curiosidade + sidusastro.com');
+exigirTexto('./src/lib/fechos-narracao.ts', 'escolherFechoNarracao', 'Diário: fecho alinhado ao tema');
+exigirTexto('./src/lib/fechos-narracao.ts', 'FECHOS_FINANCAS_PT', 'Fecho: pool dinheiro');
+exigirTexto('./src/lib/fechos-narracao.ts', 'FECHOS_AMOR_PT', 'Fecho: pool amor');
+exigirTexto('./src/lib/fechos-narracao.ts', 'afinidade do teu parceiro', 'Fecho: afinidade parceiro só em amor');
+exigirTexto('./gerar-e-publicar.ts', 'escolherFechoNarracao(legendas.tema', 'Diário: fecho coerente com gancho');
+exigirTexto('./src/lib/legenda.ts', 'tema: TemaNarracao', 'Diário: legendas devolvem tema do gancho');
 exigirTexto('./src/lib/paleta-visual.ts', 'PALETA_SIDUS', 'Visual: regra 60-30-10');
 exigirTexto('./config/sidusastro.json', 'estiloAzureMasculina', 'Voz: estilo masculino místico');
 exigirTexto('./config/sidusastro.json', 'estiloAzureFeminina', 'Voz: estilo feminino zen');

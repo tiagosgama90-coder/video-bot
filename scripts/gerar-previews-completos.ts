@@ -6,7 +6,7 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { escolherGanchoDiario } from '../src/lib/ganchos-diario';
-import { escolherGanchoEspecial } from '../src/lib/ganchos-especial';
+import { escolherGanchoEspecialComTema } from '../src/lib/ganchos-especial';
 import { obterEtiquetaGanchoMotivacional } from '../src/lib/conteudo-especial';
 import { calcularDuracaoFrames } from '../src/lib/duracao-video';
 import { escolherFundoVideo, escolherFundoVideoZen } from '../src/lib/fundo-video';
@@ -71,8 +71,8 @@ async function previewDiario(): Promise<string> {
   const signo = 'touro';
   const previsao =
     'Hoje a energia favorece decisões práticas no trabalho. Confia na tua intuição ao falar de dinheiro.';
-  const hook = escolherGanchoDiario(signo, previsao, DATA);
-  const fecho = escolherFechoNarracao();
+  const { texto: hook, tema } = escolherGanchoDiario(signo, previsao, DATA);
+  const fecho = escolherFechoNarracao(tema, signo, DATA);
   const { duracaoFrames, frameInicioPrevisao, frameInicioFecho } = await narrar({
     hook,
     previsao,
@@ -102,8 +102,8 @@ async function previewDiario(): Promise<string> {
 async function previewMotivacionalZen(): Promise<string> {
   const frase =
     'Hoje o universo conspira a teu favor. Respira fundo e confia no teu caminho espiritual.';
-  const hook = escolherGanchoEspecial('motivacao-quinta', DATA);
-  const fecho = escolherFechoNarracao();
+  const { texto: hook, tema } = escolherGanchoEspecialComTema('motivacao-quinta', DATA);
+  const fecho = escolherFechoNarracao(tema, undefined, DATA);
   const { duracaoFrames, frameInicioPrevisao, frameInicioFecho } = await narrar({
     hook,
     previsao: frase,

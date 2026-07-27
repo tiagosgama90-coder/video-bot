@@ -109,11 +109,10 @@ async function processarSigno(
     SLOTS_MUSICA_HOROSCOPO[indiceSlot % SLOTS_MUSICA_HOROSCOPO.length];
   const musicaFundoArquivo = await prepararMusicaParaVideo(signo, data, slotMusica);
 
-  const fechoNarracao = escolherFechoNarracao();
-  const fechoEcra = sanitizarTextoPublico(fechoNarracao.replace(/^\.\s+/, ''));
-
   const legendas = gerarLegendas(signo, previsaoVideo, data);
   const hookTexto = sanitizarTextoPublico(legendas.hook);
+  const fechoNarracao = escolherFechoNarracao(legendas.tema, signo, data);
+  const fechoEcra = sanitizarTextoPublico(fechoNarracao.replace(/^\.\s+/, ''));
 
   const partesNarracao = {
     hook: hookTexto,

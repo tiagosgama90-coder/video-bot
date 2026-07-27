@@ -4,7 +4,7 @@ import { execSync } from 'child_process';
 import { publicarEmTodosOsCanais } from './buffer';
 import { horaFusoParaISO, resolverDueAtFuturo } from './buffer-agenda';
 import { calcularDuracaoFrames } from './duracao-video';
-import { escolherGanchoEspecial } from './ganchos-especial';
+import { escolherGanchoEspecialComTema } from './ganchos-especial';
 import { escolherFundoVideo, escolherFundoVideoZen, type TemaFundoMistico } from './fundo-video';
 import { obterImagemFundoZenAstrologia } from './imagem-fundo';
 import { escolherFechoNarracao } from './legenda';
@@ -119,8 +119,13 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
     opcoes.slotMusica,
   );
 
-  const hookTexto = sanitizarTextoPublico(opcoes.gancho ?? escolherGanchoEspecial(opcoes.id, opcoes.data));
-  const fechoTexto = sanitizarTextoPublico(opcoes.fecho ?? escolherFechoNarracao());
+  const gancho = opcoes.gancho
+    ? { texto: opcoes.gancho, tema: escolherGanchoEspecialComTema(opcoes.id, opcoes.data).tema }
+    : escolherGanchoEspecialComTema(opcoes.id, opcoes.data);
+  const hookTexto = sanitizarTextoPublico(gancho.texto);
+  const fechoTexto = sanitizarTextoPublico(
+    opcoes.fecho ?? escolherFechoNarracao(gancho.tema, undefined, opcoes.data),
+  );
   const segmentosLimpos = opcoes.segmentosEcra?.map(sanitizarTextoPublico);
   const corpoNarracao = segmentosLimpos?.length
     ? segmentosLimpos.join('. ')

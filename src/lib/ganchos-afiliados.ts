@@ -1,6 +1,7 @@
 /* eslint-disable @remotion/deterministic-randomness -- script Node apenas */
 import crypto from 'crypto';
 import { isLocaleUS } from './locale';
+import type { GanchoComTema } from './fechos-narracao';
 import { sanitizarTextoPublico } from './texto-publico';
 
 type GanchoFn = () => string;
@@ -59,11 +60,21 @@ function hashGancho(seed: string): number {
   return hash;
 }
 
-export function escolherGanchoAfiliados(data: string, contexto: string = 'afiliados'): string {
+export function escolherGanchoAfiliadosComTema(
+  data: string,
+  contexto: string = 'afiliados',
+): GanchoComTema {
   const pool = isLocaleUS() ? GANCHOS_AFILIADOS_EN : GANCHOS_AFILIADOS_PT;
   if (process.env.TESTE_LOCAL === '1') {
-    return sanitizarTextoPublico(pool[crypto.randomInt(0, pool.length)]());
+    return {
+      texto: sanitizarTextoPublico(pool[crypto.randomInt(0, pool.length)]()),
+      tema: 'financas',
+    };
   }
   const indice = hashGancho('gancho-afiliados-' + contexto + '-' + data) % pool.length;
-  return sanitizarTextoPublico(pool[indice]());
+  return { texto: sanitizarTextoPublico(pool[indice]()), tema: 'financas' };
+}
+
+export function escolherGanchoAfiliados(data: string, contexto: string = 'afiliados'): string {
+  return escolherGanchoAfiliadosComTema(data, contexto).texto;
 }
