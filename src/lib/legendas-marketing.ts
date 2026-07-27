@@ -29,16 +29,16 @@ export const HASHTAGS_MOTIVACIONAL_EN_INSTAGRAM =
   '#motivation #horoscope #astrology #sidusastro #spiritualreels #selfgrowth #reels';
 
 export const HASHTAGS_VIP_PT_TIKTOK =
-  '#vip #sidusastro #mapaastral #astrologia #fyp';
+  '#premium #sidusastro #mapaastral #astrologia #fyp';
 
 export const HASHTAGS_VIP_PT_INSTAGRAM =
-  '#vip #sidusastro #mapaastral #astrologiapt #gratis #reels #portugal';
+  '#premium #sidusastro #mapaastral #astrologiapt #gratis #reels #portugal';
 
 export const HASHTAGS_VIP_EN_TIKTOK =
-  '#vip #sidusastro #birthchart #astrology #fyp';
+  '#premium #sidusastro #birthchart #astrology #fyp';
 
 export const HASHTAGS_VIP_EN_INSTAGRAM =
-  '#vip #sidusastro #birthchart #astrology #free #spiritualreels #reels';
+  '#premium #sidusastro #birthchart #astrology #free #spiritualreels #reels';
 
 export const HASHTAGS_AFILIADOS_PT_TIKTOK =
   '#rendaextra #afiliados #sidusastro #fyp #astrologia';
@@ -78,7 +78,7 @@ export const CTA_AFILIADOS_EN =
 
 /** Palavras-chave para ManyChat / resposta manual — usar nas legendas Instagram */
 export const CTA_COMENTARIO_INSTAGRAM_PT =
-  '💬 Comenta MAPA (mapa grátis) ou VIP (acesso vitalício) - respondemos por DM.';
+  '💬 Comenta MAPA (mapa grátis) ou PREMIUM (acesso vitalício) - respondemos por DM.';
 
 export const CTA_COMENTARIO_INSTAGRAM_EN =
-  '💬 Comment MAP (free chart) or VIP (lifetime access) - we reply in DM.';
+  '💬 Comment MAP (free chart) or PREMIUM (lifetime access) - we reply in DM.';

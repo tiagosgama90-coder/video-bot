@@ -117,7 +117,7 @@ const GANCHOS_EGO_PT: GanchoViralFn[] = [
   (n) =>
     'Ascendente + Nodo Norte = missão de alma. ' +
     n +
-    ', se te doeu ao ouvir isto, é porque o mapa está certo. Comenta MAPA ou VIP 🚨',
+    ', se te doeu ao ouvir isto, é porque o mapa está certo. Comenta MAPA ou PREMIUM 🚨',
 ];
 
 const GANCHOS_FINANCAS_EN: GanchoViralFn[] = [

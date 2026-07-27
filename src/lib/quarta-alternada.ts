@@ -23,5 +23,5 @@ export function obterIdBaseQuarta(variante: VarianteQuarta): string {
 }
 
 export function rotuloVarianteQuarta(variante: VarianteQuarta): string {
-  return variante === 'vip' ? 'VIP por Divulgação' : 'Afiliados';
+  return variante === 'vip' ? 'Premium por Divulgação' : 'Afiliados';
 }

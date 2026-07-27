@@ -59,7 +59,7 @@ async function executar(): Promise<void> {
   });
 
   const tipo =
-    variante === 'vip' ? 'VIP por Divulgação' : 'Afiliados';
+    variante === 'vip' ? 'Premium por Divulgação' : 'Afiliados';
   console.log(
     process.env.SKIP_PUBLICAR === '1'
       ? '\n🏁 Vídeo ' + tipo + ' concluído em output/' + id + '.mp4 (sem publicar no Buffer).'

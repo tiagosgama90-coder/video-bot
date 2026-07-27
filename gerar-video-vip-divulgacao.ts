@@ -37,7 +37,7 @@ async function executar(): Promise<void> {
   const id = sufixoIdVideoEspecial(ID_BASE);
   const mercado = isLocaleUS() ? 'US (@sidusastro_en)' : 'PT';
 
-  console.log('✨ SidusAstro — VIP por Divulgação [' + mercado + ']');
+  console.log('✨ SidusAstro — Premium por Divulgação [' + mercado + ']');
   console.log('📅 Data: ' + data + ' · Dias automáticos: ' + nomeDiasVipDivulgacao());
   console.log('🏷️ Título no ecrã: ' + conteudo.titulo);
   conteudo.segmentosEcra.forEach((s, i) => console.log('   ' + (i + 1) + '. ' + s));
@@ -61,10 +61,10 @@ async function executar(): Promise<void> {
 
   console.log(
     process.env.SKIP_PUBLICAR === '1'
-      ? '\n🏁 Vídeo VIP concluído em output/' + id + '.mp4 (sem publicar no Buffer).'
+      ? '\n🏁 Vídeo Premium concluído em output/' + id + '.mp4 (sem publicar no Buffer).'
       : isLocaleUS()
-        ? '\n🏁 Vídeo VIP US concluído e enfileirado no TikTok @sidusastro_en!'
-        : '\n🏁 Vídeo VIP concluído e enfileirado no Buffer (Instagram + TikTok)!',
+        ? '\n🏁 Vídeo Premium US concluído e enfileirado no TikTok @sidusastro_en!'
+        : '\n🏁 Vídeo Premium concluído e enfileirado no Buffer (Instagram + TikTok)!',
   );
 }
 

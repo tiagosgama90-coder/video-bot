@@ -26,18 +26,18 @@ import { isLocaleUS } from './locale';
 import { obterVarianteQuarta, type VarianteQuarta } from './quarta-alternada';
 import { sanitizarTextoPublico } from './texto-publico';
 
-export const TITULO_VIP_DIVULGACAO = 'O TEU VIP VITALÍCIO';
-export const TITULO_VIP_DIVULGACAO_EN = 'YOUR LIFETIME VIP';
+export const TITULO_VIP_DIVULGACAO = 'O TEU PREMIUM VITALÍCIO';
+export const TITULO_VIP_DIVULGACAO_EN = 'YOUR LIFETIME PREMIUM';
 
 /** Texto no ecrã - curto e natural */
 export const SEGMENTOS_VIP_ECRA = [
-  'VIP vitalício? Mais simples do que pensas',
+  'Premium vitalício? Mais simples do que pensas',
   'Mapa astral + tarot + oráculo - só partilhares',
   'Marca @sidusastro → sidusastro.com/pt/divulgacao-vip',
 ];
 
 export const SEGMENTOS_VIP_ECRA_EN = [
-  'Lifetime VIP? Easier than you think',
+  'Lifetime Premium? Easier than you think',
   'Birth chart + tarot + oracle - just share',
   'Tag @sidusastro → sidusastro.com/en/divulgacao-vip',
 ];
@@ -47,16 +47,16 @@ export const TEXTO_VIP_FALADO =
   'Imagina teres o SidusAstro completo para sempre, só por partilhares o que já usas. ' +
   'Mapa astral, tarot ilimitado e oráculo sem restrições. ' +
   'Grava um vídeo curto, marca arroba sidusastro, e envia o pedido em sidusastro.com barra pt barra divulgacao-vip. ' +
-  'Em até quarenta e oito horas o VIP fica na tua conta.';
+  'Em até quarenta e oito horas o Premium fica na tua conta.';
 
 export const TEXTO_VIP_FALADO_EN =
   'Imagine getting full SidusAstro access forever, just by sharing what you already use. ' +
   'Birth chart, unlimited tarot and oracle without limits. ' +
   'Record a short video, tag at sidusastro, and submit at sidusastro.com slash en slash divulgacao-vip. ' +
-  'Lifetime VIP lands on your account within forty-eight hours.';
+  'Lifetime Premium lands on your account within forty-eight hours.';
 
 export const LEGENDA_VIP_TIKTOK =
-  'Ok, isto é real: podes ter VIP vitalício no SidusAstro só por partilhares ✨\n\n' +
+  'Ok, isto é real: podes ter Premium vitalício no SidusAstro só por partilhares ✨\n\n' +
   'Grava um vídeo com o mapa, tarot ou oráculo, marca @sidusastro e envia o pedido.\n\n' +
   'Resposta em até 48h 👇\n\n' +
   CTA_VIP_PT + '\n\n' +
@@ -64,7 +64,7 @@ export const LEGENDA_VIP_TIKTOK =
 
 export const LEGENDA_VIP_INSTAGRAM =
   'Se já amas o SidusAstro, isto pode interessar-te ✨\n\n' +
-  'Partilha um vídeo, marca @sidusastro e podes ficar com VIP vitalício - mapa astral, tarot e oráculo.\n\n' +
+  'Partilha um vídeo, marca @sidusastro e podes ficar com Premium vitalício - mapa astral, tarot e oráculo.\n\n' +
   'Resposta em até 48h 👇\n\n' +
   CTA_COMENTARIO_INSTAGRAM_PT +
   '\n\n' +
@@ -73,7 +73,7 @@ export const LEGENDA_VIP_INSTAGRAM =
   HASHTAGS_VIP_PT_INSTAGRAM;
 
 export const LEGENDA_VIP_TIKTOK_EN =
-  'Okay this is real: you can get lifetime VIP on SidusAstro just by sharing ✨\n\n' +
+  'Okay this is real: you can get lifetime Premium on SidusAstro just by sharing ✨\n\n' +
   'Post a short video with your chart, tarot or oracle, tag @sidusastro and submit.\n\n' +
   'Usually within 48 hours 👇\n\n' +
   CTA_VIP_EN + '\n\n' +
@@ -81,7 +81,7 @@ export const LEGENDA_VIP_TIKTOK_EN =
 
 export const LEGENDA_VIP_INSTAGRAM_EN =
   'If you already love SidusAstro, this one is for you ✨\n\n' +
-  'Share a video, tag @sidusastro and you can unlock lifetime VIP - birth chart, tarot and oracle.\n\n' +
+  'Share a video, tag @sidusastro and you can unlock lifetime Premium - birth chart, tarot and oracle.\n\n' +
   'Usually within 48 hours 👇\n\n' +
   CTA_COMENTARIO_INSTAGRAM_EN +
   '\n\n' +

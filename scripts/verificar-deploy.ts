@@ -106,7 +106,9 @@ exigirTexto('./gerar-video-quarta.ts', 'obterVarianteQuarta', 'Quarta: variante 
 exigirTexto('./gerar-video-quarta.ts', 'fundoZenAstrologia: true', 'Quarta: fundo zen Pinterest');
 exigirTexto('./src/lib/afiliados-dia.ts', 'fundoZenAstrologia: true', 'Afiliados: fundo zen Pinterest');
 exigirTexto('./gerar-video-quarta.ts', 'SLOT_MUSICA.VIP_DIVULGACAO_QUARTA', 'Quarta: slot música');
-exigirTexto('./src/lib/conteudo-especial.ts', "export const TITULO_VIP_DIVULGACAO = 'O TEU VIP VITALÍCIO'", 'VIP: título marketing');
+exigirTexto('./src/lib/conteudo-especial.ts', "export const TITULO_VIP_DIVULGACAO = 'O TEU PREMIUM VITALÍCIO'", 'Premium: título marketing');
+exigirTexto('./src/lib/conteudo-especial.ts', 'Premium vitalício', 'Premium: texto ecrã PT');
+exigirTexto('./src/lib/legendas-marketing.ts', '#premium #sidusastro', 'Premium: hashtags');
 exigirTexto('./src/lib/conteudo-especial.ts', 'obterConteudoAfiliados', 'Quarta: conteúdo afiliados');
 exigirFicheiro('./src/lib/legendas-marketing.ts');
 exigirTexto('./src/lib/legenda.ts', 'legendas-marketing', 'Diário: hashtags marketing');

@@ -74,7 +74,7 @@ export function exigirDiasVipDivulgacao(): void {
     console.log(
       '⏭️ Hoje é ' +
         nomeHoje +
-        ' — VIP divulgação só corre ' +
+        ' — Premium divulgação só corre ' +
         nomeDiasVipDivulgacao() +
         '. Nada a fazer.',
     );
