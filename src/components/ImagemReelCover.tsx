@@ -1,6 +1,6 @@
 import React from 'react';
 import { AbsoluteFill, Img, staticFile, useVideoConfig } from 'remotion';
-import { REEL_ALTURA, REEL_LARGURA } from '../lib/imagem-fundo';
+import { REEL_ALTURA, REEL_LARGURA } from '../lib/reel-dimensoes';
 
 function resolverSrcImagem(url: string): string {
   if (url.startsWith('http://') || url.startsWith('https://')) {

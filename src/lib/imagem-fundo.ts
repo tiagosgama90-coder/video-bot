@@ -37,14 +37,9 @@ export interface ImagemFundoGerada {
   modo: ModoPaletaImagem;
 }
 
-/** Pollinations gera nativamente 576×1024 (9:16) — depois upscale para 1080×1920 */
-export const REEL_GERACAO_LARGURA = 576;
-export const REEL_GERACAO_ALTURA = 1024;
+import { REEL_ALTURA, REEL_GERACAO_ALTURA, REEL_GERACAO_LARGURA, REEL_LARGURA, RATIO_REEL } from './reel-dimensoes';
 
-/** Dimensões finais do reel Instagram/TikTok (9:16) */
-export const REEL_LARGURA = 1080;
-export const REEL_ALTURA = 1920;
-const RATIO_REEL = REEL_LARGURA / REEL_ALTURA;
+export { REEL_ALTURA, REEL_GERACAO_ALTURA, REEL_GERACAO_LARGURA, REEL_LARGURA } from './reel-dimensoes';
 
 /** JPEG mínimo 1x1 (roxo escuro #08060e) — fallback local */
 const JPEG_MINIMO_BASE64 =
