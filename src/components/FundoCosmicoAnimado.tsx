@@ -61,22 +61,22 @@ export function FundoCosmicoAnimado({
         />
       </AbsoluteFill>
 
-      <GeometriaSagradaSuave seed={seed} />
-      <EstrelasAPassear />
-
       <AbsoluteFill
         style={{
           background:
-            'radial-gradient(ellipse 70% 50% at 50% 30%, transparent 0%, transparent 38%, rgba(0,0,0,0.35) 72%, rgba(0,0,0,0.75) 100%)',
+            'radial-gradient(ellipse 70% 50% at 50% 50%, transparent 0%, transparent 45%, rgba(0,0,0,0.22) 72%, rgba(0,0,0,0.55) 100%)',
           pointerEvents: 'none',
         }}
       />
       <AbsoluteFill
         style={{
-          background: `linear-gradient(180deg, ${PALETA_SIDUS.fundo}66 0%, transparent 18%, transparent 70%, ${PALETA_SIDUS.fundo}aa 100%)`,
+          background: `linear-gradient(180deg, ${PALETA_SIDUS.fundo}44 0%, transparent 18%, transparent 70%, ${PALETA_SIDUS.fundo}77 100%)`,
           pointerEvents: 'none',
         }}
       />
+
+      <GeometriaSagradaSuave seed={seed} />
+      <EstrelasAPassear />
     </AbsoluteFill>
   );
 }
