@@ -48,6 +48,9 @@ export function EstrelasAPassear(): React.ReactElement {
   );
 }
 
+/** Opacidade do desenho de geometria sagrada (visível mas não tapa o logo) */
+export const OPACIDADE_GEOMETRIA_SAGRADA = 0.52;
+
 export function GeometriaSagradaSuave({ seed }: { seed: number }): React.ReactElement {
   const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
@@ -59,7 +62,7 @@ export function GeometriaSagradaSuave({ seed }: { seed: number }): React.ReactEl
   return (
     <AbsoluteFill
       style={{
-        opacity: 0.11,
+        opacity: OPACIDADE_GEOMETRIA_SAGRADA,
         transform: `rotate(${rotacao}deg)`,
         transformOrigin: `${cx}px ${cy}px`,
         pointerEvents: 'none',
@@ -75,8 +78,8 @@ export function GeometriaSagradaSuave({ seed }: { seed: number }): React.ReactEl
             width: (tamanho * 0.84 - i * 72),
             height: (tamanho * 0.84 - i * 72),
             borderRadius: '50%',
-            border: `1px solid ${PALETA_SIDUS.destaque}`,
-            boxShadow: `0 0 24px ${PALETA_SIDUS.destaqueSombra}`,
+            border: `1.5px solid ${PALETA_SIDUS.destaque}`,
+            boxShadow: `0 0 32px ${PALETA_SIDUS.destaqueSombra}`,
           }}
         />
       ))}
@@ -142,8 +145,8 @@ function NebulosaSuave({ seed }: { seed: number }): React.ReactElement {
               height: 420 * b.s,
               transform: 'translate(-50%, -50%)',
               borderRadius: '50%',
-              background: `radial-gradient(circle, ${b.cor}99 0%, transparent 68%)`,
-              opacity: 0.35,
+              background: `radial-gradient(circle, ${b.cor}cc 0%, transparent 68%)`,
+              opacity: 0.55,
               filter: 'blur(50px)',
             }}
           />

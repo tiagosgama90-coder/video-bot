@@ -41,22 +41,6 @@ def remover_fundo(im: Image.Image) -> Image.Image:
     return Image.fromarray(arr.astype(np.uint8), 'RGBA')
 
 
-def recortar_margens(im: Image.Image, margem_px: int = 8) -> Image.Image:
-    """Remove espaço vazio em cima/baixo — mantém símbolo + SIDUS juntos como no original."""
-    bbox = im.getbbox()
-    if not bbox:
-        return im
-    x0, y0, x1, y1 = bbox
-    return im.crop((x0, y0, x1, y1)).copy()
-
-
-def upscale(im: Image.Image, lado: int) -> Image.Image:
-    ratio = lado / max(im.width, im.height)
-    novo_w = max(1, round(im.width * ratio))
-    novo_h = max(1, round(im.height * ratio))
-    return im.resize((novo_w, novo_h), Image.Resampling.LANCZOS)
-
-
 def main() -> None:
     PUBLIC.mkdir(parents=True, exist_ok=True)
     fonte = PUBLIC / 'logo-sidus-fonte-oficial.png'
@@ -66,9 +50,10 @@ def main() -> None:
     original = Image.open(fonte)
     print(f'   Fonte: {original.size[0]}×{original.size[1]}')
 
-    transparente = recortar_margens(remover_fundo(original))
-    vertical_hd = upscale(transparente, 2048)
-    vertical_4k = upscale(transparente, 4096)
+    transparente = remover_fundo(original)
+    # Manter canvas quadrado original — NÃO recortar (preserva posição símbolo + SIDUS)
+    vertical_hd = transparente.resize((2048, 2048), Image.Resampling.LANCZOS)
+    vertical_4k = transparente.resize((4096, 4096), Image.Resampling.LANCZOS)
 
     destino_vertical = PUBLIC / 'logo-sidus-vertical.png'
     destino_horizontal = PUBLIC / 'logo-sidus-horizontal.png'

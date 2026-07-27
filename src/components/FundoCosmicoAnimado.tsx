@@ -56,7 +56,7 @@ export function FundoCosmicoAnimado({
             objectFit: 'cover',
             objectPosition: 'center center',
             display: 'block',
-            filter: 'brightness(0.92) saturate(1.22) contrast(1.05)',
+            filter: 'brightness(1.08) saturate(1.35) contrast(1.08)',
           }}
         />
       </AbsoluteFill>
@@ -67,13 +67,13 @@ export function FundoCosmicoAnimado({
       <AbsoluteFill
         style={{
           background:
-            'radial-gradient(ellipse 70% 50% at 50% 30%, transparent 0%, transparent 38%, rgba(0,0,0,0.35) 72%, rgba(0,0,0,0.75) 100%)',
+            'radial-gradient(ellipse 75% 55% at 50% 38%, transparent 0%, transparent 50%, rgba(0,0,0,0.22) 78%, rgba(0,0,0,0.55) 100%)',
           pointerEvents: 'none',
         }}
       />
       <AbsoluteFill
         style={{
-          background: `linear-gradient(180deg, ${PALETA_SIDUS.fundo}66 0%, transparent 18%, transparent 70%, ${PALETA_SIDUS.fundo}aa 100%)`,
+          background: `linear-gradient(180deg, ${PALETA_SIDUS.fundo}44 0%, transparent 22%, transparent 72%, ${PALETA_SIDUS.fundo}77 100%)`,
           pointerEvents: 'none',
         }}
       />

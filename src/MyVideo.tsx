@@ -158,7 +158,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
 
       <AbsoluteFill
         style={{
-          padding: '80px 40px 540px',
+          padding: '88px 40px 480px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',

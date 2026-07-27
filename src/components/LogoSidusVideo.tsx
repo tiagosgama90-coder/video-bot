@@ -4,54 +4,31 @@ import { Img, staticFile } from 'remotion';
 const logoVertical = staticFile('logo-sidus-vertical.png');
 
 export interface LogoSidusVideoProps {
-  /** Largura em px — altura proporcional (logo vertical) */
+  /** Largura em px — altura proporcional (logo quadrado, símbolo + SIDUS intactos) */
   larguraPx?: number;
   opacidade?: number;
 }
 
 /**
- * Logo Sidus oficial (sidusastro.com) — PNG transparente HD, sem alterar o design.
+ * Logo Sidus oficial — PNG transparente, unidade completa sem alterar posições internas.
  */
 export function LogoSidusVideo({
   larguraPx = 480,
   opacidade = 1,
 }: LogoSidusVideoProps): React.ReactElement {
   return (
-    <div
+    <Img
+      src={logoVertical}
       style={{
-        position: 'relative',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
+        width: larguraPx,
+        height: 'auto',
+        maxWidth: '94%',
+        objectFit: 'contain',
+        display: 'block',
         opacity: opacidade,
-        zIndex: 12,
+        filter:
+          'drop-shadow(0 6px 24px rgba(0,0,0,0.75)) drop-shadow(0 0 20px rgba(243,204,99,0.45))',
       }}
-    >
-      {/* halo escuro — impede que estrelas/fundo "comam" o logo */}
-      <div
-        style={{
-          position: 'absolute',
-          width: larguraPx * 1.15,
-          height: larguraPx * 1.15,
-          borderRadius: '50%',
-          background:
-            'radial-gradient(circle, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.45) 45%, transparent 72%)',
-          filter: 'blur(8px)',
-        }}
-      />
-      <Img
-        src={logoVertical}
-        style={{
-          position: 'relative',
-          width: larguraPx,
-          height: 'auto',
-          maxWidth: '94%',
-          objectFit: 'contain',
-          display: 'block',
-          filter:
-            'drop-shadow(0 8px 32px rgba(0,0,0,0.85)) drop-shadow(0 0 28px rgba(243,204,99,0.55))',
-        }}
-      />
-    </div>
+    />
   );
 }
