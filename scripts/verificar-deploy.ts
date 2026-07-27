@@ -41,7 +41,7 @@ exigirTexto('./src/lib/ganchos-diario.ts', 'escolherGanchoDiario', 'Diário: gan
 exigirTexto('./src/lib/ganchos-diario.ts', 'GANCHOS_PSICOLOGIA_PT', 'Diário: ganchos psicológicos PT');
 exigirTexto('./src/lib/ganchos-diario.ts', 'paraste o scroll', 'Diário: gancho psicológico PT');
 exigirTexto('./src/lib/ganchos-diario.ts', 'you stopped scrolling', 'Diário: gancho psicológico EN');
-exigirTexto('./src/lib/legenda.ts', 'Visite o SidusAstro', 'Diário: fecho comercial SidusAstro');
+exigirTexto('./src/lib/legenda.ts', 'mapa astral grátis em sidusastro.com', 'Diário: fecho curiosidade + sidusastro.com');
 exigirTexto('./src/lib/paleta-visual.ts', 'PALETA_SIDUS', 'Visual: regra 60-30-10');
 exigirTexto('./config/sidusastro.json', 'estiloAzureMasculina', 'Voz: estilo masculino místico');
 exigirTexto('./config/sidusastro.json', 'estiloAzureFeminina', 'Voz: estilo feminino zen');

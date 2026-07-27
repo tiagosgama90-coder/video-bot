@@ -53,7 +53,7 @@ async function executar(): Promise<void> {
   console.log('🎬 A gerar vídeo de exemplo (fundo cósmico + logo Sidus)...');
 
   const textoNarracao =
-    'Peixes, a pessoa em quem pensaste agora aparece nos astros. A tua intuição está aguçada hoje. Visite o SidusAstro em sidusastro.com';
+    'Peixes, a pessoa em quem pensaste agora aparece nos astros. A tua intuição está aguçada hoje. O segredo que falta no vídeo está no teu mapa em sidusastro.com';
 
   gerarNarracaoPreview(textoNarracao, './public/narracao.mp3');
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3', 22);
@@ -67,7 +67,7 @@ async function executar(): Promise<void> {
     previsao:
       'A tua intuição está aguçada hoje. Confia nos sinais que o universo te envia e segue o teu coração com serenidade.',
     hookTexto: 'Peixes, a pessoa em quem pensaste agora aparece nos astros',
-    fechoTexto: 'Visite o SidusAstro — mapa astral completo grátis em sidusastro.com',
+    fechoTexto: 'Não pares aqui - descobre tudo no mapa astral grátis em sidusastro.com',
     frameInicioPrevisao: Math.round(30 * 3),
     frameInicioFecho: duracaoFrames - Math.round(30 * 4.8),
     fundoVideoSeed,
