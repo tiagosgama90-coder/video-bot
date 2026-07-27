@@ -15,7 +15,7 @@ import type { HoroscopoProps } from './types/horoscopo';
 
 export type { HoroscopoProps } from './types/horoscopo';
 
-const LOGO_SIDUS_LARGURA_PX = 480;
+const LOGO_SIDUS_LARGURA_PX = 260;
 
 function tamanhoFonteSigno(texto: string): number {
   if (texto.length > 28) {

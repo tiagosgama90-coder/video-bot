@@ -13,7 +13,7 @@ export interface LogoSidusVideoProps {
  * Logo Sidus oficial — PNG transparente, unidade completa sem alterar posições internas.
  */
 export function LogoSidusVideo({
-  larguraPx = 480,
+  larguraPx = 260,
   opacidade = 1,
 }: LogoSidusVideoProps): React.ReactElement {
   return (
