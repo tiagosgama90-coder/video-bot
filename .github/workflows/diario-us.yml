@@ -6,6 +6,12 @@ name: Horóscopo Diário US (sidusastro_en)
 # Slots Buffer: 09:00/13:30/19:00 NY — 3 vídeos/dia (ter/sáb: afiliados fila livre + 2 horóscopos).
 on:
   workflow_dispatch:
+    inputs:
+      forcar:
+        description: 'Forçar nova geração mesmo se já correu hoje'
+        required: false
+        default: false
+        type: boolean
   schedule:
     - cron: '30 11 * * *'  # ~07:30 America/New_York (EDT)
     - cron: '30 12 * * *'  # ~07:30 America/New_York (EST)
@@ -15,17 +21,22 @@ permissions:
   contents: read
 
 jobs:
-  evitar-duplicado-schedule:
-    if: github.event_name == 'schedule'
+  evitar-duplicado:
     runs-on: ubuntu-latest
     outputs:
       continuar: ${{ steps.decide.outputs.continuar }}
     steps:
-      - name: Saltar backup se o diário US já correu hoje
+      - name: Saltar se o diário US já correu hoje
         id: decide
         uses: actions/github-script@v7
         with:
           script: |
+            const forcar = context.payload.inputs?.forcar === true || context.payload.inputs?.forcar === 'true';
+            if (forcar) {
+              core.warning('Forçar activado — nova geração mesmo que já tenha corrido hoje.');
+              core.setOutput('continuar', 'true');
+              return;
+            }
             const hoje = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
             const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
               owner: context.repo.owner,
@@ -39,12 +50,12 @@ jobs:
             );
             core.setOutput('continuar', correu ? 'false' : 'true');
             if (correu) {
-              core.info('Diário US já correu hoje (' + hoje + ' NY) — backup schedule ignorado.');
+              core.info('Diário US já correu hoje (' + hoje + ' NY) — execução ignorada.');
             }
 
   gerar-e-publicar-us:
-    needs: evitar-duplicado-schedule
-    if: always() && (github.event_name != 'schedule' || needs.evitar-duplicado-schedule.outputs.continuar == 'true')
+    needs: evitar-duplicado
+    if: needs.evitar-duplicado.outputs.continuar == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 90
 

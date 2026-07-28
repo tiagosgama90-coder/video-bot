@@ -168,12 +168,14 @@ exigirTexto('./src/MyVideo.tsx', 'LogoSidusVideo', 'Vídeo: logo Sidus destacado
 
 exigirFicheiro('./.github/workflows/diario.yml');
 exigirTexto('./.github/workflows/diario.yml', 'workflow_dispatch', 'Diário: disparo externo');
-exigirTexto('./.github/workflows/diario.yml', 'evitar-duplicado-schedule', 'Diário PT: backup schedule com anti-duplicado');
+exigirTexto('./.github/workflows/diario.yml', 'evitar-duplicado', 'Diário PT: anti-duplicado');
+exigirTexto('./.github/workflows/diario-us.yml', 'evitar-duplicado', 'Diário US: anti-duplicado');
+exigirTexto('./src/lib/buffer.ts', 'getDownloadURL', 'Buffer: URL Firebase oficial');
+exigirTexto('./src/lib/buffer.ts', 'preservar', 'Buffer: preservar tokens ao re-upload');
 exigirTexto('./.github/workflows/diario.yml', "cron: '15 6 * * *'", 'Diário PT: cron backup verão Lisboa');
 
 exigirFicheiro('./.github/workflows/diario-us.yml');
 exigirTexto('./.github/workflows/diario-us.yml', 'workflow_dispatch', 'Diário US: disparo externo');
-exigirTexto('./.github/workflows/diario-us.yml', 'evitar-duplicado-schedule', 'Diário US: backup schedule com anti-duplicado');
 
 exigirFicheiro('./.github/workflows/monitor-crons.yml');
 exigirTexto('./.github/workflows/monitor-crons.yml', 'verificar-pt', 'Monitor: recuperação PT');

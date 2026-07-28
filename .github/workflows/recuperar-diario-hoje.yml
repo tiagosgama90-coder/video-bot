@@ -1,6 +1,6 @@
 name: Recuperar Horóscopo Diário (hoje)
 
-# Disparo único via push do ficheiro trigger — remove após recuperação.
+# Disparo único via push do ficheiro trigger — só corre se o diário ainda não correu hoje.
 on:
   push:
     branches: [main]
@@ -15,10 +15,25 @@ jobs:
   disparar-pt:
     runs-on: ubuntu-latest
     steps:
-      - name: Disparar Horóscopo Diário PT
+      - name: Disparar Horóscopo Diário PT (se em falta)
         uses: actions/github-script@v7
         with:
           script: |
+            const hoje = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Lisbon' });
+            const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'diario.yml',
+              status: 'success',
+              per_page: 20,
+            });
+            const correu = runs.some((r) =>
+              new Date(r.created_at).toLocaleDateString('en-CA', { timeZone: 'Europe/Lisbon' }) === hoje,
+            );
+            if (correu) {
+              core.info('Diário PT já correu hoje (' + hoje + ') — recuperação ignorada.');
+              return;
+            }
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -30,10 +45,25 @@ jobs:
   disparar-us:
     runs-on: ubuntu-latest
     steps:
-      - name: Disparar Horóscopo Diário US
+      - name: Disparar Horóscopo Diário US (se em falta)
         uses: actions/github-script@v7
         with:
           script: |
+            const hoje = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+            const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'diario-us.yml',
+              status: 'success',
+              per_page: 20,
+            });
+            const correu = runs.some((r) =>
+              new Date(r.created_at).toLocaleDateString('en-CA', { timeZone: 'America/New_York' }) === hoje,
+            );
+            if (correu) {
+              core.info('Diário US já correu hoje (' + hoje + ') — recuperação ignorada.');
+              return;
+            }
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
