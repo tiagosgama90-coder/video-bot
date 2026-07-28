@@ -11,7 +11,7 @@ import {
 } from './legendas-marketing';
 import { escolherGanchoDiario } from './ganchos-diario';
 import { ehGanchoViralLongo } from './ganchos-virais';
-import { escolherFechoNarracao, type TemaNarracao } from './fechos-narracao';
+import type { TemaNarracao } from './fechos-narracao';
 import { isLocaleUS } from './locale';
 import { obterNomeSigno, type SignoZodiaco } from './signos';
 import { sanitizarTextoPublico } from './texto-publico';

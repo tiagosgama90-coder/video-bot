@@ -27,3 +27,6 @@ jobs:
         run: npx ts-node scripts/verificar-deploy.ts
         env:
           GITHUB_SHA: ${{ github.sha }}
+
+      - name: Compilar TypeScript (scripts de produção)
+        run: npx tsc --noEmit

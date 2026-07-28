@@ -1,7 +1,8 @@
 import React from 'react';
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
 import { PALETA_SIDUS } from '../lib/paleta-visual';
-import { EstrelasRealistas, GeometriaCosmicaCentro } from './FundoCosmicoSidus';
+import { EstrelasRealistas } from './FundoCosmicoSidus';
+import { GeometriaCosmicaCentro } from './GeometriaCosmicaCentro';
 import { ImagemReelCover } from './ImagemReelCover';
 
 export interface FundoCosmicoAnimadoProps {
