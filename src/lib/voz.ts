@@ -32,9 +32,13 @@ function obterVozesAzure(): VozNeural[] {
     ];
   }
   return [
-    { id: cfg.voz.pt.femininaId, genero: 'feminina', origem: 'azure', lang: 'pt-PT' },
-    { id: cfg.voz.pt.masculinaId, genero: 'masculina', origem: 'azure', lang: 'pt-PT' },
+    { id: cfg.voz.pt.femininaId, genero: 'feminina', origem: 'azure', lang: 'pt-BR' },
+    { id: cfg.voz.pt.masculinaId, genero: 'masculina', origem: 'azure', lang: 'pt-BR' },
   ];
+}
+
+function ehLocalePortugues(lang: string): boolean {
+  return lang === 'pt-BR' || lang === 'pt-PT';
 }
 
 function escapeXml(texto: string): string {
@@ -76,7 +80,7 @@ function prepararTextoSsml(texto: string, comEnfase = true): string {
 
 function obterBlocoVoz(voz: VozNeural): ProsodiaLocale {
   const cfg = carregarConfigProjeto();
-  return voz.lang === 'pt-PT' ? cfg.voz.pt : cfg.voz.en;
+  return ehLocalePortugues(voz.lang) ? cfg.voz.pt : cfg.voz.en;
 }
 
 function obterProsodiaExpressiva(voz: VozNeural): { rate: string; pitch: string; volume: string } {

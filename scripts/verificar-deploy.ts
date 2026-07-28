@@ -151,7 +151,10 @@ exigirTexto('./gerar-video-quinta.ts', 'obterLegendasMotivacional(gancho', 'Quin
 exigirTexto('./gerar-video-segunda.ts', 'obterEtiquetaGanchoMotivacional', 'Segunda: etiqueta gancho ecrã');
 exigirTexto('./src/lib/fundo-video.ts', 'return true', 'Zen: fundo cósmico animado');
 
-exigirTexto('./config/sidusastro.json', '"femininaRate": "+4%"', 'Voz: prosódia feminina zen');
+exigirTexto('./config/sidusastro.json', 'pt-BR-FranciscaNeural', 'Voz PT: feminina BR zen');
+exigirTexto('./config/sidusastro.json', 'pt-BR-AntonioNeural', 'Voz PT: masculina BR zen');
+exigirTexto('./config/sidusastro.json', '"femininaRate": "-3%"', 'Voz: prosódia feminina zen BR');
+exigirTexto('./src/lib/voz.ts', "lang: 'pt-BR'", 'Voz: locale Azure pt-BR');
 exigirTexto('./src/lib/voz.ts', 'mstts:express-as', 'Voz: estilo Azure expressivo');
 exigirFicheiro('./src/lib/fundo-video.ts');
 exigirTexto('./src/lib/fundo-video.ts', 'mesa_tarot', 'Vídeo: tema mesa tarot');

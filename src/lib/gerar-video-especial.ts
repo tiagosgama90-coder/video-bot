@@ -138,7 +138,7 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
   };
   const textoNarracao = montarTextoNarracaoDiaria(partesNarracao);
 
-  console.log('🎙️ Narração especial (' + opcoes.generoVoz + ') [' + (isLocaleUS() ? 'en-US' : 'pt-PT') + ']');
+  console.log('🎙️ Narração especial (' + opcoes.generoVoz + ') [' + (isLocaleUS() ? 'en-US' : 'pt-BR') + ']');
   console.log('   Gancho → corpo → fecho (voz completa)');
   await gerarNarracao(textoNarracao, './public/narracao.mp3', opcoes.generoVoz);
 
