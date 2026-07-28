@@ -26,13 +26,13 @@ import { isLocaleUS } from './locale';
 import { obterVarianteQuarta, type VarianteQuarta } from './quarta-alternada';
 import { sanitizarTextoPublico } from './texto-publico';
 
-export const TITULO_VIP_DIVULGACAO = 'O TEU PREMIUM VITALÍCIO';
+export const TITULO_VIP_DIVULGACAO = 'SEU PREMIUM VITALÍCIO';
 export const TITULO_VIP_DIVULGACAO_EN = 'YOUR LIFETIME PREMIUM';
 
 /** Texto no ecrã - curto e natural */
 export const SEGMENTOS_VIP_ECRA = [
-  'Premium vitalício? Mais simples do que pensas',
-  'Mapa astral + tarot + oráculo - só partilhares',
+  'Premium vitalício? Mais simples do que você imagina',
+  'Mapa astral + tarot + oráculo - só compartilhar',
   'Marca @sidusastro → sidusastro.com/pt/divulgacao-vip',
 ];
 
@@ -44,10 +44,10 @@ export const SEGMENTOS_VIP_ECRA_EN = [
 
 /** Narração TTS curta (~25-30s) */
 export const TEXTO_VIP_FALADO =
-  'Imagina teres o SidusAstro completo para sempre, só por partilhares o que já usas. ' +
+  'Imagina ter o SidusAstro completo para sempre, só por compartilhar o que você já usa. ' +
   'Mapa astral, tarot ilimitado e oráculo sem restrições. ' +
-  'Grava um vídeo curto, marca arroba sidusastro, e envia o pedido em sidusastro.com barra pt barra divulgacao-vip. ' +
-  'Em até quarenta e oito horas o Premium fica na tua conta.';
+  'Grave um vídeo curto, marque arroba sidusastro, e envie o pedido em sidusastro.com barra pt barra divulgacao-vip. ' +
+  'Em até quarenta e oito horas o Premium fica na sua conta.';
 
 export const TEXTO_VIP_FALADO_EN =
   'Imagine getting full SidusAstro access forever, just by sharing what you already use. ' +
@@ -56,15 +56,15 @@ export const TEXTO_VIP_FALADO_EN =
   'Lifetime Premium lands on your account within forty-eight hours.';
 
 export const LEGENDA_VIP_TIKTOK =
-  'Ok, isto é real: podes ter Premium vitalício no SidusAstro só por partilhares ✨\n\n' +
-  'Grava um vídeo com o mapa, tarot ou oráculo, marca @sidusastro e envia o pedido.\n\n' +
+  'Ok, isso é real: você pode ter Premium vitalício no SidusAstro só por compartilhar ✨\n\n' +
+  'Grave um vídeo com o mapa, tarot ou oráculo, marque @sidusastro e envie o pedido.\n\n' +
   'Resposta em até 48h 👇\n\n' +
   CTA_VIP_PT + '\n\n' +
   HASHTAGS_VIP_PT_TIKTOK;
 
 export const LEGENDA_VIP_INSTAGRAM =
-  'Se já amas o SidusAstro, isto pode interessar-te ✨\n\n' +
-  'Partilha um vídeo, marca @sidusastro e podes ficar com Premium vitalício - mapa astral, tarot e oráculo.\n\n' +
+  'Se você já ama o SidusAstro, isso pode interessar ✨\n\n' +
+  'Compartilhe um vídeo, marque @sidusastro e você pode ficar com Premium vitalício - mapa astral, tarot e oráculo.\n\n' +
   'Resposta em até 48h 👇\n\n' +
   CTA_COMENTARIO_INSTAGRAM_PT +
   '\n\n' +
@@ -93,26 +93,26 @@ export const TITULO_AFILIADOS = 'GANHA COM O CÉU';
 export const TITULO_AFILIADOS_EN = 'EARN WITH THE STARS';
 
 export const TEXTO_AFILIADOS_ECRA =
-  'SidusAstro | Portal Místico. Descobre o teu Mapa Astral ou junta-te à equipa para ganhares 50% de comissão por cada venda! Acede abaixo 👇';
+  'SidusAstro | Portal Místico. Descubra seu Mapa Astral ou junte-se à equipe para ganhar 50% de comissão por cada venda! Acesse abaixo 👇';
 
 export const TEXTO_AFILIADOS_ECRA_EN =
   'SidusAstro | Mystic Portal. Get your birth chart or join our team and earn 50% commission on every sale! Link below 👇';
 
 export const TEXTO_AFILIADOS_FALADO =
-  'SidusAstro, Portal Místico. Descobre o teu Mapa Astral ou junta-te à equipa para ganhares cinquenta por cento de comissão por cada venda. Acede abaixo.';
+  'SidusAstro, Portal Místico. Descubra seu Mapa Astral ou junte-se à equipe para ganhar cinquenta por cento de comissão por cada venda. Acesse abaixo.';
 
 export const TEXTO_AFILIADOS_FALADO_EN =
   'SidusAstro, Mystic Portal. Get your birth chart or join our team and earn fifty percent commission on every sale. Link below.';
 
 export const LEGENDA_AFILIADOS_TIKTOK =
-  'Se gostas de astrologia e queres ganhar com isso, isto é para ti 💸\n\n' +
-  'No SidusAstro podes levar 50% de comissão por cada venda. Registo grátis, link teu, partilhas onde quiseres.\n\n' +
+  'Se você gosta de astrologia e quer ganhar com isso, isso é para você 💸\n\n' +
+  'No SidusAstro você pode levar 50% de comissão por cada venda. Cadastro grátis, link seu, compartilhe onde quiser.\n\n' +
   CTA_AFILIADOS_PT + '\n\n' +
   HASHTAGS_AFILIADOS_PT_TIKTOK;
 
 export const LEGENDA_AFILIADOS_INSTAGRAM =
-  'Gostas de falar de signos? Podes ganhar com isso ✨\n\n' +
-  'Programa de afiliados SidusAstro: 50% de comissão em cada venda. Sem taxas, sem investimento, link exclusivo teu.\n\n' +
+  'Gosta de falar de signos? Você pode ganhar com isso ✨\n\n' +
+  'Programa de afiliados SidusAstro: 50% de comissão em cada venda. Sem taxas, sem investimento, link exclusivo seu.\n\n' +
   CTA_COMENTARIO_INSTAGRAM_PT +
   '\n\n' +
   CTA_AFILIADOS_PT +
@@ -135,56 +135,56 @@ export const LEGENDA_AFILIADOS_INSTAGRAM_EN =
   HASHTAGS_AFILIADOS_EN_INSTAGRAM;
 
 const FRASES_MOTIVACIONAIS = [
-  'Hoje não precisas de ter tudo resolvido. Basta dar um passo de cada vez, com calma e com confiança no teu caminho.',
-  'Às vezes o universo pede-te pausa, não pressa. Respira, observa e deixa que o dia te mostre o que realmente importa.',
-  'Não és a tua última dificuldade. És também tudo o que já superaste - e isso conta mais do que pensas.',
-  'A tua sensibilidade não é fraqueza. É a forma como sentes o mundo, e isso também é uma força.',
-  'Se hoje estiveres mais cansado, está tudo bem. Amanhã o céu continua lá, e tu também podes recomeçar.',
-  'Nem todos os dias brilham igual, e isso é normal. O teu valor não depende do teu melhor momento.',
-  'Confia no teu ritmo. Há dias para avançar e dias para cuidar de ti - os dois têm o seu lugar.',
-  'O que te move por dentro merece ser ouvido. Presta atenção aos teus sinais, eles guiam-te melhor do que a pressa.',
-  'Tu mereces gentileza, sobretudo da parte de quem te olha no espelho todas as manhãs.',
-  'Quando tudo parecer demasiado, volta ao simples: uma respiração, um gesto de carinho, um pequeno passo.',
-  'Não precisas de provar nada a ninguém hoje. Basta seres honesto contigo e fazer o melhor que conseguires.',
+  'Hoje você não precisa ter tudo resolvido. Basta dar um passo de cada vez, com calma e com confiança no seu caminho.',
+  'Às vezes o universo pede pausa, não pressa. Respire, observe e deixe que o dia mostre o que realmente importa.',
+  'Você não é a sua última dificuldade. Você é também tudo o que já superou - e isso conta mais do que imagina.',
+  'Sua sensibilidade não é fraqueza. É a forma como você sente o mundo, e isso também é uma força.',
+  'Se hoje você estiver mais cansado, está tudo bem. Amanhã o céu continua lá, e você também pode recomeçar.',
+  'Nem todos os dias brilham igual, e isso é normal. Seu valor não depende do seu melhor momento.',
+  'Confie no seu ritmo. Há dias para avançar e dias para cuidar de você - os dois têm o seu lugar.',
+  'O que te move por dentro merece ser ouvido. Preste atenção aos seus sinais, eles guiam melhor do que a pressa.',
+  'Você merece gentileza, sobretudo da parte de quem te olha no espelho todas as manhãs.',
+  'Quando tudo parecer demais, volte ao simples: uma respiração, um gesto de carinho, um pequeno passo.',
+  'Você não precisa provar nada a ninguém hoje. Basta ser honesto consigo e fazer o melhor que conseguir.',
   'Há beleza em recomeçar quantas vezes forem precisas. Cada manhã é uma nova página, não um julgamento.',
-  'O teu coração sabe mais do que imaginas. Quando duvidares, escolhe o que te deixa em paz.',
-  'Está tudo bem não estar bem. O importante é não ficares sozinho com isso - pede ajuda, fala, respira.',
-  'Tu és mais do que um dia difícil. És história, aprendizagem, coragem silenciosa e luz que ainda cresce.',
+  'Seu coração sabe mais do que imagina. Quando duvidar, escolha o que te deixa em paz.',
+  'Está tudo bem não estar bem. O importante é não ficar sozinho com isso - peça ajuda, fale, respire.',
+  'Você é mais do que um dia difícil. Você é história, aprendizado, coragem silenciosa e luz que ainda cresce.',
   'Nem tudo precisa de resposta hoje. Algumas coisas só precisam de tempo, presença e um pouco de fé.',
-  'Cuida de ti como cuidarias de alguém que amas. Isso também é força, não egoísmo.',
-  'O mundo não precisa que sejas perfeito. Precisa que sejas verdadeiro, e isso já basta.',
-  'Se hoje for um dia lento, usa-o para te ouvires. Às vezes a clareza chega quando paramos.',
-  'Tu já fizeste coisas difíceis antes, mesmo quando não acreditavas. Lembra-te disso agora.',
-  'A tua jornada é tua. Não precisa de parecer com a de mais ninguém para ser válida.',
+  'Cuide de você como cuidaria de alguém que ama. Isso também é força, não egoísmo.',
+  'O mundo não precisa que você seja perfeito. Precisa que você seja verdadeiro, e isso já basta.',
+  'Se hoje for um dia lento, use-o para se ouvir. Às vezes a clareza chega quando paramos.',
+  'Você já fez coisas difíceis antes, mesmo quando não acreditava. Lembre-se disso agora.',
+  'Sua jornada é sua. Não precisa parecer com a de mais ninguém para ser válida.',
   'Há esperança em cada pequeno gesto: uma mensagem, um sorriso, um passo fora da zona de conforto.',
-  'Não te peças menos do que mereces. E não te cobres mais do que hoje consegues dar.',
-  'O céu muda, a vida muda, e tu também podes mudar - sem deixar de seres quem és no essencial.',
-  'Quando o dia pesar, lembra-te: até a noite mais longa acaba. Tu também vais encontrar luz outra vez.',
-  'Ser gentil contigo hoje é um acto de coragem. Não subestimes isso.',
-  'Não estás atrasado. Estás no teu tempo, e o teu tempo também tem valor.',
-  'O que te inspira merece espaço. Protege o que te faz bem, mesmo que seja só um momento de silêncio.',
-  'Tu não precisas de carregar tudo sozinho. Partilhar o peso também é caminhar.',
+  'Não peça menos do que merece. E não cobre de si mais do que hoje consegue dar.',
+  'O céu muda, a vida muda, e você também pode mudar - sem deixar de ser quem é no essencial.',
+  'Quando o dia pesar, lembre-se: até a noite mais longa acaba. Você também vai encontrar luz outra vez.',
+  'Ser gentil consigo hoje é um ato de coragem. Não subestime isso.',
+  'Você não está atrasado. Está no seu tempo, e seu tempo também tem valor.',
+  'O que te inspira merece espaço. Proteja o que te faz bem, mesmo que seja só um momento de silêncio.',
+  'Você não precisa carregar tudo sozinho. Compartilhar o peso também é caminhar.',
   'Hoje pode ser um bom dia para escolher o que te faz bem, mesmo que seja algo pequeno.',
-  'A tua presença no mundo importa, mesmo nos dias em que te sentes pequeno.',
+  'Sua presença no mundo importa, mesmo nos dias em que você se sente pequeno.',
   'Às vezes o melhor plano é descansar, reorganizar e voltar com mais calma amanhã.',
-  'Não confundas calma com desistência. Às vezes calma é exactamente o que te vai salvar.',
-  'Tu és capaz de dias bonitos e de dias duros. Os dois fazem parte de quem estás a construir.',
-  'Se precisares de um sinal hoje, fica com este: continua. Suavemente, mas continua.',
-  'Há futuro em ti que ainda não viste. Dá tempo ao tempo sem deixar de te mover.',
-  'O teu esforço silencioso também conta. Nem tudo precisa de ser visto para ser real.',
-  'Escolhe hoje uma coisa que te traga paz. Só uma já pode mudar o tom do dia.',
-  'Tu mereces dias mais leves. E podes começar por seres mais leve contigo.',
-  'Não te compares com o highlight de ninguém. A tua vida real também merece cuidado.',
-  'Quando tiveres medo, não precisas de o vencer de uma vez. Podes caminhar com ele, devagar.',
-  'Há força em pedir tempo, em dizer não, em escolher o que faz sentido para ti.',
-  'O universo não te pede perfeição. Pede presença, honestidade e um coração aberto.',
-  'Se hoje fizer sol por dentro, aproveita. Se não fizer, cria um raio de luz pequeno.',
-  'Tu és mais resiliente do que o teu medo te diz. Já o provaste antes.',
-  'Deixa que hoje seja suficiente. Não precisa de ser extraordinário para ter valor.',
-  'A tua história ainda está a ser escrita. Este capítulo também pode ser bonito.',
-  'Confia: há dias melhores a caminho, e tu estás a aprender o que precisas para os receber.',
-  'No fim, o que fica é como te trataste a ti e aos outros. Hoje, escolhe gentileza.',
-  'Respira. Estás aqui. E isso, por si só, já é um começo.',
+  'Não confunda calma com desistência. Às vezes calma é exatamente o que vai te salvar.',
+  'Você é capaz de dias bonitos e de dias duros. Os dois fazem parte de quem você está construindo.',
+  'Se precisar de um sinal hoje, fique com este: continue. Suavemente, mas continue.',
+  'Há futuro em você que ainda não viu. Dê tempo ao tempo sem deixar de se mover.',
+  'Seu esforço silencioso também conta. Nem tudo precisa ser visto para ser real.',
+  'Escolha hoje uma coisa que te traga paz. Só uma já pode mudar o tom do dia.',
+  'Você merece dias mais leves. E pode começar por ser mais leve consigo.',
+  'Não se compare com o highlight de ninguém. Sua vida real também merece cuidado.',
+  'Quando tiver medo, não precisa vencê-lo de uma vez. Pode caminhar com ele, devagar.',
+  'Há força em pedir tempo, em dizer não, em escolher o que faz sentido para você.',
+  'O universo não pede perfeição. Pede presença, honestidade e um coração aberto.',
+  'Se hoje fizer sol por dentro, aproveite. Se não fizer, crie um raio de luz pequeno.',
+  'Você é mais resiliente do que seu medo diz. Já provou isso antes.',
+  'Deixe que hoje seja suficiente. Não precisa ser extraordinário para ter valor.',
+  'Sua história ainda está sendo escrita. Este capítulo também pode ser bonito.',
+  'Confie: há dias melhores a caminho, e você está aprendendo o que precisa para recebê-los.',
+  'No fim, o que fica é como você se tratou e tratou os outros. Hoje, escolha gentileza.',
+  'Respire. Você está aqui. E isso, por si só, já é um começo.',
 ];
 
 const FRASES_MOTIVACIONAIS_EN = [
@@ -263,11 +263,11 @@ export function escolherFraseMotivacional(
 
 const ETIQUETAS_GANCHO_MOTIVACIONAL_PT = [
   'PARA QUEM PAROU O SCROLL',
-  'ISTO É PARA TI',
-  'O CÉU MANDOU ISTO',
+  'ISSO É PRA VOCÊ',
+  'O CÉU MANDOU ISSO',
   'NÃO É COINCIDÊNCIA',
-  'LÊ COM ATENÇÃO',
-  'GUARDA ESTE REEL',
+  'LEIA COM ATENÇÃO',
+  'SALVE ESTE REEL',
   'PARA QUEM PRECISAVA',
   'O UNIVERSO FALA',
 ] as const;
@@ -304,7 +304,7 @@ function prefixoUrgenciaMotivacionalInstagram(gancho: string): string {
   }
   return isLocaleUS()
     ? '🚨 URGENT - read the full caption!\n\n'
-    : '🚨 URGENTE - lê a legenda completa!\n\n';
+    : '🚨 URGENTE - leia a legenda completa!\n\n';
 }
 
 export function obterLegendasMotivacional(
@@ -432,8 +432,8 @@ export function obterConteudoQuarta(data: string): {
 }
 
 export const LEGENDA_MOTIVACIONAL_TIKTOK =
-  'Precisava disto hoje, talvez tu também ✨\n\n' +
-  'Guarda para quando precisares.\n\n' +
+  'Precisava disso hoje, talvez você também ✨\n\n' +
+  'Salve para quando precisar.\n\n' +
   CTA_MOTIVACIONAL_PT + '\n\n' +
   HASHTAGS_MOTIVACIONAL_PT_TIKTOK;
 
@@ -445,7 +445,7 @@ export const LEGENDA_MOTIVACIONAL_TIKTOK_EN =
 
 export const LEGENDA_MOTIVACIONAL_INSTAGRAM =
   'Uma lembrança rápida para quem precisa hoje ✨\n\n' +
-  'Guarda este reel. O teu mapa astral tem respostas que ainda não descobriste. 🔮\n\n' +
+  'Salve este reel. Seu mapa astral tem respostas que você ainda não descobriu. 🔮\n\n' +
   CTA_MOTIVACIONAL_PT + '\n\n' +
   HASHTAGS_MOTIVACIONAL_PT_INSTAGRAM;
 

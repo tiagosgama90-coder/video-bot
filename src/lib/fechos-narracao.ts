@@ -11,11 +11,11 @@ export interface GanchoComTema {
 }
 
 const FECHOS_FINANCAS_PT = [
-  'A janela financeira que falámos está no teu mapa grátis em sidusastro.com',
-  'O bloqueio de dinheiro tem saída no mapa natal - vê em sidusastro.com',
-  'O trânsito de rendimento continua detalhado no teu mapa em sidusastro.com',
-  'Ninguém te mostra a casa do dinheiro nas apps - mapa completo em sidusastro.com',
-  'A área financeira que mencionámos abre-se no mapa astral grátis em sidusastro.com',
+  'A janela financeira que falamos está no seu mapa grátis em sidusastro.com',
+  'O bloqueio de dinheiro tem saída no mapa natal - veja em sidusastro.com',
+  'O trânsito de renda continua detalhado no seu mapa em sidusastro.com',
+  'Ninguém mostra a casa do dinheiro nos apps - mapa completo em sidusastro.com',
+  'A área financeira que mencionamos abre no mapa astral grátis em sidusastro.com',
 ] as const;
 
 const FECHOS_FINANCAS_EN = [
@@ -27,11 +27,11 @@ const FECHOS_FINANCAS_EN = [
 ] as const;
 
 const FECHOS_AMOR_PT = [
-  'Descobre já a afinidade do teu parceiro com o teu em sidusastro.com',
-  'A Casa da Vénus no teu mapa explica o padrão - sidusastro.com grátis',
-  'Se a relação te consome ou a traição te ronda, o mapa em sidusastro.com esclarece',
+  'Descubra já a afinidade do seu parceiro com a sua em sidusastro.com',
+  'A Casa da Vênus no seu mapa explica o padrão - sidusastro.com grátis',
+  'Se a relação consome você ou a traição ronda, o mapa em sidusastro.com esclarece',
   'A compatibilidade real do casal está no mapa em sidusastro.com - grátis',
-  'O que a conversa não diz, o mapa de sinastria mostra em sidusastro.com',
+  'O que a conversa não diz, a sinastria mostra em sidusastro.com',
 ] as const;
 
 const FECHOS_AMOR_EN = [
@@ -43,11 +43,11 @@ const FECHOS_AMOR_EN = [
 ] as const;
 
 const FECHOS_EGO_PT = [
-  'A tua missão de vida está no mapa natal grátis em sidusastro.com',
-  'O propósito que evitas há anos aparece no teu mapa em sidusastro.com',
-  'O que o universo te pede hoje está escrito no teu mapa em sidusastro.com',
+  'Sua missão de vida está no mapa natal grátis em sidusastro.com',
+  'O propósito que você evita há anos aparece no seu mapa em sidusastro.com',
+  'O que o universo pede hoje está escrito no seu mapa em sidusastro.com',
   'Ascendente e Nodo Norte explicados no mapa grátis em sidusastro.com',
-  'Nasceste para mais - o mapa natal confirma em sidusastro.com',
+  'Você nasceu para mais - o mapa natal confirma em sidusastro.com',
 ] as const;
 
 const FECHOS_EGO_EN = [
@@ -59,11 +59,11 @@ const FECHOS_EGO_EN = [
 ] as const;
 
 const FECHOS_DEPRESSAO_PT = [
-  'Não és fraco - o teu mapa explica o que sentes em sidusastro.com',
+  'Você não é fraco - seu mapa explica o que sente em sidusastro.com',
   'O que pesa hoje tem resposta no mapa astral grátis em sidusastro.com',
-  'A fase pesada que vives tem nome no teu mapa em sidusastro.com',
+  'A fase pesada que você vive tem nome no seu mapa em sidusastro.com',
   'O que a mente não descansa, o mapa traduz em sidusastro.com - grátis',
-  'Não estás sozinho - o teu mapa mostra o porquê em sidusastro.com',
+  'Você não está sozinho - seu mapa mostra o porquê em sidusastro.com',
 ] as const;
 
 const FECHOS_DEPRESSAO_EN = [
@@ -75,14 +75,14 @@ const FECHOS_DEPRESSAO_EN = [
 ] as const;
 
 const FECHOS_GERAL_PT = [
-  'Ninguém te mostra isto nas apps grátis - mapa astral completo em sidusastro.com',
-  'O segredo que falta no vídeo está no teu mapa em sidusastro.com',
-  'Não pares aqui - descobre tudo no mapa astral grátis em sidusastro.com',
-  'A verdade completa do teu dia está em sidusastro.com',
-  'Mapa astral grátis em sidusastro.com - o que lá está não está nas apps',
-  'O que vais ler a seguir no site muda tudo - sidusastro.com',
-  'Última peça do puzzle: mapa astral grátis em sidusastro.com',
-  'Parece mentira, mas o teu mapa astral grátis está em sidusastro.com',
+  'Ninguém mostra isso nos apps grátis - mapa astral completo em sidusastro.com',
+  'O segredo que falta no vídeo está no seu mapa em sidusastro.com',
+  'Não pare aqui - descubra tudo no mapa astral grátis em sidusastro.com',
+  'A verdade completa do seu dia está em sidusastro.com',
+  'Mapa astral grátis em sidusastro.com - o que tem lá não está nos apps',
+  'O que você vai ler no site muda tudo - sidusastro.com',
+  'Última peça do quebra-cabeça: mapa astral grátis em sidusastro.com',
+  'Parece mentira, mas seu mapa astral grátis está em sidusastro.com',
 ] as const;
 
 const FECHOS_GERAL_EN = [

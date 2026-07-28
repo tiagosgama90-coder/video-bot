@@ -42,57 +42,57 @@ type GanchoViralFn = (nomeSigno: string, signo: SignoZodiaco) => string;
 const GANCHOS_FINANCAS_PT: GanchoViralFn[] = [
   (n, s) =>
     SIGNOS_FINANCAS.includes(s)
-      ? 'Se és ' +
+      ? 'Se você é ' +
         n +
         ' (ou ascendente ' +
         n +
-        '): tens um trânsito astrológico raro a começar amanhã que pode desbloquear a tua área financeira. Só tens de saber onde olhar. Lê a legenda urgente 🚨'
-      : 'Se o teu signo ou ascendente é Touro, Capricórnio, Escorpião ou Virgem: tens um trânsito raro a começar amanhã que desbloqueia dinheiro. ' +
+        '): tem um trânsito astrológico raro começando amanhã que pode desbloquear sua área financeira. Só precisa saber onde olhar. Leia a legenda urgente 🚨'
+      : 'Se seu signo ou ascendente é Touro, Capricórnio, Escorpião ou Virgem: tem um trânsito raro amanhã que desbloqueia dinheiro. ' +
         n +
-        ', o teu mapa diz onde olhar. Legenda urgente 🚨',
+        ', seu mapa mostra onde olhar. Legenda urgente 🚨',
   (n) =>
     n +
-    ', para de ignorar os sinais: Júpiter e Vénus estão a abrir uma janela financeira entre hoje e os próximos 7 dias. Quem tem mapa astral vê o ponto exacto. Comenta MAPA 🚨',
+    ', pare de ignorar os sinais: Júpiter e Vênus estão abrindo uma janela financeira nos próximos 7 dias. Quem tem mapa astral vê o ponto exato. Comenta MAPA 🚨',
   (n) =>
-    'Aviso para ' +
+    'Atenção ' +
     n +
-    ' e para quem tem Sol em Touro, Capricórnio, Escorpião ou Virgem: o céu está a reorganizar a tua carreira e rendimento. Isto não volta tão cedo. Lê a legenda 🚨',
+    ' e quem tem Sol em Touro, Capricórnio, Escorpião ou Virgem: o céu está reorganizando sua carreira e renda. Isso não volta tão cedo. Leia a legenda 🚨',
   (n) =>
     n +
-    ', se sentes que o dinheiro trava sempre no mesmo sítio, não é azar - é um trânsito que termina em breve. O mapa natal mostra a saída. Urgente 🚨',
+    ', se sente que o dinheiro trava sempre no mesmo lugar, não é azar - é um trânsito que termina em breve. O mapa natal mostra a saída em sidusastro.com 🚨',
   (n) =>
     'Trânsito financeiro raro para ' +
     n +
-    ': a partir de amanhã, Saturno deixa de bloquear uma casa que governa rendimento. Só quem sabe o ascendente aproveita. Legenda 🚨',
+    ': a partir de amanhã, Saturno deixa de bloquear a casa da renda. Só quem sabe o ascendente aproveita. Legenda 🚨',
 ];
 
 const GANCHOS_AMOR_PT: GanchoViralFn[] = [
   () =>
-    'Diz-me em que Casa tens a tua Vénus e eu digo-te exactamente por que razão os teus relacionamentos dão sempre errado ou parecem travar no mesmo sítio.',
+    'Me diz em qual Casa está sua Vênus e eu te digo exatamente por que seus relacionamentos travam no mesmo lugar.',
   (n) =>
     n +
-    ', a Casa da tua Vénus explica porque repetiste a mesma história amorosa. Não é coincidência - é padrão no mapa. Comenta MAPA para saberes qual é 🚨',
+    ', a Casa da sua Vênus explica por que você repetiu a mesma história amorosa. Não é coincidência - é padrão no mapa. Comenta MAPA 🚨',
   (n) =>
-    'Se és ' +
+    'Se você é ' +
     n +
-    ' e ainda não sabes onde está a tua Vénus natal, estás a namorar no escuro. Uma casa errada = sempre o mesmo bloqueio. Legenda urgente 🚨',
+    ' e ainda não sabe onde está sua Vênus natal, está namorando no escuro. Legenda urgente 🚨',
   () =>
-    'Por que é que atraís sempre o mesmo tipo de pessoa? A resposta está na Casa de Vénus + aspectos a Marte. Quem comenta MAPA recebe o caminho.',
+    'Por que você atrai sempre o mesmo tipo de pessoa? A resposta está na Casa de Vênus e Marte. Comenta MAPA 🚨',
   (n) =>
     n +
-    ', o teu coração não está partido - o teu mapa está a pedir um ajuste na Casa 7. Relacionamentos mudam quando vês isto. Urgente 🚨',
+    ', seu coração não está partido - seu mapa pede ajuste na Casa 7. Relacionamentos mudam quando você vê isso. Urgente 🚨',
   () =>
-    'Descobre já a afinidade do teu parceiro com o teu em sidusastro.com - o mapa mostra o que a conversa não diz. Comenta MAPA 🚨',
+    'Descubra já a afinidade do seu parceiro com a sua em sidusastro.com - o mapa mostra o que a conversa não diz. Comenta MAPA 🚨',
   (n) =>
     n +
-    ', se sentes que te traem em silêncio, a Casa 7 e Marte no teu mapa contam a verdade. Legenda urgente 🚨',
+    ', se sente que te traem em silêncio, a Casa 7 e Marte no seu mapa contam a verdade. Legenda urgente 🚨',
   (n) =>
     n +
-    ': traição não é sempre óbvia - Vénus e Plutão no teu mapa revelam quem joga a dois jogos. sidusastro.com 🚨',
+    ': traição nem sempre é óbvia - Vênus e Plutão no seu mapa revelam quem joga dos dois lados. sidusastro.com 🚨',
   (n) =>
-    'Relacionamento a travar, ' +
+    'Relacionamento travando, ' +
     n +
-    '? A compatibilidade real do casal está no mapa de sinastria em sidusastro.com - grátis 🚨',
+    '? A compatibilidade real do casal está na sinastria grátis em sidusastro.com 🚨',
 ];
 
 const GANCHOS_EGO_PT: GanchoViralFn[] = [
@@ -100,24 +100,24 @@ const GANCHOS_EGO_PT: GanchoViralFn[] = [
     SIGNOS_EGO.includes(s)
       ? 'Aviso astrológico para quem tem Ascendente em ' +
         n +
-        ': o universo cansou-se de te ver a ignorar a tua verdadeira missão de vida. O teu mapa natal avisa-te disto todos os dias...'
-      : 'Aviso para Ascendente em Leão, Carneiro, Gémeos ou Sagitário: o universo cansou-se de te ver a ignorar a tua missão. ' +
+        ': o universo cansou de ver você ignorar sua verdadeira missão de vida. Seu mapa natal avisa isso todo dia...'
+      : 'Aviso para Ascendente em Leão, Áries, Gêmeos ou Sagitário: o universo cansou de ver você ignorar sua missão. ' +
         n +
-        ', o teu Sol também fala disto. Legenda 🚨',
+        ', seu Sol também fala disso. Legenda 🚨',
   (n) =>
     n +
-    ', não é drama - é alerta: Plutão está a pressionar quem foge do propósito. O mapa natal mostra o que evitas há anos. Comenta MAPA 🚨',
+    ', não é drama - é alerta: Plutão está pressionando quem foge do propósito. O mapa natal mostra o que você evita há anos. Comenta MAPA 🚨',
   (n) =>
-    'Se és ' +
+    'Se você é ' +
     n +
-    ' e sentes que nasceste para mais mas travas no meio, o ascendente + Meio-Céu explicam o porquê. Isto é para ti. Urgente 🚨',
+    ' e sente que nasceu para mais mas trava no meio, ascendente e Meio-Céu explicam o porquê. Isso é para você. Urgente 🚨',
   (n) =>
     n +
-    ': o universo não te manda sinais por acaso. Ignorar a missão de vida custa caro em 2026. O teu mapa já avisou - vês ou não vês?',
+    ': o universo não manda sinais por acaso. Ignorar a missão de vida custa caro em 2026. Seu mapa já avisou - você vê ou não vê?',
   (n) =>
     'Ascendente + Nodo Norte = missão de alma. ' +
     n +
-    ', se te doeu ao ouvir isto, é porque o mapa está certo. Comenta MAPA ou PREMIUM 🚨',
+    ', se doeu ouvir isso, é porque o mapa está certo. Comenta MAPA ou PREMIUM 🚨',
 ];
 
 const GANCHOS_FINANCAS_EN: GanchoViralFn[] = [

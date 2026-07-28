@@ -36,7 +36,7 @@ function gerarCorpoLegenda(previsao: string, hook: string): string {
   const resumo = limpa.length > 95 ? limpa.slice(0, 92).trim() + '...' : limpa;
   const linhaCta = isLocaleUS()
     ? 'The full chart is free - link in bio (sidusastro.com/en)'
-    : 'Mapa astral completo grátis - link na bio (sidusastro.com)';
+    : 'Mapa astral, tarot e vidente grátis - link na bio (sidusastro.com)';
   return sanitizarTextoPublico(hook + '\n\n' + resumo + '\n\n' + linhaCta);
 }
 
@@ -54,7 +54,7 @@ function prefixoUrgenciaInstagram(hook: string): string {
   }
   return isLocaleUS()
     ? '🚨 URGENT - read the full caption!\n\n'
-    : '🚨 URGENTE - lê a legenda completa!\n\n';
+    : '🚨 URGENTE - leia a legenda completa!\n\n';
 }
 
 function sufixoInstagram(signo: SignoZodiaco, hook: string): string {
