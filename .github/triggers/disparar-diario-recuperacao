@@ -1,2 +1,1 @@
-Recuperação manual após falha de 2026-07-16 (verificar-deploy desactualizado).
-Remove este ficheiro e recuperar-diario-hoje.yml após os workflows diários concluírem.
+Recuperação manual 2026-07-28 — fix TS6133 legenda.ts bloqueava gerar-e-publicar.ts no CI.
