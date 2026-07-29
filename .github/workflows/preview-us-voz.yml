@@ -46,12 +46,7 @@ jobs:
         env:
           AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
           AZURE_SPEECH_REGION: northeurope
-
-      - name: Upload previews
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: preview-us-voz-diario
-          path: output/preview-us-leo-*.mp4
-          retention-days: 7
-          if-no-files-found: warn
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+          STORAGE_PROVIDER: cloudinary

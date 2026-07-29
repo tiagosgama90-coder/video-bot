@@ -30,6 +30,9 @@ const DATA = '2026-07-29';
 const SIGNO: SignoZodiaco = 'leao';
 const ARTEFACTOS = '/opt/cursor/artifacts';
 
+const PREVISAO_EXEMPLO =
+  'Today your creative energy peaks at midday. Trust your instincts in love and let conversations flow naturally.';
+
 function aguardar(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -54,9 +57,6 @@ async function narrarComRetry(
   }
   throw ultimoErro;
 }
-
-const PREVISAO_EXEMPLO =
-  'Today your creative energy peaks at midday. Trust your instincts in love and let conversations flow naturally.';
 
 function garantirPastas(): void {
   for (const pasta of ['./public', './output', ARTEFACTOS]) {
@@ -141,6 +141,19 @@ async function gerarPreview(genero: 'feminina' | 'masculina'): Promise<string> {
   });
 }
 
+async function publicarPreviewsOnline(caminhos: string[]): Promise<void> {
+  if (!process.env.CLOUDINARY_CLOUD_NAME?.trim()) {
+    console.log('ℹ️ Cloudinary não configurado — previews só em output/ local.');
+    return;
+  }
+  const { uploadVideoPublico } = await import('../src/lib/storage-video');
+  for (const caminho of caminhos) {
+    const id = path.basename(caminho, '.mp4');
+    const url = await uploadVideoPublico(caminho, id, DATA, 'previews-us');
+    console.log('\n🔗 Preview online (' + id + '):\n   ' + url);
+  }
+}
+
 async function executar(): Promise<void> {
   garantirPastas();
   console.log('🎬 A gerar previews US (Leo) — Ava feminina + Andrew masculina...');
@@ -161,6 +174,7 @@ async function executar(): Promise<void> {
 
   console.log('\n✅ Previews US prontos (' + gerados.length + '/2):');
   gerados.forEach((caminho) => console.log('   ' + caminho));
+  await publicarPreviewsOnline(gerados);
 }
 
 executar().catch((erro) => {
