@@ -15,6 +15,12 @@ async function verificar(): Promise<void> {
     'AZURE_SPEECH_REGION',
   ];
 
+  const cloudinary = [
+    'CLOUDINARY_CLOUD_NAME',
+    'CLOUDINARY_API_KEY',
+    'CLOUDINARY_API_SECRET',
+  ];
+
   let ok = true;
 
   for (const nome of obrigatorios) {
@@ -26,6 +32,29 @@ async function verificar(): Promise<void> {
       const preview = nome.includes('TOKEN') || nome.includes('KEY') ? '***' + valor.slice(-4) : valor;
       console.log('✅ ' + nome + ' = ' + preview);
     }
+  }
+
+  console.log('\n☁️ Storage de vídeos (Cloudinary — sem cartão Google):\n');
+
+  let cloudinaryOk = true;
+  for (const nome of cloudinary) {
+    const valor = process.env[nome];
+    if (!valor || valor.trim() === '') {
+      console.log('❌ ' + nome + ' — EM FALTA');
+      cloudinaryOk = false;
+      ok = false;
+    } else {
+      const preview =
+        nome === 'CLOUDINARY_CLOUD_NAME' ? valor : '***' + valor.slice(-4);
+      console.log('✅ ' + nome + ' = ' + preview);
+    }
+  }
+
+  if (!cloudinaryOk) {
+    console.log(
+      '\n⚠️ Sem Cloudinary o bot não consegue enviar vídeos ao Buffer (Firebase exige cartão).\n' +
+        '   Cria os 3 secrets no GitHub: CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET\n',
+    );
   }
 
   if (!process.env.BUFFER_ACCESS_TOKEN) {

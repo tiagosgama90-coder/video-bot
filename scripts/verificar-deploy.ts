@@ -173,6 +173,8 @@ exigirTexto('./.github/workflows/diario-us.yml', 'evitar-duplicado', 'Diário US
 exigirTexto('./src/lib/storage-video.ts', 'getDownloadURL', 'Buffer: URL Firebase oficial');
 exigirTexto('./src/lib/storage-video.ts', 'preservar', 'Buffer: preservar tokens ao re-upload');
 exigirTexto('./src/lib/storage-video.ts', 'verificarGravacaoStorage', 'Storage: verificação antes de renderizar');
+exigirTexto('./src/lib/storage-video.ts', 'usarCloudinaryComoPrincipal', 'Storage: Cloudinary sem cartão Google');
+exigirTexto('./verificar-config.ts', 'CLOUDINARY_API_KEY', 'Config: validar API key Cloudinary');
 exigirFicheiro('./scripts/verificar-storage.ts');
 exigirTexto('./.github/workflows/diario.yml', "cron: '15 6 * * *'", 'Diário PT: cron backup verão Lisboa');
 
