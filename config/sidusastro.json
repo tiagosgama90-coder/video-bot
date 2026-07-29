@@ -18,19 +18,19 @@
       "grauEstiloMasculina": 1.25
     },
     "en": {
-      "femininaId": "en-US-JennyNeural",
-      "masculinaId": "en-US-DavisNeural",
-      "feminina": "en-US-JennyNeural",
-      "masculina": "en-US-DavisNeural",
-      "femininaRate": "+5%",
-      "femininaPitch": "+12%",
-      "masculinaRate": "-4%",
-      "masculinaPitch": "-10%",
-      "volume": "+12.00%",
-      "estiloAzureFeminina": "cheerful",
+      "femininaId": "en-US-AvaNeural",
+      "masculinaId": "en-US-AndrewNeural",
+      "feminina": "en-US-AvaNeural",
+      "masculina": "en-US-AndrewNeural",
+      "femininaRate": "-8%",
+      "femininaPitch": "+2%",
+      "masculinaRate": "-10%",
+      "masculinaPitch": "-2%",
+      "volume": "+8.00%",
+      "estiloAzureFeminina": "calm",
       "estiloAzureMasculina": "calm",
-      "grauEstiloFeminina": 1.15,
-      "grauEstiloMasculina": 1.45
+      "grauEstiloFeminina": 1.08,
+      "grauEstiloMasculina": 1.05
     },
     "pausaFraseMs": 520,
     "pausaVirgulaMs": 260

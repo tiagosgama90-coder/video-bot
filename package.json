@@ -64,6 +64,7 @@
     "studio:fix": "powershell -ExecutionPolicy Bypass -File scripts/reparar-electron.ps1",
     "studio:build-exe": "powershell -ExecutionPolicy Bypass -File scripts/build-sidus-studio-exe.ps1",
     "testar-voz": "npx ts-node scripts/testar-voz.ts",
+    "preview-us-diario": "LOCALE=en-US npx ts-node scripts/gerar-preview-us-diario.ts",
     "setup-local": "powershell -ExecutionPolicy Bypass -File configurar-local.ps1"
   }
 }

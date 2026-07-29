@@ -115,8 +115,9 @@ function montarCorpoSsml(texto: string, voz: VozNeural, opcoes: OpcoesSsml = {})
   const comEnfase = opcoes.comEnfase !== false;
   const bloco = obterBlocoVoz(voz);
   const prosodia = obterProsodiaExpressiva(voz);
-  const conteudo = prepararTextoSsml(texto, comEnfase);
   const { estilo, grau } = obterEstiloAzure(voz, bloco);
+  const usarEnfase = comEnfase && estilo !== 'calm';
+  const conteudo = prepararTextoSsml(texto, usarEnfase);
 
   const prosody =
     "<prosody rate='" +
