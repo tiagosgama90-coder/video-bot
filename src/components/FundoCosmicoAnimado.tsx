@@ -9,6 +9,8 @@ export interface FundoCosmicoAnimadoProps {
   imagemFundoUrl: string;
   imagemFundoModo?: 'color' | 'mono';
   seed?: number;
+  signoIndice?: number;
+  varianteGeometria?: number;
 }
 
 function filtroPinterest(modo?: 'color' | 'mono'): string {
@@ -25,6 +27,8 @@ export function FundoCosmicoAnimado({
   imagemFundoUrl,
   imagemFundoModo,
   seed = 0,
+  signoIndice = 0,
+  varianteGeometria,
 }: FundoCosmicoAnimadoProps): React.ReactElement {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
@@ -66,7 +70,11 @@ export function FundoCosmicoAnimado({
         }}
       />
 
-      <GeometriaCosmicaCentro seed={seed} />
+      <GeometriaCosmicaCentro
+        seed={seed}
+        signoIndice={signoIndice}
+        varianteIndice={varianteGeometria}
+      />
       <EstrelasRealistas seed={seed} camada="frente" />
     </AbsoluteFill>
   );

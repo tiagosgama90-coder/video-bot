@@ -183,17 +183,27 @@ export function EstrelasAPassear(): React.ReactElement {
 
 export interface FundoCosmicoSidusProps {
   seed?: number;
+  signoIndice?: number;
+  varianteGeometria?: number;
 }
 
 /**
  * Fundo cosmos puro — nebulosas atrás, geometria simétrica no centro (baixa opacidade), estrelas realistas.
  */
-export function FundoCosmicoSidus({ seed = 0 }: FundoCosmicoSidusProps): React.ReactElement {
+export function FundoCosmicoSidus({
+  seed = 0,
+  signoIndice = 0,
+  varianteGeometria,
+}: FundoCosmicoSidusProps): React.ReactElement {
   return (
     <AbsoluteFill style={{ backgroundColor: '#000000', overflow: 'hidden' }}>
       <NebulosasCosmicas seed={seed} />
       <EstrelasRealistas seed={seed} camada="fundo" />
-      <GeometriaCosmicaCentro seed={seed} />
+      <GeometriaCosmicaCentro
+        seed={seed}
+        signoIndice={signoIndice}
+        varianteIndice={varianteGeometria}
+      />
       <EstrelasRealistas seed={seed} camada="frente" />
       <AbsoluteFill
         style={{

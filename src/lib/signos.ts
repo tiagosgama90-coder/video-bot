@@ -80,6 +80,11 @@ export const SIGNOS_ZODIACO = [
 
 export type SignoZodiaco = (typeof SIGNOS_ZODIACO)[number];
 
+export function obterIndiceSigno(signo: SignoZodiaco): number {
+  const indice = SIGNOS_ZODIACO.indexOf(signo);
+  return indice >= 0 ? indice : 0;
+}
+
 export const NOMES_SIGNOS: Record<SignoZodiaco, string> = {
   carneiro: 'Carneiro',
   touro: 'Touro',

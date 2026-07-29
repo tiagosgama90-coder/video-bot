@@ -15,6 +15,10 @@ export interface HoroscopoProps {
   fundoVideoTema?: TemaFundoMistico;
   /** Seed determinístico — varia partículas e cores dentro do tema */
   fundoVideoSeed?: number;
+  /** Chave interna do signo (carneiro, leao, …) — geometria zodiacal no centro */
+  signoChave?: string;
+  /** Índice da variante de geometria central (0–9) — por signo + data */
+  fundoVideoGeometria?: number;
   /** Imagem zen IA Pinterest em public/ — diário, motivacional e especiais */
   imagemFundoUrl?: string;
   /** Paleta da imagem IA — colorido ou monocromático (alternância automática) */

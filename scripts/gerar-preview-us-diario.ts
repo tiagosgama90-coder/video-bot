@@ -12,7 +12,7 @@ dotenv.config();
 
 import { calcularDuracaoFrames, DURACAO_MAXIMA_DIARIO_SEG } from '../src/lib/duracao-video';
 import { escolherFechoVoz } from '../src/lib/fechos-narracao';
-import { escolherFundoVideoZen } from '../src/lib/fundo-video';
+import { escolherFundoVideoZen, escolherIndiceGeometriaCentro } from '../src/lib/fundo-video';
 import { gerarLegendas } from '../src/lib/legenda';
 import { urlSiteMarca } from '../src/lib/locale';
 import {
@@ -123,6 +123,7 @@ async function gerarPreview(genero: 'feminina' | 'masculina'): Promise<string> {
   );
 
   const { seed: fundoVideoSeed } = escolherFundoVideoZen(SIGNO, DATA);
+  const fundoVideoGeometria = escolherIndiceGeometriaCentro(SIGNO, DATA);
   const musicaFundoArquivo = await prepararMusicaParaVideo(SIGNO, DATA, SLOT_MUSICA.HOROSCOPO_0);
 
   return renderizarPreview(nome, {
@@ -133,6 +134,8 @@ async function gerarPreview(genero: 'feminina' | 'masculina'): Promise<string> {
     frameInicioPrevisao,
     frameInicioFecho,
     fundoVideoSeed,
+    signoChave: SIGNO,
+    fundoVideoGeometria,
     musicaFundoArquivo,
     duracaoFrames,
     segmentosEcra,
