@@ -62,7 +62,8 @@ exigirTexto('./src/lib/legenda.ts', 'tema: TemaNarracao', 'Diário: legendas dev
 exigirTexto('./src/lib/paleta-visual.ts', 'PALETA_SIDUS', 'Visual: regra 60-30-10');
 exigirTexto('./config/sidusastro.json', 'estiloAzureMasculina', 'Voz: estilo masculino místico');
 exigirTexto('./config/sidusastro.json', 'estiloAzureFeminina', 'Voz: estilo feminino zen');
-exigirTexto('./config/sidusastro.json', 'en-US-DavisNeural', 'Voz EN: Davis sombria');
+exigirTexto('./config/sidusastro.json', 'en-US-AvaNeural', 'Voz EN: feminina Ava calm');
+exigirTexto('./config/sidusastro.json', 'en-US-AndrewNeural', 'Voz EN: masculina Andrew calm');
 exigirTexto('./src/lib/legenda.ts', "export { escolherFechoNarracao, escolherFechoVoz", 'Legenda: re-export fecho temático');
 exigirFicheiro('./src/lib/afiliados-dia.ts');
 exigirTexto('./src/lib/afiliados-dia.ts', 'fila Buffer (hora livre)', 'Afiliados: sem horário fixo');
