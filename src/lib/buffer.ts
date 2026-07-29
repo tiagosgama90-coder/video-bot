@@ -1,10 +1,10 @@
-import crypto from 'crypto';
 import axios from 'axios';
-import { getDownloadURL, getStorage } from 'firebase-admin/storage';
-import { inicializarFirebase } from './inicializar-app';
 import { obterDueAtSlot, resolverDueAtFuturo, rotuloHorarioAgenda } from './buffer-agenda';
 import { isLocaleUS, subpastaVideosFirebase } from './locale';
+import { uploadVideoPublico } from './storage-video';
 import { sanitizarTextoPublico } from './texto-publico';
+
+export { uploadVideoPublico } from './storage-video';
 
 interface BufferChannel {
   id: string;
@@ -198,128 +198,6 @@ export async function resolverCanaisPublicacao(): Promise<BufferChannel[]> {
   }
 
   return selecionados;
-}
-
-function montarUrlFirebaseDownload(bucketName: string, destino: string, token: string): string {
-  return (
-    'https://firebasestorage.googleapis.com/v0/b/' +
-    bucketName +
-    '/o/' +
-    encodeURIComponent(destino) +
-    '?alt=media&token=' +
-    token
-  );
-}
-
-async function lerTokensDownloadExistentes(bucket: { file: (path: string) => import('@google-cloud/storage').File }, destino: string): Promise<string[]> {
-  try {
-    const file = bucket.file(destino);
-    const [existe] = await file.exists();
-    if (!existe) {
-      return [];
-    }
-    const [metadata] = await file.getMetadata();
-    const raw = metadata.metadata?.firebaseStorageDownloadTokens;
-    if (!raw || typeof raw !== 'string') {
-      return [];
-    }
-    return raw
-      .split(',')
-      .map((token) => token.trim())
-      .filter(Boolean);
-  } catch {
-    return [];
-  }
-}
-
-/** Garante que o Buffer consegue descarregar o vídeo (GET com Range, como o TikTok). */
-async function verificarUrlVideoAcessivel(url: string): Promise<void> {
-  const resposta = await axios.get<ArrayBuffer>(url, {
-    timeout: 60_000,
-    responseType: 'arraybuffer',
-    headers: { Range: 'bytes=0-65535' },
-    maxContentLength: 1024 * 1024,
-    validateStatus: (status) => status === 200 || status === 206,
-  });
-
-  const contentType = String(resposta.headers['content-type'] ?? '');
-  if (
-    !contentType.includes('video') &&
-    !contentType.includes('octet-stream') &&
-    !contentType.includes('application/mp4')
-  ) {
-    throw new Error(
-      'URL do vídeo não é acessível para o Buffer (Content-Type: ' + contentType + ')',
-    );
-  }
-
-  if (!resposta.data || resposta.data.byteLength < 1024) {
-    throw new Error('URL do vídeo devolveu ficheiro demasiado pequeno para o Buffer');
-  }
-}
-
-/**
- * Envia vídeo para Firebase Storage com URL pública para o Buffer.
- * Preserva tokens antigos ao re-substituir o ficheiro — evita que posts já
- * agendados no Buffer fiquem com URL inválida após recuperação do workflow.
- */
-export async function uploadVideoPublico(
-  caminhoLocal: string,
-  identificador: string,
-  data: string,
-  subpasta = 'videos',
-): Promise<string> {
-  const bucketName = process.env.FIREBASE_STORAGE_BUCKET;
-  if (!bucketName) {
-    throw new Error('FIREBASE_STORAGE_BUCKET não definido no .env');
-  }
-
-  inicializarFirebase();
-
-  const destino = subpasta + '/' + data + '/' + identificador + '.mp4';
-  const novoToken = crypto.randomUUID();
-
-  console.log('☁️ A enviar vídeo para Firebase Storage: ' + destino);
-
-  const bucket = getStorage().bucket(bucketName);
-  const tokensAntigos = await lerTokensDownloadExistentes(bucket, destino);
-  const todosTokens = [...new Set([...tokensAntigos, novoToken])].join(',');
-
-  if (tokensAntigos.length > 0) {
-    console.log(
-      '♻️ Ficheiro já existia — a preservar ' +
-        tokensAntigos.length +
-        ' token(s) de download para não invalidar posts Buffer antigos',
-    );
-  }
-
-  await bucket.upload(caminhoLocal, {
-    destination: destino,
-    metadata: {
-      contentType: 'video/mp4',
-      cacheControl: 'public, max-age=31536000',
-      metadata: {
-        firebaseStorageDownloadTokens: todosTokens,
-      },
-    },
-  });
-
-  const file = bucket.file(destino);
-  const urlDownload = await getDownloadURL(file);
-  console.log('✅ URL Firebase para Buffer: ' + urlDownload.slice(0, 80) + '...');
-
-  try {
-    await verificarUrlVideoAcessivel(urlDownload);
-    console.log('✅ URL verificada (GET com Range — acessível para Buffer/TikTok)');
-  } catch (erroVerificacao) {
-    const urlLegada = montarUrlFirebaseDownload(bucketName, destino, novoToken);
-    console.log('⚠️ getDownloadURL falhou verificação — a tentar URL com token novo...');
-    await verificarUrlVideoAcessivel(urlLegada);
-    console.log('✅ URL legada verificada (GET com Range)');
-    return urlLegada;
-  }
-
-  return urlDownload;
 }
 
 export async function publicarVideoNoCanal(

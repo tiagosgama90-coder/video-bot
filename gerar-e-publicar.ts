@@ -174,6 +174,9 @@ async function processarSigno(
 }
 
 async function executarRoboSidusAstro(): Promise<void> {
+  const { verificarGravacaoStorage } = await import('./src/lib/storage-video');
+  await verificarGravacaoStorage();
+
   const data = obterDataPublicacao();
   const mercado = isLocaleUS() ? 'US (@sidusastro_en)' : 'PT (Instagram + TikTok)';
   const diaAfiliados = ehDiaAfiliados();

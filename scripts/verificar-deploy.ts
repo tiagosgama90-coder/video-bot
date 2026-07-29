@@ -170,8 +170,10 @@ exigirFicheiro('./.github/workflows/diario.yml');
 exigirTexto('./.github/workflows/diario.yml', 'workflow_dispatch', 'Diário: disparo externo');
 exigirTexto('./.github/workflows/diario.yml', 'evitar-duplicado', 'Diário PT: anti-duplicado');
 exigirTexto('./.github/workflows/diario-us.yml', 'evitar-duplicado', 'Diário US: anti-duplicado');
-exigirTexto('./src/lib/buffer.ts', 'getDownloadURL', 'Buffer: URL Firebase oficial');
-exigirTexto('./src/lib/buffer.ts', 'preservar', 'Buffer: preservar tokens ao re-upload');
+exigirTexto('./src/lib/storage-video.ts', 'getDownloadURL', 'Buffer: URL Firebase oficial');
+exigirTexto('./src/lib/storage-video.ts', 'preservar', 'Buffer: preservar tokens ao re-upload');
+exigirTexto('./src/lib/storage-video.ts', 'verificarGravacaoStorage', 'Storage: verificação antes de renderizar');
+exigirFicheiro('./scripts/verificar-storage.ts');
 exigirTexto('./.github/workflows/diario.yml', "cron: '15 6 * * *'", 'Diário PT: cron backup verão Lisboa');
 
 exigirFicheiro('./.github/workflows/diario-us.yml');

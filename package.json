@@ -51,6 +51,7 @@
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc",
     "verificar": "npx ts-node verificar-config.ts",
+    "verificar-storage": "npx ts-node scripts/verificar-storage.ts",
     "verificar-deploy": "npx ts-node scripts/verificar-deploy.ts",
     "disparar-diario": "bash scripts/disparar-diario.sh",
     "configurar-cron": "bash scripts/configurar-cron-externo.sh",

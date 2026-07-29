@@ -82,6 +82,9 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
   garantirPasta('./public');
   garantirPasta('./output');
 
+  const { verificarGravacaoStorage } = await import('./storage-video');
+  await verificarGravacaoStorage();
+
   const idPublicacao = sufixoIdVideoEspecial(opcoes.id);
   const signoChave = 'caranguejo' as SignoZodiaco;
 
