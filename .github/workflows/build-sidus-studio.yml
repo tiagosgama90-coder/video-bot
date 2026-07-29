@@ -35,7 +35,7 @@ jobs:
         with:
           name: SidusStudio-Windows
           path: SidusStudio.exe
-          retention-days: 90
+          retention-days: 7
 
       - name: Anexar à Release (se existir tag)
         if: startsWith(github.ref, 'refs/tags/')
