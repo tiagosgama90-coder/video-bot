@@ -49,6 +49,7 @@ interface PropsVideo {
   duracaoFrames: number;
   frameInicioPrevisao: number;
   frameInicioFecho: number;
+  segmentosEcra?: Array<{ texto: string; frameInicio: number }>;
   siteMarca: string;
   volumeMusica: number;
 }
