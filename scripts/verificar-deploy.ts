@@ -40,6 +40,8 @@ exigirTexto('./src/components/FundoCosmicoSidus.tsx', 'NebulosasCosmicas', 'Víd
 exigirTexto('./src/components/FundoCosmicoSidus.tsx', 'GeometriaCosmicaCentro', 'Vídeo: geometria no centro');
 exigirTexto('./src/components/GeometriaCosmicaCentro.tsx', 'OPACIDADE_GEOMETRIA_CENTRO', 'Vídeo: geometria opacidade baixa');
 exigirTexto('./src/components/GeometriaCosmicaCentro.tsx', 'VarianteMetatron', 'Vídeo: variantes geometria cósmica');
+exigirTexto('./src/components/GeometriaCosmicaCentro.tsx', 'VarianteRodaZodiaco', 'Vídeo: roda zodiacal animada');
+exigirTexto('./src/lib/fundo-video.ts', 'escolherIndiceGeometriaCentro', 'Vídeo: geometria central por signo+data');
 exigirTexto('./src/components/OverlayLegibilidadeTexto.tsx', 'modoImagemZen', 'Vídeo: overlay leve com imagem zen');
 exigirTexto('./src/lib/legenda.ts', 'prefixoInstagramProfissional', 'Instagram: prefixo profissional sem urgência');
 exigirTexto('./src/lib/ganchos-diario.ts', 'escolherGanchoDiario', 'Diário: ganchos emocionais');
@@ -73,6 +75,7 @@ exigirTexto('./gerar-e-publicar.ts', 'gerarAfiliadosDia', 'Diário: afiliados te
 exigirTexto('./gerar-e-publicar.ts', 'HOROSCOPOS_EM_DIA_AFILIADOS', 'Diário: 2 horóscopos em dia afiliados');
 exigirTexto('./gerar-e-publicar.ts', 'escolherFechoVoz', 'Horóscopo: fecho zen na narração');
 exigirTexto('./gerar-e-publicar.ts', 'montarTextoNarracaoDiaria', 'Diário: narração gancho + previsão + fecho');
+exigirTexto('./gerar-e-publicar.ts', 'fundoVideoGeometria', 'Diário: variante geometria no props');
 exigirTexto('./src/lib/gerar-video-especial.ts', 'montarTextoNarracaoDiaria', 'Especiais: narração gancho+corpo+fecho');
 exigirTexto('./src/lib/ganchos-especial.ts', 'escolherGanchoEspecial', 'Especiais: gancho de abertura');
 exigirTexto('./src/MyVideo.tsx', 'LOGO_SIDUS_LARGURA_PX', 'Vídeo: logo Sidus maior');
