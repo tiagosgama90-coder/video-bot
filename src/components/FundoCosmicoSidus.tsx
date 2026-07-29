@@ -98,16 +98,30 @@ type Estrela = {
 };
 
 function gerarEstrelas(width: number, height: number, seed: number, quantidade: number, camada: number): Estrela[] {
-  const cores = ['#ffffff', '#f0f4ff', '#fff8e8', '#e8eeff', '#ffe8c8'];
+  const cores = [
+    '#ffffff',
+    '#f0f4ff',
+    '#fff8e8',
+    '#e8eeff',
+    '#ffe8c8',
+    '#ffd6a5',
+    '#c4e8ff',
+    '#e8d4ff',
+    '#fff0f5',
+  ];
   return Array.from({ length: quantidade }, (_, i) => ({
     x: random(`st-x-${seed}-${camada}-${i}`) * width,
     y: random(`st-y-${seed}-${camada}-${i}`) * height,
     size: camada === 0
-      ? 0.6 + random(`st-s-${seed}-${camada}-${i}`) * 1.2
-      : 1.2 + random(`st-s-${seed}-${camada}-${i}`) * 3.2,
+      ? 0.5 + random(`st-s-${seed}-${camada}-${i}`) * 1.4
+      : camada === 2
+        ? 0.35 + random(`st-s-${seed}-${camada}-${i}`) * 0.9
+        : 1.1 + random(`st-s-${seed}-${camada}-${i}`) * 3.4,
     opacidade: camada === 0
-      ? 0.15 + random(`st-o-${seed}-${camada}-${i}`) * 0.35
-      : 0.35 + random(`st-o-${seed}-${camada}-${i}`) * 0.55,
+      ? 0.18 + random(`st-o-${seed}-${camada}-${i}`) * 0.38
+      : camada === 2
+        ? 0.12 + random(`st-o-${seed}-${camada}-${i}`) * 0.28
+        : 0.38 + random(`st-o-${seed}-${camada}-${i}`) * 0.58,
     cor: cores[Math.floor(random(`st-c-${seed}-${camada}-${i}`) * cores.length)],
     brilho: random(`st-b-${seed}-${camada}-${i}`),
     camada,
@@ -126,17 +140,22 @@ export function EstrelasRealistas({
   const { width, height, durationInFrames, fps } = useVideoConfig();
   const t = frame / fps;
 
-  const camadaFundo = gerarEstrelas(width, height, seed, 220, 0);
-  const camadaFrente = gerarEstrelas(width, height, seed + 7, 85, 1);
+  const camadaFundo = gerarEstrelas(width, height, seed, 360, 0);
+  const camadaMicro = gerarEstrelas(width, height, seed + 3, 180, 2);
+  const camadaFrente = gerarEstrelas(width, height, seed + 7, 140, 1);
 
   const listas =
     camada === 'fundo'
-      ? [[camadaFundo, 0.6] as const]
+      ? [
+          [camadaFundo, 0.55] as const,
+          [camadaMicro, 0.35] as const,
+        ]
       : camada === 'frente'
-        ? [[camadaFrente, 1.2] as const]
+        ? [[camadaFrente, 1.25] as const]
         : ([
-            [camadaFundo, 0.6],
-            [camadaFrente, 1.2],
+            [camadaFundo, 0.55],
+            [camadaMicro, 0.35],
+            [camadaFrente, 1.25],
           ] as const);
 
   const renderizar = (lista: Estrela[], fatorVel: number) =>
