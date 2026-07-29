@@ -30,6 +30,31 @@ const DATA = '2026-07-29';
 const SIGNO: SignoZodiaco = 'leao';
 const ARTEFACTOS = '/opt/cursor/artifacts';
 
+function aguardar(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function narrarComRetry(
+  texto: string,
+  genero: 'feminina' | 'masculina',
+  tentativas = 3,
+): Promise<void> {
+  let ultimoErro: unknown;
+  for (let i = 0; i < tentativas; i++) {
+    try {
+      await gerarNarracao(texto, './public/narracao.mp3', genero);
+      return;
+    } catch (erro) {
+      ultimoErro = erro;
+      console.log('⚠️ Narração falhou (tentativa ' + (i + 1) + '/' + tentativas + '): ' + String(erro));
+      if (i < tentativas - 1) {
+        await aguardar(4000 * (i + 1));
+      }
+    }
+  }
+  throw ultimoErro;
+}
+
 const PREVISAO_EXEMPLO =
   'Today your creative energy peaks at midday. Trust your instincts in love and let conversations flow naturally.';
 
@@ -85,7 +110,7 @@ async function gerarPreview(genero: 'feminina' | 'masculina'): Promise<string> {
   console.log('📝 Fecho: ' + fechoVoz);
   console.log('══════════════════════════════════════\n');
 
-  await gerarNarracao(textoNarracao, './public/narracao.mp3', genero);
+  await narrarComRetry(textoNarracao, genero);
 
   const duracaoFrames = calcularDuracaoFrames('./public/narracao.mp3', DURACAO_MAXIMA_DIARIO_SEG);
   const { frameInicioPrevisao, frameInicioFecho } = calcularQuadrosNarracaoDiaria(
@@ -120,12 +145,22 @@ async function executar(): Promise<void> {
   garantirPastas();
   console.log('🎬 A gerar previews US (Leo) — Ava feminina + Andrew masculina...');
 
-  const feminina = await gerarPreview('feminina');
-  const masculina = await gerarPreview('masculina');
+  const gerados: string[] = [];
+  for (const genero of ['feminina', 'masculina'] as const) {
+    try {
+      gerados.push(await gerarPreview(genero));
+      await aguardar(5000);
+    } catch (erro) {
+      console.error('❌ Falha preview ' + genero + ':', erro);
+    }
+  }
 
-  console.log('\n✅ Previews US prontos:');
-  console.log('   Feminina: ' + feminina);
-  console.log('   Masculina: ' + masculina);
+  if (gerados.length === 0) {
+    throw new Error('Nenhum preview US foi gerado');
+  }
+
+  console.log('\n✅ Previews US prontos (' + gerados.length + '/2):');
+  gerados.forEach((caminho) => console.log('   ' + caminho));
 }
 
 executar().catch((erro) => {
