@@ -2,6 +2,12 @@ name: Preview voz US (horóscopo diário)
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'config/sidusastro.json'
+      - 'scripts/gerar-preview-us-diario.ts'
+      - '.github/workflows/preview-us-voz.yml'
 
 permissions:
   contents: read
