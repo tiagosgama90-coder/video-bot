@@ -7,7 +7,7 @@ import { calcularDuracaoFrames } from './duracao-video';
 import { escolherGanchoEspecialComTema } from './ganchos-especial';
 import { escolherFundoVideo, escolherFundoVideoZen, type TemaFundoMistico } from './fundo-video';
 import { obterImagemFundoZenAstrologia } from './imagem-fundo';
-import { escolherFechoNarracao } from './legenda';
+import { escolherFechoEcra, escolherFechoVoz } from './legenda';
 import {
   isLocaleUS,
   obterFusoPublicacao,
@@ -122,12 +122,17 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
     opcoes.slotMusica,
   );
 
-  const gancho = opcoes.gancho
+  const gancho = opcoes.gancho !== undefined
     ? { texto: opcoes.gancho, tema: escolherGanchoEspecialComTema(opcoes.id, opcoes.data).tema }
-    : escolherGanchoEspecialComTema(opcoes.id, opcoes.data);
+    : opcoes.segmentosEcra?.length
+      ? { texto: '', tema: 'geral' as const }
+      : escolherGanchoEspecialComTema(opcoes.id, opcoes.data);
   const hookTexto = sanitizarTextoPublico(gancho.texto);
-  const fechoTexto = sanitizarTextoPublico(
-    opcoes.fecho ?? escolherFechoNarracao(gancho.tema, undefined, opcoes.data),
+  const fechoVoz = sanitizarTextoPublico(
+    opcoes.fecho ?? escolherFechoVoz(gancho.tema, undefined, opcoes.data),
+  );
+  const fechoEcra = sanitizarTextoPublico(
+    opcoes.fecho ?? escolherFechoEcra(gancho.tema, undefined, opcoes.data),
   );
   const segmentosLimpos = opcoes.segmentosEcra?.map(sanitizarTextoPublico);
   const corpoNarracao = segmentosLimpos?.length
@@ -137,7 +142,7 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
   const partesNarracao = {
     hook: hookTexto,
     previsao: corpoNarracao,
-    fecho: fechoTexto,
+    fecho: fechoVoz,
   };
   const textoNarracao = montarTextoNarracaoDiaria(partesNarracao);
 
@@ -182,7 +187,7 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
     signo: sanitizarTextoPublico(opcoes.titulo),
     previsao: segmentosProgressivos ? '' : textoEcra,
     hookTexto,
-    fechoTexto,
+    fechoTexto: fechoEcra,
     frameInicioPrevisao,
     frameInicioFecho,
     fundoVideoTema,

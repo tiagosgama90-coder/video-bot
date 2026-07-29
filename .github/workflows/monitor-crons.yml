@@ -44,6 +44,7 @@ jobs:
               repo: context.repo.repo,
               workflow_id: 'diario.yml',
               ref: 'main',
+              inputs: { forcar: 'true' },
             });
 
   verificar-us:
@@ -76,4 +77,5 @@ jobs:
               repo: context.repo.repo,
               workflow_id: 'diario-us.yml',
               ref: 'main',
+              inputs: { forcar: 'true' },
             });

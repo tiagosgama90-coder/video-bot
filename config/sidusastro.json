@@ -3,19 +3,19 @@
   "voz": {
     "preferencia": "aleatoria",
     "pt": {
-      "femininaId": "pt-BR-FranciscaNeural",
+      "femininaId": "pt-BR-ThalitaNeural",
       "masculinaId": "pt-BR-AntonioNeural",
-      "feminina": "pt-BR-FranciscaNeural",
+      "feminina": "pt-BR-ThalitaNeural",
       "masculina": "pt-BR-AntonioNeural",
-      "femininaRate": "-3%",
-      "femininaPitch": "+6%",
-      "masculinaRate": "-5%",
-      "masculinaPitch": "-4%",
-      "volume": "+12.00%",
+      "femininaRate": "-10%",
+      "femininaPitch": "+1%",
+      "masculinaRate": "-12%",
+      "masculinaPitch": "-3%",
+      "volume": "+8.00%",
       "estiloAzureFeminina": "calm",
-      "estiloAzureMasculina": "",
-      "grauEstiloFeminina": 1.05,
-      "grauEstiloMasculina": 1.0
+      "estiloAzureMasculina": "calm",
+      "grauEstiloFeminina": 1.35,
+      "grauEstiloMasculina": 1.25
     },
     "en": {
       "femininaId": "en-US-JennyNeural",
@@ -32,8 +32,8 @@
       "grauEstiloFeminina": 1.15,
       "grauEstiloMasculina": 1.45
     },
-    "pausaFraseMs": 420,
-    "pausaVirgulaMs": 200
+    "pausaFraseMs": 520,
+    "pausaVirgulaMs": 260
   },
   "musica": {
     "volume": 0.09,

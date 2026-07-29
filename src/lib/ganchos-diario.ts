@@ -60,7 +60,7 @@ const GANCHOS_IDENTIFICACAO_BR: GanchoTemado[] = [
   gancho('amor', (n) => 'Você já teve a sensação de repetir a mesma história amorosa, ' + n + '? Não é azar'),
   gancho('depressao', (n) => 'Pouca gente fala de depressão em voz alta - mas seu signo de ' + n + ' fala por você'),
   gancho('geral', (n) => n + ', se ninguém entende o que você sente hoje, eu traduzo pelo horóscopo'),
-  gancho('amor', (n) => 'Se a relação consome você, ' + n + ', o mapa em sidusastro.com esclarece o padrão'),
+  gancho('amor', (n) => 'Se a relação consome você, ' + n + ', o céu mostra o padrão que se repete'),
   gancho('geral', (n) => 'Respira, ' + n + ' - o que vem a seguir parece escrito para o seu momento'),
 ];
 
@@ -76,16 +76,28 @@ const GANCHOS_PROVOCATIVO_BR: GanchoTemado[] = [
   gancho('geral', (n) => 'Fique mais 20 segundos, ' + n + ' - vale cada palavra do que vem agora'),
 ];
 
-const GANCHOS_BRASIL: GanchoTemado[] = [
+/** Ganchos só para narração/overlay — sem "legenda", "comenta mapa", URLs nem emojis */
+const GANCHOS_NARRACAO_BR: GanchoTemado[] = [
   ...GANCHOS_CURIOSIDADE_BR,
   ...GANCHOS_ALERTA_BR,
-  ...GANCHOS_ATALHO_BR,
   ...GANCHOS_IDENTIFICACAO_BR,
   ...GANCHOS_PROVOCATIVO_BR,
 ];
 
-/** Alias histórico — pools psicológicos BR (5 categorias de gancho) */
-export const GANCHOS_PSICOLOGIA_PT = GANCHOS_BRASIL;
+/** Remove instruções de legenda/comentário que só devem ir para o Buffer */
+export function limparGanchoParaNarracao(texto: string): string {
+  return sanitizarTextoPublico(texto)
+    .replace(/\bleia\s+a\s+legenda[^.!?]*/gi, '')
+    .replace(/\blegenda\s+urgente/gi, '')
+    .replace(/\bcomenta\s+(mapa|premium)[^.!?]*/gi, '')
+    .replace(/\burgente\s*$/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/\s+([,.])/g, '$1')
+    .trim();
+}
+
+/** Alias histórico — pools psicológicos BR (narração + atalho para legendas) */
+export const GANCHOS_PSICOLOGIA_PT = [...GANCHOS_NARRACAO_BR, ...GANCHOS_ATALHO_BR];
 
 const GANCHOS_HOROSCOPO_BR: GanchoFn[] = [
   (n) => n + ', o horóscopo de hoje não é o que você esperava',
@@ -156,10 +168,10 @@ function ganchoDaPrevisao(
 }
 
 /**
- * Gancho narrado — 50% viral BR | resto ganchos brasileiros (5 categorias) + horóscopo.
+ * Gancho para narração e overlay no vídeo — inteligente, humano, sem CTAs de legenda.
  * A previsão do site não é alterada — só o gancho de abertura.
  */
-export function escolherGanchoDiario(
+export function escolherGanchoNarracao(
   signo: SignoZodiaco,
   previsao: string,
   data?: string,
@@ -168,33 +180,63 @@ export function escolherGanchoDiario(
   const dataRef = data ?? new Date().toISOString().slice(0, 10);
 
   if (isLocaleUS()) {
-    if (escolherIndiceGancho(signo, dataRef + '-viral', 100) < 55) {
-      return escolherGanchoViralComTema(signo, dataRef);
+    if (escolherIndiceGancho(signo, dataRef + '-prev', 100) < 25) {
+      const daPrevisao = ganchoDaPrevisao(nomeSigno, previsao, signo, dataRef);
+      if (daPrevisao) {
+        return daPrevisao;
+      }
     }
     const indice = escolherIndiceGancho(signo, dataRef + '-horo', GANCHOS_HOROSCOPO_EN.length);
     return { texto: sanitizarTextoPublico(GANCHOS_HOROSCOPO_EN[indice](nomeSigno)), tema: 'geral' };
   }
 
-  if (escolherIndiceGancho(signo, dataRef + '-viral', 100) < 50) {
-    return escolherGanchoViralComTema(signo, dataRef);
-  }
-
-  if (escolherIndiceGancho(signo, dataRef + '-prev', 100) < 15) {
+  if (escolherIndiceGancho(signo, dataRef + '-prev', 100) < 20) {
     const daPrevisao = ganchoDaPrevisao(nomeSigno, previsao, signo, dataRef);
     if (daPrevisao) {
-      return daPrevisao;
+      return { texto: limparGanchoParaNarracao(daPrevisao.texto), tema: daPrevisao.tema };
     }
   }
 
-  const usarHoroscopo = escolherIndiceGancho(signo, dataRef + '-horo', 100) < 10;
+  const usarHoroscopo = escolherIndiceGancho(signo, dataRef + '-horo', 100) < 15;
   if (usarHoroscopo) {
     const indice = escolherIndiceGancho(signo, dataRef + '-horo', GANCHOS_HOROSCOPO_BR.length);
-    return { texto: sanitizarTextoPublico(GANCHOS_HOROSCOPO_BR[indice](nomeSigno)), tema: 'geral' };
+    return {
+      texto: limparGanchoParaNarracao(GANCHOS_HOROSCOPO_BR[indice](nomeSigno)),
+      tema: 'geral',
+    };
   }
 
-  const indice = escolherIndiceGancho(signo, dataRef + '-br', GANCHOS_BRASIL.length);
-  const escolhido = GANCHOS_BRASIL[indice];
-  return { texto: sanitizarTextoPublico(escolhido.fn(nomeSigno)), tema: escolhido.tema };
+  const indice = escolherIndiceGancho(signo, dataRef + '-br', GANCHOS_NARRACAO_BR.length);
+  const escolhido = GANCHOS_NARRACAO_BR[indice];
+  return {
+    texto: limparGanchoParaNarracao(escolhido.fn(nomeSigno)),
+    tema: escolhido.tema,
+  };
+}
+
+/**
+ * Gancho para legendas Buffer — pode incluir viral/CTA (nunca narrado).
+ * @deprecated preferir escolherGanchoNarracao para vídeo + escolherGanchoLegendaBuffer para caption
+ */
+export function escolherGanchoDiario(
+  signo: SignoZodiaco,
+  previsao: string,
+  data?: string,
+): GanchoComTema {
+  return escolherGanchoNarracao(signo, previsao, data);
+}
+
+/** Gancho extra só para texto da legenda Buffer (não entra no vídeo) */
+export function escolherGanchoLegendaBuffer(
+  signo: SignoZodiaco,
+  previsao: string,
+  data?: string,
+): GanchoComTema {
+  const dataRef = data ?? new Date().toISOString().slice(0, 10);
+  if (!isLocaleUS() && escolherIndiceGancho(signo, dataRef + '-viral-cap', 100) < 35) {
+    return escolherGanchoViralComTema(signo, dataRef);
+  }
+  return escolherGanchoNarracao(signo, previsao, data);
 }
 
 export function escolherTextoGanchoDiario(
