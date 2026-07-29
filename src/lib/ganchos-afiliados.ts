@@ -2,7 +2,7 @@
 import crypto from 'crypto';
 import { isLocaleUS } from './locale';
 import type { GanchoComTema } from './fechos-narracao';
-import { sanitizarTextoPublico } from './texto-publico';
+import { filtrarTextoParaVideo, sanitizarTextoPublico } from './texto-publico';
 
 type GanchoFn = () => string;
 
@@ -20,7 +20,7 @@ const GANCHOS_AFILIADOS_PT: GanchoFn[] = [
   () => 'Não é influencer? Melhor - afiliados ganham em silêncio',
   () => 'O que você evita tentar por medo de falhar tem resposta aqui',
   () => 'Parece anúncio - mas é oportunidade para quem já usa o app',
-  () => 'Comente menos, ganhe mais: compartilhe o SidusAstro no seu nicho',
+  () => 'Compartilhe o SidusAstro no seu nicho e ganhe em cada venda',
   () => 'A energia de hoje pede um passo - monetize o que você já sabe',
   () => 'Alguém vai ganhar com astrologia hoje - por que não você',
   () => 'O segredo não é viralizar - é ter o link certo em sidusastro.com',
@@ -72,7 +72,10 @@ export function escolherGanchoAfiliadosComTema(
     };
   }
   const indice = hashGancho('gancho-afiliados-' + contexto + '-' + data) % pool.length;
-  return { texto: sanitizarTextoPublico(pool[indice]()), tema: 'financas' };
+  return {
+    texto: filtrarTextoParaVideo(pool[indice]()),
+    tema: 'financas',
+  };
 }
 
 export function escolherGanchoAfiliados(data: string, contexto: string = 'afiliados'): string {

@@ -7,7 +7,7 @@ import { calcularDuracaoFrames } from './duracao-video';
 import { escolherGanchoEspecialComTema } from './ganchos-especial';
 import { escolherFundoVideo, escolherFundoVideoZen, type TemaFundoMistico } from './fundo-video';
 import { obterImagemFundoZenAstrologia } from './imagem-fundo';
-import { escolherFechoEcra, escolherFechoVoz } from './legenda';
+import { escolherFechoVoz } from './legenda';
 import {
   isLocaleUS,
   obterFusoPublicacao,
@@ -22,7 +22,7 @@ import {
 } from './narracao-diario';
 import { calcularSegmentosProgressivos } from './texto-progressivo';
 import { obterVolumeMusica } from './project-config';
-import { sanitizarTextoPublico } from './texto-publico';
+import { sanitizarTextoPublico, filtrarTextoParaVideo } from './texto-publico';
 import { gerarNarracao } from './voz';
 import type { SignoZodiaco } from './signos';
 
@@ -127,17 +127,15 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
     : opcoes.segmentosEcra?.length
       ? { texto: '', tema: 'geral' as const }
       : escolherGanchoEspecialComTema(opcoes.id, opcoes.data);
-  const hookTexto = sanitizarTextoPublico(gancho.texto);
-  const fechoVoz = sanitizarTextoPublico(
+  const hookTexto = filtrarTextoParaVideo(gancho.texto);
+  const fechoVoz = filtrarTextoParaVideo(
     opcoes.fecho ?? escolherFechoVoz(gancho.tema, undefined, opcoes.data),
   );
-  const fechoEcra = sanitizarTextoPublico(
-    opcoes.fecho ?? escolherFechoEcra(gancho.tema, undefined, opcoes.data),
-  );
-  const segmentosLimpos = opcoes.segmentosEcra?.map(sanitizarTextoPublico);
+  const fechoEcra = fechoVoz;
+  const segmentosLimpos = opcoes.segmentosEcra?.map((s) => filtrarTextoParaVideo(s));
   const corpoNarracao = segmentosLimpos?.length
     ? segmentosLimpos.join('. ')
-    : sanitizarTextoPublico(opcoes.textoNarracao);
+    : filtrarTextoParaVideo(opcoes.textoNarracao);
 
   const partesNarracao = {
     hook: hookTexto,
@@ -176,7 +174,7 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
     });
   }
 
-  const textoEcraBruto = sanitizarTextoPublico(opcoes.textoEcra);
+  const textoEcraBruto = filtrarTextoParaVideo(opcoes.textoEcra);
   const textoEcra = textoEcraBruto.includes('.')
     ? textoEcraBruto.length > 280
       ? textoEcraBruto.slice(0, 277).trim() + '...'
@@ -184,7 +182,7 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
     : textoEcraBruto;
 
   const props: PropsVideoEspecial = {
-    signo: sanitizarTextoPublico(opcoes.titulo),
+    signo: filtrarTextoParaVideo(opcoes.titulo),
     previsao: segmentosProgressivos ? '' : textoEcra,
     hookTexto,
     fechoTexto: fechoEcra,
