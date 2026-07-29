@@ -74,6 +74,26 @@ const FECHOS_DEPRESSAO_EN = [
   'You are not alone - your chart shows why at sidusastro.com/en',
 ] as const;
 
+const FECHOS_VOZ_ZEN_PT = [
+  'Respira fundo e leva esta mensagem com calma para o resto do dia',
+  'O universo não tem pressa. Guarde estas palavras no coração por um instante',
+  'Calma. O que você sentiu aqui faz sentido - confie no seu ritmo',
+  'Deixe o dia desenrolar devagar. Você já sabe o que precisa ouvir',
+  'Feche os olhos por um segundo e absorva o que os astros disseram hoje',
+  'Silêncio por dentro também é resposta. Leve isso com você',
+  'Não force nada agora. A mensagem já chegou até você',
+] as const;
+
+const FECHOS_VOZ_ZEN_EN = [
+  'Take a deep breath and carry this message calmly through your day',
+  'The universe is not in a hurry. Hold these words in your heart for a moment',
+  'Ease. What you felt here makes sense - trust your own rhythm',
+  'Let the day unfold slowly. You already know what you needed to hear',
+  'Close your eyes for a second and absorb what the stars said today',
+  'Stillness inside is also an answer. Take this with you',
+  'Do not force anything now. The message has already reached you',
+] as const;
+
 const FECHOS_GERAL_PT = [
   'Ninguém mostra isso nos apps grátis - mapa astral completo em sidusastro.com',
   'O segredo que falta no vídeo está no seu mapa em sidusastro.com',
@@ -131,6 +151,27 @@ function poolPorTema(tema: TemaNarracao): readonly string[] {
     default:
       return FECHOS_GERAL_PT;
   }
+}
+
+/** Fecho narrado em voz — zen, humano, sem CTA de legenda/comentário */
+export function escolherFechoVoz(
+  tema: TemaNarracao,
+  signo?: SignoZodiaco,
+  data?: string,
+): string {
+  const pool = isLocaleUS() ? FECHOS_VOZ_ZEN_EN : FECHOS_VOZ_ZEN_PT;
+  const chave = 'fecho-voz-' + tema + '-' + (signo ?? 'geral') + '-' + (data ?? 'hoje');
+  const indice = hashFecho(chave) % pool.length;
+  return sanitizarTextoPublico(pool[indice]);
+}
+
+/** Texto no ecrã no final — CTA suave com site (não narrado se diferente do fecho voz) */
+export function escolherFechoEcra(
+  tema: TemaNarracao,
+  signo?: SignoZodiaco,
+  data?: string,
+): string {
+  return escolherFechoNarracao(tema, signo, data);
 }
 
 /** Fecho de despedida alinhado ao tema do gancho — nunca misturar dinheiro com amor, etc. */

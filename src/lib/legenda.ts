@@ -9,14 +9,14 @@ import {
   HASHTAGS_DIARIO_PT_INSTAGRAM,
   HASHTAGS_DIARIO_PT_TIKTOK,
 } from './legendas-marketing';
-import { escolherGanchoDiario } from './ganchos-diario';
+import { escolherGanchoNarracao } from './ganchos-diario';
 import { ehGanchoViralLongo } from './ganchos-virais';
 import type { TemaNarracao } from './fechos-narracao';
 import { isLocaleUS } from './locale';
 import { obterNomeSigno, type SignoZodiaco } from './signos';
 import { sanitizarTextoPublico } from './texto-publico';
 
-export { escolherFechoNarracao, type TemaNarracao } from './fechos-narracao';
+export { escolherFechoNarracao, escolherFechoVoz, escolherFechoEcra, type TemaNarracao } from './fechos-narracao';
 
 function normalizarHashtag(texto: string): string {
   return texto
@@ -90,7 +90,7 @@ export function gerarLegendaTikTok(
   previsao: string,
   data?: string,
 ): string {
-  const { texto: hook } = escolherGanchoDiario(signo, previsao, data);
+  const { texto: hook } = escolherGanchoNarracao(signo, previsao, data);
   return sanitizarTextoPublico(
     gerarCorpoLegenda(previsao, hook) + '\n\n' + sufixoTikTok(signo),
   );
@@ -102,19 +102,19 @@ export function gerarLegendaInstagram(
   previsao: string,
   data?: string,
 ): string {
-  const { texto: hook } = escolherGanchoDiario(signo, previsao, data);
+  const { texto: hook } = escolherGanchoNarracao(signo, previsao, data);
   return sanitizarTextoPublico(
     gerarCorpoLegenda(previsao, hook) + '\n\n' + sufixoInstagram(signo, hook),
   );
 }
 
-/** Gera ambas as legendas com o mesmo gancho (overlay 3s + Buffer) */
+/** Gera ambas as legendas: gancho do vídeo (narração) + corpo; caption pode ter extra viral */
 export function gerarLegendas(
   signo: SignoZodiaco,
   previsao: string,
   data?: string,
 ): { tiktok: string; instagram: string; hook: string; tema: TemaNarracao } {
-  const { texto: hook, tema } = escolherGanchoDiario(signo, previsao, data);
+  const { texto: hook, tema } = escolherGanchoNarracao(signo, previsao, data);
   const corpo = gerarCorpoLegenda(previsao, hook);
   return {
     hook,

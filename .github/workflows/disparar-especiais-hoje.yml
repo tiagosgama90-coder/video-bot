@@ -37,12 +37,16 @@ jobs:
               core.info('Hoje em Lisboa (' + dia + ') — sem vídeo especial PT.');
               return;
             }
-            await github.rest.actions.createWorkflowDispatch({
+            const payload = {
               owner: context.repo.owner,
               repo: context.repo.repo,
               workflow_id: workflow,
               ref: 'main',
-            });
+            };
+            if (workflow.includes('vip-divulgacao')) {
+              payload.inputs = { forcar: 'true' };
+            }
+            await github.rest.actions.createWorkflowDispatch(payload);
             core.info('Especial PT disparado: ' + workflow);
 
   disparar-us:
@@ -68,10 +72,14 @@ jobs:
               core.info('Hoje em New York (' + dia + ') — sem vídeo especial US.');
               return;
             }
-            await github.rest.actions.createWorkflowDispatch({
+            const payload = {
               owner: context.repo.owner,
               repo: context.repo.repo,
               workflow_id: workflow,
               ref: 'main',
-            });
+            };
+            if (workflow.includes('vip-divulgacao')) {
+              payload.inputs = { forcar: 'true' };
+            }
+            await github.rest.actions.createWorkflowDispatch(payload);
             core.info('Especial US disparado: ' + workflow);

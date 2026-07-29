@@ -4,9 +4,11 @@ import { execSync } from 'child_process';
 import dotenv from 'dotenv';
 import { publicarEmTodosOsCanais } from './src/lib/buffer';
 import { obterTextoHoroscopo, extrairAteSegundoPontoFinal } from './src/lib/horoscopo';
-import { escolherFechoNarracao, gerarLegendas } from './src/lib/legenda';
+import { gerarLegendas } from './src/lib/legenda';
+import { escolherFechoEcra, escolherFechoVoz } from './src/lib/fechos-narracao';
 import { escolherFundoVideoZen } from './src/lib/fundo-video';
 import { calcularDuracaoFrames, DURACAO_MAXIMA_DIARIO_SEG } from './src/lib/duracao-video';
+import { calcularSegmentosProgressivos } from './src/lib/texto-progressivo';
 import {
   calcularQuadrosNarracaoDiaria,
   montarTextoNarracaoDiaria,
@@ -111,13 +113,13 @@ async function processarSigno(
 
   const legendas = gerarLegendas(signo, previsaoVideo, data);
   const hookTexto = sanitizarTextoPublico(legendas.hook);
-  const fechoNarracao = escolherFechoNarracao(legendas.tema, signo, data);
-  const fechoEcra = sanitizarTextoPublico(fechoNarracao.replace(/^\.\s+/, ''));
+  const fechoVoz = escolherFechoVoz(legendas.tema, signo, data);
+  const fechoEcra = sanitizarTextoPublico(escolherFechoEcra(legendas.tema, signo, data));
 
   const partesNarracao = {
     hook: hookTexto,
     previsao: previsaoVideo,
-    fecho: fechoEcra,
+    fecho: fechoVoz,
   };
   const textoNarracao = montarTextoNarracaoDiaria(partesNarracao);
   console.log('🎙️ Narração completa: gancho → previsão → fecho');
@@ -132,11 +134,18 @@ async function processarSigno(
     partesNarracao,
     duracaoFrames,
   );
+  const segmentosEcra = calcularSegmentosProgressivos(
+    [hookTexto, previsaoVideo, fechoEcra],
+    duracaoFrames,
+  );
   console.log(
     '📺 Sincronização ecrã: previsão @ frame ' +
       frameInicioPrevisao +
       ', fecho @ frame ' +
-      frameInicioFecho,
+      frameInicioFecho +
+      ' (segmentos: ' +
+      segmentosEcra.map((s) => s.frameInicio).join(', ') +
+      ')',
   );
 
   console.log('📋 Legenda TikTok:\n' + legendas.tiktok);
@@ -152,6 +161,7 @@ async function processarSigno(
     duracaoFrames,
     frameInicioPrevisao,
     frameInicioFecho,
+    segmentosEcra,
     siteMarca: urlSiteMarca(),
     volumeMusica: obterVolumeMusica(),
   };

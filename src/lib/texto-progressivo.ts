@@ -9,6 +9,7 @@ export function calcularSegmentosProgressivos(
   duracaoFrames: number,
   margemInicio = 12,
   margemFim = 8,
+  antecipacaoFrames = 15,
 ): SegmentoEcra[] {
   if (textos.length === 0) {
     return [];
@@ -22,7 +23,9 @@ export function calcularSegmentosProgressivos(
   return textos.map((texto, i) => {
     const peso = palavrasPorSegmento[i] / totalPalavras;
     const framesSegmento = Math.max(24, Math.round(peso * framesUteis));
-    const segmento: SegmentoEcra = { texto: texto.trim(), frameInicio: frame };
+    const inicio =
+      i === 0 ? frame : Math.max(margemInicio, frame - antecipacaoFrames);
+    const segmento: SegmentoEcra = { texto: texto.trim(), frameInicio: inicio };
     frame += framesSegmento;
     return segmento;
   });
