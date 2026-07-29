@@ -170,6 +170,181 @@ async function uploadCloudinaryVideo(
   return uploadCloudinaryArquivo(caminhoLocal, pasta, identificador, 'video');
 }
 
+function credenciaisCloudinary(): {
+  cloudName: string;
+  apiKey: string;
+  apiSecret: string;
+  authHeader: string;
+} {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME!.trim();
+  const apiKey = process.env.CLOUDINARY_API_KEY!.trim();
+  const apiSecret = process.env.CLOUDINARY_API_SECRET!.trim();
+  const authHeader =
+    'Basic ' + Buffer.from(apiKey + ':' + apiSecret).toString('base64');
+  return { cloudName, apiKey, apiSecret, authHeader };
+}
+
+/** Dias a manter vídeos no Cloudinary (Buffer já descarregou). Default: 14. */
+export function diasRetencaoCloudinary(): number {
+  const raw = process.env.CLOUDINARY_RETENTION_DAYS?.trim();
+  const dias = raw ? Number.parseInt(raw, 10) : 14;
+  if (!Number.isFinite(dias) || dias < 1) {
+    return 14;
+  }
+  return Math.min(dias, 90);
+}
+
+interface RecursoCloudinary {
+  public_id: string;
+  created_at: string;
+  bytes?: number;
+}
+
+async function listarRecursosCloudinary(
+  tipo: 'video' | 'raw',
+  prefixo: string,
+): Promise<RecursoCloudinary[]> {
+  const { cloudName, authHeader } = credenciaisCloudinary();
+  const recursos: RecursoCloudinary[] = [];
+  let cursor: string | undefined;
+
+  do {
+    const params = new URLSearchParams({
+      type: 'upload',
+      prefix: prefixo,
+      max_results: '500',
+    });
+    if (cursor) {
+      params.set('next_cursor', cursor);
+    }
+
+    const url =
+      'https://api.cloudinary.com/v1_1/' +
+      cloudName +
+      '/resources/' +
+      tipo +
+      '?' +
+      params.toString();
+
+    const resposta = await axios.get<{
+      resources?: RecursoCloudinary[];
+      next_cursor?: string;
+    }>(url, {
+      headers: { Authorization: authHeader },
+      timeout: 60_000,
+    });
+
+    recursos.push(...(resposta.data.resources ?? []));
+    cursor = resposta.data.next_cursor;
+  } while (cursor);
+
+  return recursos;
+}
+
+async function apagarRecursosCloudinary(
+  tipo: 'video' | 'raw',
+  publicIds: string[],
+): Promise<void> {
+  if (publicIds.length === 0) {
+    return;
+  }
+
+  const { cloudName, authHeader } = credenciaisCloudinary();
+  const lote = 100;
+
+  for (let i = 0; i < publicIds.length; i += lote) {
+    const pedaco = publicIds.slice(i, i + lote);
+    const body = new URLSearchParams();
+    for (const id of pedaco) {
+      body.append('public_ids[]', id);
+    }
+
+    const url =
+      'https://api.cloudinary.com/v1_1/' +
+      cloudName +
+      '/resources/' +
+      tipo +
+      '/upload';
+
+    await axios.delete(url, {
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      data: body.toString(),
+      timeout: 60_000,
+    });
+  }
+}
+
+/**
+ * Apaga vídeos e probes antigos no Cloudinary para não esgotar os 25 créditos grátis.
+ * Chamado automaticamente antes de renderizar (verificarGravacaoStorage).
+ */
+export async function limparCloudinaryAntigos(): Promise<{
+  apagados: number;
+  megabytes: number;
+}> {
+  if (!cloudinaryConfigurado()) {
+    return { apagados: 0, megabytes: 0 };
+  }
+
+  const diasVideos = diasRetencaoCloudinary();
+  const limiteVideos = Date.now() - diasVideos * 24 * 60 * 60 * 1000;
+  const limiteProbes = Date.now() - 24 * 60 * 60 * 1000;
+
+  console.log(
+    '\n🧹 Limpeza Cloudinary — vídeos > ' +
+      diasVideos +
+      ' dias, probes healthcheck > 1 dia...',
+  );
+
+  const [videos, raw] = await Promise.all([
+    listarRecursosCloudinary('video', 'sidusastro/'),
+    listarRecursosCloudinary('raw', 'sidusastro/healthcheck'),
+  ]);
+
+  const paraApagarVideo: string[] = [];
+  const paraApagarRaw: string[] = [];
+  let bytesTotal = 0;
+
+  for (const item of videos) {
+    const criado = Date.parse(item.created_at);
+    if (Number.isFinite(criado) && criado < limiteVideos) {
+      paraApagarVideo.push(item.public_id);
+      bytesTotal += item.bytes ?? 0;
+    }
+  }
+
+  for (const item of raw) {
+    const criado = Date.parse(item.created_at);
+    if (Number.isFinite(criado) && criado < limiteProbes) {
+      paraApagarRaw.push(item.public_id);
+      bytesTotal += item.bytes ?? 0;
+    }
+  }
+
+  await apagarRecursosCloudinary('video', paraApagarVideo);
+  await apagarRecursosCloudinary('raw', paraApagarRaw);
+
+  const apagados = paraApagarVideo.length + paraApagarRaw.length;
+  const megabytes = Math.round((bytesTotal / 1024 / 1024) * 10) / 10;
+
+  if (apagados === 0) {
+    console.log('✅ Cloudinary limpo — nada antigo para apagar.\n');
+  } else {
+    console.log(
+      '✅ Cloudinary: ' +
+        apagados +
+        ' ficheiro(s) antigo(s) apagado(s) (~' +
+        megabytes +
+        ' MB libertados).\n',
+    );
+  }
+
+  return { apagados, megabytes };
+}
+
 async function uploadFirebaseVideo(
   caminhoLocal: string,
   identificador: string,
@@ -264,6 +439,16 @@ export async function verificarGravacaoStorage(): Promise<ProvedorStorage> {
   }
 
   console.log('\n🔍 A verificar gravação de Storage (antes de renderizar vídeos)...');
+
+  if (usarCloudinaryComoPrincipal() && process.env.SKIP_CLOUDINARY_CLEANUP !== '1') {
+    try {
+      await limparCloudinaryAntigos();
+    } catch (erro) {
+      console.warn(
+        '⚠️ Limpeza Cloudinary falhou (não bloqueia geração): ' + String(erro),
+      );
+    }
+  }
 
   const ficheiroProbe = path.join(os.tmpdir(), 'sidus-storage-probe-' + Date.now() + '.txt');
   fs.writeFileSync(ficheiroProbe, 'sidusastro-storage-probe');

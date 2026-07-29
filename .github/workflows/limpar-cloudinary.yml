@@ -1,0 +1,36 @@
+name: Limpar vídeos antigos Cloudinary
+
+# Liberta espaço no plano grátis (25 créditos/mês).
+# Também corre automaticamente no passo verificar-storage de cada workflow de vídeo.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * 0'  # domingo 03:00 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  limpar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Apagar vídeos Cloudinary antigos
+        run: npx ts-node scripts/limpar-cloudinary.ts
+        env:
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+          CLOUDINARY_RETENTION_DAYS: '14'
