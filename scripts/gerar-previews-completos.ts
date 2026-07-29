@@ -9,7 +9,7 @@ import { escolherGanchoDiario } from '../src/lib/ganchos-diario';
 import { escolherGanchoEspecialComTema } from '../src/lib/ganchos-especial';
 import { obterEtiquetaGanchoMotivacional } from '../src/lib/conteudo-especial';
 import { calcularDuracaoFrames } from '../src/lib/duracao-video';
-import { escolherFundoVideo, escolherFundoVideoZen } from '../src/lib/fundo-video';
+import { escolherFundoVideo, escolherFundoVideoZen, escolherIndiceGeometriaCentro } from '../src/lib/fundo-video';
 import { obterImagemFundo } from '../src/lib/imagem-fundo';
 import { obterImagemFundoZenAstrologia } from '../src/lib/imagem-fundo';
 import { escolherFechoNarracao } from '../src/lib/legenda';
@@ -79,6 +79,7 @@ async function previewDiario(): Promise<string> {
     fecho,
   });
   const fundo = escolherFundoVideo(signo, DATA);
+  const fundoVideoGeometria = escolherIndiceGeometriaCentro(signo, DATA);
   const { ficheiro: imagem, modo: imagemFundoModo } = await obterImagemFundo(signo, DATA);
   const musica = await prepararMusicaParaVideo(signo, DATA, SLOT_MUSICA.HOROSCOPO_0);
 
@@ -92,6 +93,8 @@ async function previewDiario(): Promise<string> {
     imagemFundoUrl: imagem,
     imagemFundoModo,
     fundoVideoSeed: fundo.seed,
+    signoChave: signo,
+    fundoVideoGeometria,
     musicaFundoArquivo: musica,
     duracaoFrames,
     siteMarca: 'sidusastro.com',
@@ -111,6 +114,7 @@ async function previewMotivacionalZen(): Promise<string> {
   });
   const { ficheiro: imagem, modo: imagemFundoModo } = await obterImagemFundoZenAstrologia('preview-motivacional', DATA);
   const fundo = escolherFundoVideoZen('preview-motivacional', DATA);
+  const fundoVideoGeometria = escolherIndiceGeometriaCentro('preview-motivacional', DATA);
   const musica = await prepararMusicaEspecial('preview-motivacional', DATA, 'zen');
 
   return renderizarPreview('preview-motivacional-zen', {
@@ -123,6 +127,8 @@ async function previewMotivacionalZen(): Promise<string> {
     imagemFundoUrl: imagem,
     imagemFundoModo,
     fundoVideoSeed: fundo.seed,
+    signoChave: 'caranguejo',
+    fundoVideoGeometria,
     musicaFundoArquivo: musica,
     duracaoFrames,
     siteMarca: 'sidusastro.com',

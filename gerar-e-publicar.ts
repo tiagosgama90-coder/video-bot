@@ -6,7 +6,7 @@ import { publicarEmTodosOsCanais } from './src/lib/buffer';
 import { obterTextoHoroscopo, extrairAteSegundoPontoFinal } from './src/lib/horoscopo';
 import { gerarLegendas } from './src/lib/legenda';
 import { escolherFechoVoz } from './src/lib/fechos-narracao';
-import { escolherFundoVideoZen } from './src/lib/fundo-video';
+import { escolherFundoVideoZen, escolherIndiceGeometriaCentro } from './src/lib/fundo-video';
 import { calcularDuracaoFrames, DURACAO_MAXIMA_DIARIO_SEG } from './src/lib/duracao-video';
 import { calcularSegmentosProgressivos } from './src/lib/texto-progressivo';
 import {
@@ -44,7 +44,9 @@ interface PropsVideo {
   previsao: string;
   hookTexto: string;
   fechoTexto: string;
-  fundoVideoSeed: number;
+  fundoVideoSeed?: number;
+  signoChave?: string;
+  fundoVideoGeometria?: number;
   musicaFundoArquivo: string;
   duracaoFrames: number;
   frameInicioPrevisao: number;
@@ -106,7 +108,8 @@ async function processarSigno(
   console.log('✂️ Vídeo (1.ª + 2.ª frase por ponto final): "' + previsaoVideo + '"');
 
   const { seed: fundoVideoSeed } = escolherFundoVideoZen(signo, data);
-  console.log('🌌 Fundo cosmos animado (seed ' + fundoVideoSeed + ')');
+  const fundoVideoGeometria = escolherIndiceGeometriaCentro(signo, data);
+  console.log('🌌 Fundo cosmos animado (seed ' + fundoVideoSeed + ', geometria ' + fundoVideoGeometria + ')');
   const slotMusica =
     SLOTS_MUSICA_HOROSCOPO[indiceSlot] ??
     SLOTS_MUSICA_HOROSCOPO[indiceSlot % SLOTS_MUSICA_HOROSCOPO.length];
@@ -158,6 +161,8 @@ async function processarSigno(
     hookTexto,
     fechoTexto: fechoEcra,
     fundoVideoSeed,
+    signoChave: signo,
+    fundoVideoGeometria,
     musicaFundoArquivo,
     duracaoFrames,
     frameInicioPrevisao,

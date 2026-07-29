@@ -6,17 +6,18 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { calcularDuracaoFrames } from '../src/lib/duracao-video';
-import { nomeGeometriaCosmica } from '../src/components/GeometriaCosmicaCentro';
+import { NOMES_VARIANTES_GEOMETRIA, nomeGeometriaCosmica } from '../src/components/GeometriaCosmicaCentro';
 import { prepararMusicaEspecial } from '../src/lib/musicas';
 import { obterVolumeMusica } from '../src/lib/project-config';
 
 const ART = '/opt/cursor/artifacts/previews-cosmos';
-const SEEDS = [0, 17, 42, 99];
+const VARIANTES = NOMES_VARIANTES_GEOMETRIA.length;
+const SIGNOS_PREVIEW = ['carneiro', 'leao', 'escorpiao', 'peixes'] as const;
 
-async function renderizar(seed: number): Promise<string> {
-  const nome = nomeGeometriaCosmica(seed);
-  const output = path.join('./output', `preview-cosmos-${nome}.mp4`);
-  const destino = path.join(ART, `exemplo-cosmos-${nome}.mp4`);
+async function renderizar(variante: number, signoChave: string, seed: number): Promise<string> {
+  const nome = nomeGeometriaCosmica(variante);
+  const output = path.join('./output', `preview-cosmos-${nome}-${signoChave}.mp4`);
+  const destino = path.join(ART, `exemplo-cosmos-${nome}-${signoChave}.mp4`);
 
   execSync('ffmpeg -y -f lavfi -i anullsrc=r=44100:cl=mono -t 10 -q:a 9 ./public/narracao.mp3', {
     stdio: 'pipe',
@@ -32,6 +33,8 @@ async function renderizar(seed: number): Promise<string> {
     frameInicioPrevisao: 60,
     frameInicioFecho: duracaoFrames - 90,
     fundoVideoSeed: seed,
+    signoChave,
+    fundoVideoGeometria: variante,
     musicaFundoArquivo: musica,
     duracaoFrames,
     siteMarca: 'sidusastro.com',
@@ -53,9 +56,11 @@ async function executar(): Promise<void> {
   fs.mkdirSync('./output', { recursive: true });
   fs.mkdirSync('./public', { recursive: true });
 
-  for (const seed of SEEDS) {
-    console.log(`\n🌌 Seed ${seed} (${nomeGeometriaCosmica(seed)})...`);
-    await renderizar(seed);
+  for (let variante = 0; variante < VARIANTES; variante++) {
+    const signoChave = SIGNOS_PREVIEW[variante % SIGNOS_PREVIEW.length];
+    const seed = variante * 17 + 3;
+    console.log(`\n🌌 Variante ${variante} (${nomeGeometriaCosmica(variante)}) — ${signoChave}...`);
+    await renderizar(variante, signoChave, seed);
   }
 
   if (fs.existsSync('./public/props-temporarias.json')) {

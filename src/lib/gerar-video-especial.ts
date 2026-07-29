@@ -5,7 +5,7 @@ import { publicarEmTodosOsCanais } from './buffer';
 import { horaFusoParaISO, resolverDueAtFuturo } from './buffer-agenda';
 import { calcularDuracaoFrames } from './duracao-video';
 import { escolherGanchoEspecialComTema } from './ganchos-especial';
-import { escolherFundoVideo, escolherFundoVideoZen, type TemaFundoMistico } from './fundo-video';
+import { escolherFundoVideo, escolherFundoVideoZen, escolherIndiceGeometriaCentro, type TemaFundoMistico } from './fundo-video';
 import { obterImagemFundoZenAstrologia } from './imagem-fundo';
 import { escolherFechoVoz } from './legenda';
 import {
@@ -35,6 +35,8 @@ interface PropsVideoEspecial {
   frameInicioFecho: number;
   fundoVideoTema?: TemaFundoMistico;
   fundoVideoSeed?: number;
+  signoChave?: string;
+  fundoVideoGeometria?: number;
   imagemFundoUrl?: string;
   imagemFundoModo?: 'color' | 'mono';
   musicaFundoArquivo: string;
@@ -95,6 +97,7 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
 
   const fundo = escolherFundoVideoZen(idPublicacao, opcoes.data);
   fundoVideoSeed = fundo.seed;
+  const fundoVideoGeometria = escolherIndiceGeometriaCentro(idPublicacao, opcoes.data);
 
   if (opcoes.fundoZenAstrologia) {
     const imagem = await obterImagemFundoZenAstrologia(idPublicacao, opcoes.data);
@@ -190,6 +193,8 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
     frameInicioFecho,
     fundoVideoTema,
     fundoVideoSeed,
+    signoChave: signoChave,
+    fundoVideoGeometria,
     imagemFundoUrl,
     imagemFundoModo,
     musicaFundoArquivo,

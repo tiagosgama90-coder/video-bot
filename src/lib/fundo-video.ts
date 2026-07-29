@@ -57,6 +57,11 @@ export function escolherFundoVideoZen(id: string, data: string): ConfigFundoVide
   return { tema, seed };
 }
 
+/** Índice da geometria central — independente do seed de estrelas/nebulosas (varia por signo + dia) */
+export function escolherIndiceGeometriaCentro(signo: string, data: string): number {
+  return hashChave(`${data}|${signo}|geometria-centro-zodiaco-v2`) % 10;
+}
+
 /** Vídeos zen usam fundo cósmico preto animado (sem imagens IA esticadas) */
 export function deveUsarFundoAnimadoZen(_id: string, _data: string): boolean {
   return true;
