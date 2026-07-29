@@ -1,13 +1,17 @@
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame, useVideoConfig } from 'remotion';
-import { normalizarIndiceSigno, SIMBOLOS_ZODIACO_UNICODE } from '../lib/geometria-zodiaco';
+import {
+  brilhoSignoZodiaco,
+  corComAlpha,
+  corSignoZodiaco,
+  normalizarIndiceSigno,
+  paletaVarianteGeometria,
+  SIMBOLOS_ZODIACO_UNICODE,
+} from '../lib/geometria-zodiaco';
 import { PALETA_SIDUS } from '../lib/paleta-visual';
 
-const COR = PALETA_SIDUS.destaque;
-const BRILHO = PALETA_SIDUS.destaqueSombra;
-
-/** Opacidade baixa — geometria subtil no centro, não mandala dominante */
-export const OPACIDADE_GEOMETRIA_CENTRO = 0.3;
+/** Opacidade subtil — cores vivas por baixo para não dominar o vídeo */
+export const OPACIDADE_GEOMETRIA_CENTRO = 0.38;
 
 export interface GeometriaCosmicaCentroProps {
   seed: number;
@@ -23,6 +27,7 @@ interface VarianteCtx {
   tamanho: number;
   signoIndice: number;
   frame: number;
+  paleta: readonly [string, string, string];
 }
 
 function Anel({
@@ -30,13 +35,16 @@ function Anel({
   cy,
   diametro,
   grossura = 1.5,
+  cor,
 }: {
   cx: number;
   cy: number;
   diametro: number;
   grossura?: number;
+  cor: string;
 }): React.ReactElement {
   const r = diametro / 2;
+  const brilho = corComAlpha(cor, 0.55);
   return (
     <div
       style={{
@@ -46,8 +54,8 @@ function Anel({
         width: diametro,
         height: diametro,
         borderRadius: '50%',
-        border: `${grossura}px solid ${COR}`,
-        boxShadow: `0 0 20px ${BRILHO}`,
+        border: `${grossura}px solid ${cor}`,
+        boxShadow: `0 0 20px ${brilho}, 0 0 6px ${corComAlpha(cor, 0.35)}`,
       }}
     />
   );
@@ -67,6 +75,8 @@ function SimboloZodiaco({
   destaque?: boolean;
 }): React.ReactElement {
   const simbolo = SIMBOLOS_ZODIACO_UNICODE[normalizarIndiceSigno(indice)];
+  const cor = corSignoZodiaco(indice);
+  const brilho = brilhoSignoZodiaco(indice);
   return (
     <div
       style={{
@@ -77,12 +87,12 @@ function SimboloZodiaco({
         fontSize: tamanho,
         fontFamily: 'Georgia, "Times New Roman", serif',
         fontWeight: destaque ? 700 : 400,
-        color: COR,
+        color: cor,
         textShadow: destaque
-          ? `0 0 28px ${BRILHO}, 0 0 8px ${COR}`
-          : `0 0 14px ${BRILHO}`,
-        WebkitTextStroke: destaque ? `0.5px ${COR}` : undefined,
-        opacity: destaque ? 1 : 0.85,
+          ? `0 0 28px ${brilho}, 0 0 12px ${cor}, 0 0 4px ${PALETA_SIDUS.destaqueForte}`
+          : `0 0 16px ${brilho}, 0 0 6px ${corComAlpha(cor, 0.7)}`,
+        WebkitTextStroke: destaque ? `0.6px ${corComAlpha(cor, 0.9)}` : undefined,
+        opacity: destaque ? 1 : 0.92,
       }}
     >
       {simbolo}
@@ -98,16 +108,17 @@ function posicoesZodiaco(cx: number, cy: number, raio: number): Array<{ x: numbe
 }
 
 /** Roda zodiacal — 12 signos em órbita, rotação lenta */
-function VarianteRodaZodiaco({ cx, cy, tamanho, signoIndice, frame }: VarianteCtx): React.ReactElement {
+function VarianteRodaZodiaco({ cx, cy, tamanho, signoIndice, frame, paleta }: VarianteCtx): React.ReactElement {
   const raio = tamanho * 0.36;
   const posicoes = posicoesZodiaco(cx, cy, raio);
   const pulso = 1 + 0.06 * Math.sin(frame * 0.08);
+  const corSigno = corSignoZodiaco(signoIndice);
 
   return (
     <>
-      <Anel cx={cx} cy={cy} diametro={tamanho * 0.78} grossura={1.5} />
-      <Anel cx={cx} cy={cy} diametro={tamanho * 0.52} grossura={1} />
-      <Anel cx={cx} cy={cy} diametro={tamanho * 0.26} grossura={1.5} />
+      <Anel cx={cx} cy={cy} diametro={tamanho * 0.78} grossura={1.5} cor={paleta[0]} />
+      <Anel cx={cx} cy={cy} diametro={tamanho * 0.52} grossura={1} cor={paleta[1]} />
+      <Anel cx={cx} cy={cy} diametro={tamanho * 0.26} grossura={1.5} cor={corSigno} />
       {posicoes.map((p, i) => (
         <SimboloZodiaco
           key={`zod-roda-${i}`}
@@ -130,7 +141,7 @@ function VarianteRodaZodiaco({ cx, cy, tamanho, signoIndice, frame }: VarianteCt
 }
 
 /** Mandala 12 pétalas com signos — simétrica */
-function VarianteMandalaZodiacal({ cx, cy, tamanho, signoIndice, frame }: VarianteCtx): React.ReactElement {
+function VarianteMandalaZodiacal({ cx, cy, tamanho, signoIndice, paleta }: VarianteCtx): React.ReactElement {
   const raioExt = tamanho * 0.38;
   const raioInt = tamanho * 0.22;
 
@@ -146,6 +157,7 @@ function VarianteMandalaZodiacal({ cx, cy, tamanho, signoIndice, frame }: Varian
         const dy = y2 - y1;
         const len = Math.sqrt(dx * dx + dy * dy);
         const rot = (Math.atan2(dy, dx) * 180) / Math.PI;
+        const corPetala = i % 3 === 0 ? paleta[0] : i % 3 === 1 ? paleta[1] : paleta[2];
         return (
           <div
             key={`petala-${i}`}
@@ -155,15 +167,15 @@ function VarianteMandalaZodiacal({ cx, cy, tamanho, signoIndice, frame }: Varian
               top: y1,
               width: len,
               height: 2,
-              background: `linear-gradient(90deg, ${COR}66, ${COR}22, transparent)`,
+              background: `linear-gradient(90deg, ${corComAlpha(corPetala, 0.75)}, ${corComAlpha(corPetala, 0.25)}, transparent)`,
               transformOrigin: 'left center',
               transform: `rotate(${rot}deg)`,
             }}
           />
         );
       })}
-      <Anel cx={cx} cy={cy} diametro={tamanho * 0.72} grossura={1} />
-      <Anel cx={cx} cy={cy} diametro={tamanho * 0.44} grossura={1.5} />
+      <Anel cx={cx} cy={cy} diametro={tamanho * 0.72} grossura={1} cor={paleta[0]} />
+      <Anel cx={cx} cy={cy} diametro={tamanho * 0.44} grossura={1.5} cor={paleta[2]} />
       {posicoesZodiaco(cx, cy, raioExt).map((p, i) => (
         <SimboloZodiaco
           key={`zod-mand-${i}`}
@@ -180,18 +192,29 @@ function VarianteMandalaZodiacal({ cx, cy, tamanho, signoIndice, frame }: Varian
 }
 
 /** Signo do dia em destaque — esboço central + anéis */
-function VarianteSignoCentral({ cx, cy, tamanho, signoIndice }: VarianteCtx): React.ReactElement {
+function VarianteSignoCentral({ cx, cy, tamanho, signoIndice, paleta }: VarianteCtx): React.ReactElement {
+  const corSigno = corSignoZodiaco(signoIndice);
+  const coresAneis = [corSigno, paleta[0], paleta[1], paleta[2]];
   return (
     <>
       {[0.32, 0.48, 0.64, 0.8].map((f, i) => (
-        <Anel key={`sc-${i}`} cx={cx} cy={cy} diametro={tamanho * f} grossura={i === 0 ? 1.5 : 1} />
+        <Anel key={`sc-${i}`} cx={cx} cy={cy} diametro={tamanho * f} grossura={i === 0 ? 1.5 : 1} cor={coresAneis[i]} />
       ))}
       {Array.from({ length: 12 }, (_, i) => {
         const ang = (i / 12) * Math.PI * 2;
         const r = tamanho * 0.4;
         const px = cx + Math.cos(ang) * r;
         const py = cy + Math.sin(ang) * r;
-        return <Anel key={`tick-${i}`} cx={px} cy={py} diametro={tamanho * 0.025} grossura={1} />;
+        return (
+          <Anel
+            key={`tick-${i}`}
+            cx={px}
+            cy={py}
+            diametro={tamanho * 0.025}
+            grossura={1}
+            cor={corSignoZodiaco(i)}
+          />
+        );
       })}
       <SimboloZodiaco x={cx} y={cy} indice={signoIndice} tamanho={tamanho * 0.28} destaque />
     </>
@@ -199,12 +222,13 @@ function VarianteSignoCentral({ cx, cy, tamanho, signoIndice }: VarianteCtx): Re
 }
 
 /** Órbitas com os 12 glifos (em vez de pontos) */
-function VarianteOrbitasSignos({ cx, cy, tamanho, signoIndice }: VarianteCtx): React.ReactElement {
+function VarianteOrbitasSignos({ cx, cy, tamanho, signoIndice, paleta }: VarianteCtx): React.ReactElement {
   const raio = tamanho * 0.34;
+  const coresOrbita = [paleta[0], paleta[1], paleta[2], corSignoZodiaco(signoIndice)];
   return (
     <>
       {[0.28, 0.42, 0.56, 0.7].map((f, i) => (
-        <Anel key={`orb-${i}`} cx={cx} cy={cy} diametro={tamanho * f} grossura={1} />
+        <Anel key={`orb-${i}`} cx={cx} cy={cy} diametro={tamanho * f} grossura={1} cor={coresOrbita[i]} />
       ))}
       {posicoesZodiaco(cx, cy, raio).map((p, i) => (
         <SimboloZodiaco
@@ -221,11 +245,12 @@ function VarianteOrbitasSignos({ cx, cy, tamanho, signoIndice }: VarianteCtx): R
 }
 
 /** Anéis concêntricos + roda exterior de signos */
-function VarianteAneisZodiacais({ cx, cy, tamanho, signoIndice }: VarianteCtx): React.ReactElement {
+function VarianteAneisZodiacais({ cx, cy, tamanho, signoIndice, paleta }: VarianteCtx): React.ReactElement {
+  const coresAneis = [paleta[0], paleta[1], paleta[2], corSignoZodiaco(signoIndice)];
   return (
     <>
       {Array.from({ length: 4 }, (_, i) => (
-        <Anel key={`anel-${i}`} cx={cx} cy={cy} diametro={tamanho * 0.88 - i * 72} grossura={1.5} />
+        <Anel key={`anel-${i}`} cx={cx} cy={cy} diametro={tamanho * 0.88 - i * 72} grossura={1.5} cor={coresAneis[i]} />
       ))}
       {posicoesZodiaco(cx, cy, tamanho * 0.4).map((p, i) => (
         <SimboloZodiaco
@@ -240,6 +265,7 @@ function VarianteAneisZodiacais({ cx, cy, tamanho, signoIndice }: VarianteCtx): 
       {Array.from({ length: 8 }, (_, i) => {
         const ang = (i / 8) * Math.PI * 2;
         const r = tamanho * 0.38;
+        const corRaio = i % 2 === 0 ? paleta[0] : paleta[1];
         return (
           <div
             key={`raio-${i}`}
@@ -251,7 +277,7 @@ function VarianteAneisZodiacais({ cx, cy, tamanho, signoIndice }: VarianteCtx): 
               height: r,
               transformOrigin: 'top center',
               transform: `rotate(${(ang * 180) / Math.PI}deg)`,
-              background: `linear-gradient(180deg, ${COR}99, transparent)`,
+              background: `linear-gradient(180deg, ${corComAlpha(corRaio, 0.85)}, transparent)`,
             }}
           />
         );
@@ -260,7 +286,7 @@ function VarianteAneisZodiacais({ cx, cy, tamanho, signoIndice }: VarianteCtx): 
   );
 }
 
-function VarianteMetatron({ cx, cy, tamanho }: VarianteCtx): React.ReactElement {
+function VarianteMetatron({ cx, cy, tamanho, paleta }: VarianteCtx): React.ReactElement {
   const r = tamanho * 0.32;
   const pontos = Array.from({ length: 6 }, (_, i) => {
     const ang = (i / 6) * Math.PI * 2 - Math.PI / 2;
@@ -274,6 +300,7 @@ function VarianteMetatron({ cx, cy, tamanho }: VarianteCtx): React.ReactElement 
         const dy = prox.y - p.y;
         const len = Math.sqrt(dx * dx + dy * dy);
         const ang = (Math.atan2(dy, dx) * 180) / Math.PI;
+        const cor = i % 3 === 0 ? paleta[0] : i % 3 === 1 ? paleta[1] : paleta[2];
         return (
           <div
             key={`hex-${i}`}
@@ -283,25 +310,26 @@ function VarianteMetatron({ cx, cy, tamanho }: VarianteCtx): React.ReactElement 
               top: p.y,
               width: len,
               height: 1.5,
-              background: `linear-gradient(90deg, ${COR}88, ${COR}44)`,
+              background: `linear-gradient(90deg, ${corComAlpha(cor, 0.9)}, ${corComAlpha(cor, 0.45)})`,
               transformOrigin: 'left center',
               transform: `rotate(${ang}deg)`,
             }}
           />
         );
       })}
-      <Anel cx={cx} cy={cy} diametro={tamanho * 0.18} grossura={1.5} />
-      <Anel cx={cx} cy={cy} diametro={tamanho * 0.64} grossura={1} />
+      <Anel cx={cx} cy={cy} diametro={tamanho * 0.18} grossura={1.5} cor={paleta[2]} />
+      <Anel cx={cx} cy={cy} diametro={tamanho * 0.64} grossura={1} cor={paleta[0]} />
     </>
   );
 }
 
-function VarianteEstrelaOctogonal({ cx, cy, tamanho }: VarianteCtx): React.ReactElement {
+function VarianteEstrelaOctogonal({ cx, cy, tamanho, paleta }: VarianteCtx): React.ReactElement {
   const r = tamanho * 0.38;
   return (
     <>
       {Array.from({ length: 8 }, (_, i) => {
         const ang = (i / 8) * Math.PI * 2 - Math.PI / 2;
+        const cor = i % 2 === 0 ? paleta[0] : paleta[1];
         return (
           <div
             key={`eixo-${i}`}
@@ -313,18 +341,18 @@ function VarianteEstrelaOctogonal({ cx, cy, tamanho }: VarianteCtx): React.React
               height: r,
               transformOrigin: 'top center',
               transform: `rotate(${(ang * 180) / Math.PI}deg)`,
-              background: `linear-gradient(180deg, ${COR}aa, transparent)`,
+              background: `linear-gradient(180deg, ${corComAlpha(cor, 0.95)}, transparent)`,
             }}
           />
         );
       })}
-      <Anel cx={cx} cy={cy} diametro={tamanho * 0.22} grossura={1.5} />
-      <Anel cx={cx} cy={cy} diametro={tamanho * 0.5} grossura={1} />
+      <Anel cx={cx} cy={cy} diametro={tamanho * 0.22} grossura={1.5} cor={paleta[2]} />
+      <Anel cx={cx} cy={cy} diametro={tamanho * 0.5} grossura={1} cor={paleta[0]} />
     </>
   );
 }
 
-function VarianteGradeCosmica({ cx, cy, tamanho }: VarianteCtx): React.ReactElement {
+function VarianteGradeCosmica({ cx, cy, tamanho, paleta }: VarianteCtx): React.ReactElement {
   const metade = tamanho * 0.36;
   const passo = tamanho * 0.18;
   const linhas: Array<{ x1: number; y1: number; x2: number; y2: number }> = [];
@@ -339,6 +367,7 @@ function VarianteGradeCosmica({ cx, cy, tamanho }: VarianteCtx): React.ReactElem
         const dy = l.y2 - l.y1;
         const len = Math.sqrt(dx * dx + dy * dy);
         const ang = (Math.atan2(dy, dx) * 180) / Math.PI;
+        const cor = i % 3 === 0 ? paleta[0] : i % 3 === 1 ? paleta[1] : paleta[2];
         return (
           <div
             key={`grid-${i}`}
@@ -348,19 +377,19 @@ function VarianteGradeCosmica({ cx, cy, tamanho }: VarianteCtx): React.ReactElem
               top: l.y1,
               width: len,
               height: 1,
-              background: `linear-gradient(90deg, transparent, ${COR}55, transparent)`,
+              background: `linear-gradient(90deg, transparent, ${corComAlpha(cor, 0.7)}, transparent)`,
               transformOrigin: 'left center',
               transform: `rotate(${ang}deg)`,
             }}
           />
         );
       })}
-      <Anel cx={cx} cy={cy} diametro={tamanho * 0.12} grossura={1.5} />
+      <Anel cx={cx} cy={cy} diametro={tamanho * 0.12} grossura={1.5} cor={paleta[2]} />
     </>
   );
 }
 
-function VarianteCruzCosmica({ cx, cy, tamanho }: VarianteCtx): React.ReactElement {
+function VarianteCruzCosmica({ cx, cy, tamanho, paleta }: VarianteCtx): React.ReactElement {
   const r = tamanho * 0.4;
   return (
     <>
@@ -371,7 +400,7 @@ function VarianteCruzCosmica({ cx, cy, tamanho }: VarianteCtx): React.ReactEleme
           top: cy - 1,
           width: r * 2,
           height: 2,
-          background: `linear-gradient(90deg, transparent, ${COR}88, transparent)`,
+          background: `linear-gradient(90deg, transparent, ${corComAlpha(paleta[0], 0.9)}, ${corComAlpha(paleta[1], 0.9)}, transparent)`,
         }}
       />
       <div
@@ -381,29 +410,30 @@ function VarianteCruzCosmica({ cx, cy, tamanho }: VarianteCtx): React.ReactEleme
           top: cy - r,
           width: 2,
           height: r * 2,
-          background: `linear-gradient(180deg, transparent, ${COR}88, transparent)`,
+          background: `linear-gradient(180deg, transparent, ${corComAlpha(paleta[2], 0.9)}, ${corComAlpha(paleta[0], 0.9)}, transparent)`,
         }}
       />
-      <Anel cx={cx} cy={cy} diametro={tamanho * 0.2} grossura={1.5} />
-      <Anel cx={cx} cy={cy} diametro={tamanho * 0.55} grossura={1} />
+      <Anel cx={cx} cy={cy} diametro={tamanho * 0.2} grossura={1.5} cor={paleta[1]} />
+      <Anel cx={cx} cy={cy} diametro={tamanho * 0.55} grossura={1} cor={paleta[2]} />
     </>
   );
 }
 
 /** Flor de vida simplificada — 6 círculos + signo central */
-function VarianteFlorCosmica({ cx, cy, tamanho, signoIndice }: VarianteCtx): React.ReactElement {
+function VarianteFlorCosmica({ cx, cy, tamanho, signoIndice, paleta }: VarianteCtx): React.ReactElement {
   const r = tamanho * 0.14;
   const centros = [{ x: cx, y: cy }];
   for (let i = 0; i < 6; i++) {
     const ang = (i / 6) * Math.PI * 2;
     centros.push({ x: cx + Math.cos(ang) * r, y: cy + Math.sin(ang) * r });
   }
+  const coresFlor = [corSignoZodiaco(signoIndice), paleta[0], paleta[1], paleta[2]];
   return (
     <>
       {centros.map((c, i) => (
-        <Anel key={`flor-${i}`} cx={c.x} cy={c.y} diametro={r * 2} grossura={1} />
+        <Anel key={`flor-${i}`} cx={c.x} cy={c.y} diametro={r * 2} grossura={1} cor={coresFlor[i % coresFlor.length]} />
       ))}
-      <Anel cx={cx} cy={cy} diametro={tamanho * 0.68} grossura={1} />
+      <Anel cx={cx} cy={cy} diametro={tamanho * 0.68} grossura={1} cor={paleta[0]} />
       <SimboloZodiaco x={cx} y={cy} indice={signoIndice} tamanho={tamanho * 0.12} destaque />
     </>
   );
@@ -464,7 +494,8 @@ export function GeometriaCosmicaCentro({
   const rotacao = frame * 0.022 + seed * 0.11;
   const rotacaoContraria = -frame * 0.014 + seed * 0.07;
   const Variante = VARIANTES[indice];
-  const ctx: VarianteCtx = { cx, cy, tamanho: quadrado * 0.92, signoIndice: signo, frame };
+  const paleta = paletaVarianteGeometria(indice);
+  const ctx: VarianteCtx = { cx, cy, tamanho: quadrado * 0.92, signoIndice: signo, frame, paleta };
 
   const usaContrarrotacao = indice <= 4;
 

@@ -41,6 +41,7 @@ exigirTexto('./src/components/FundoCosmicoSidus.tsx', 'GeometriaCosmicaCentro', 
 exigirTexto('./src/components/GeometriaCosmicaCentro.tsx', 'OPACIDADE_GEOMETRIA_CENTRO', 'Vídeo: geometria opacidade baixa');
 exigirTexto('./src/components/GeometriaCosmicaCentro.tsx', 'VarianteMetatron', 'Vídeo: variantes geometria cósmica');
 exigirTexto('./src/components/GeometriaCosmicaCentro.tsx', 'VarianteRodaZodiaco', 'Vídeo: roda zodiacal animada');
+exigirTexto('./src/lib/geometria-zodiaco.ts', 'CORES_SIGNO_ZODIACO', 'Vídeo: cores por signo na geometria');
 exigirTexto('./src/lib/fundo-video.ts', 'escolherIndiceGeometriaCentro', 'Vídeo: geometria central por signo+data');
 exigirTexto('./src/components/OverlayLegibilidadeTexto.tsx', 'modoImagemZen', 'Vídeo: overlay leve com imagem zen');
 exigirTexto('./src/lib/legenda.ts', 'prefixoInstagramProfissional', 'Instagram: prefixo profissional sem urgência');
