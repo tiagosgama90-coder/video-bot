@@ -1,1 +1,1 @@
-Recuperação manual 2026-07-28 — fix TS6133 legenda.ts bloqueava gerar-e-publicar.ts no CI.
+Recuperação manual 2026-07-29 — fix CLOUDINARY_* nos passos Gerar dos workflows.
