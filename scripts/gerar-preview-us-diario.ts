@@ -151,6 +151,12 @@ async function publicarPreviewsOnline(caminhos: string[]): Promise<void> {
     const id = path.basename(caminho, '.mp4');
     const url = await uploadVideoPublico(caminho, id, DATA, 'previews-us');
     console.log('\n🔗 Preview online (' + id + '):\n   ' + url);
+    if (process.env.GITHUB_STEP_SUMMARY) {
+      fs.appendFileSync(
+        process.env.GITHUB_STEP_SUMMARY,
+        '\n### ' + id + '\n\n[Abrir vídeo](' + url + ')\n\n',
+      );
+    }
   }
 }
 
