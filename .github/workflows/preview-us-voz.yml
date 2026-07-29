@@ -49,7 +49,9 @@ jobs:
 
       - name: Upload previews
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: preview-us-voz-diario
           path: output/preview-us-leo-*.mp4
           retention-days: 7
+          if-no-files-found: warn
