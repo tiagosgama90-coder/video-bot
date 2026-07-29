@@ -16,6 +16,14 @@ function cloudinaryConfigurado(): boolean {
   );
 }
 
+/** Cloudinary configurado = hospedagem principal (não precisa de cartão no Google). */
+function usarCloudinaryComoPrincipal(): boolean {
+  if (process.env.STORAGE_PROVIDER === 'firebase') {
+    return false;
+  }
+  return process.env.STORAGE_PROVIDER === 'cloudinary' || cloudinaryConfigurado();
+}
+
 export function ehErroBillingFirebase(erro: unknown): boolean {
   const texto = String(erro);
   return (
@@ -28,9 +36,11 @@ export function ehErroBillingFirebase(erro: unknown): boolean {
 export function mensagemErroStoragePt(erro: unknown): string {
   if (ehErroBillingFirebase(erro)) {
     return (
-      '❌ Firebase Storage indisponível: a faturação do projeto Google Cloud está desativada.\n' +
-      '   → Abre https://console.cloud.google.com/billing e reativa a faturação do projeto sidus-app.\n' +
-      '   → Alternativa: adiciona secrets CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY e CLOUDINARY_API_SECRET no GitHub.'
+      '❌ Firebase Storage bloqueado — o Google exige cartão associado (plano Blaze), mesmo para uso grátis.\n' +
+      '   Se não consegues associar cartão, usa Cloudinary (grátis, sem cartão):\n' +
+      '   1. Cria conta em https://cloudinary.com/users/register_free\n' +
+      '   2. No GitHub → Settings → Secrets, adiciona CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY e CLOUDINARY_API_SECRET\n' +
+      '   3. Volta a disparar o workflow — o bot ignora o Firebase automaticamente.'
     );
   }
   return '❌ Falha ao gravar vídeo para o Buffer: ' + String(erro);
@@ -221,7 +231,8 @@ async function uploadFirebaseVideo(
 
 /**
  * Envia vídeo com URL pública estável para o Buffer.
- * Firebase primeiro; Cloudinary como fallback se billing estiver desativado.
+ * Com Cloudinary configurado: usa só Cloudinary (sem cartão Google).
+ * Senão: Firebase.
  */
 export async function uploadVideoPublico(
   caminhoLocal: string,
@@ -229,11 +240,16 @@ export async function uploadVideoPublico(
   data: string,
   subpasta = 'videos',
 ): Promise<string> {
+  if (usarCloudinaryComoPrincipal()) {
+    console.log('☁️ Storage: Cloudinary (sem Firebase / sem cartão Google)');
+    return uploadCloudinaryVideo(caminhoLocal, subpasta + '/' + data, identificador);
+  }
+
   try {
     return await uploadFirebaseVideo(caminhoLocal, identificador, data, subpasta);
   } catch (erro) {
-    if (cloudinaryConfigurado() && (ehErroBillingFirebase(erro) || process.env.STORAGE_PROVIDER === 'cloudinary')) {
-      console.log('⚠️ Firebase indisponível — a usar Cloudinary como fallback...');
+    if (cloudinaryConfigurado()) {
+      console.log('⚠️ Firebase falhou — a usar Cloudinary...');
       return uploadCloudinaryVideo(caminhoLocal, subpasta + '/' + data, identificador);
     }
     throw new Error(mensagemErroStoragePt(erro));
@@ -244,12 +260,7 @@ export async function uploadVideoPublico(
 export async function verificarGravacaoStorage(): Promise<ProvedorStorage> {
   if (process.env.SKIP_STORAGE_CHECK === '1') {
     console.log('⏭️ SKIP_STORAGE_CHECK=1 — verificação de Storage ignorada.');
-    return cloudinaryConfigurado() ? 'cloudinary' : 'firebase';
-  }
-
-  const bucketName = process.env.FIREBASE_STORAGE_BUCKET;
-  if (!bucketName) {
-    throw new Error('FIREBASE_STORAGE_BUCKET não definido');
+    return usarCloudinaryComoPrincipal() ? 'cloudinary' : 'firebase';
   }
 
   console.log('\n🔍 A verificar gravação de Storage (antes de renderizar vídeos)...');
@@ -258,6 +269,17 @@ export async function verificarGravacaoStorage(): Promise<ProvedorStorage> {
   fs.writeFileSync(ficheiroProbe, 'sidusastro-storage-probe');
 
   try {
+    if (usarCloudinaryComoPrincipal()) {
+      await uploadCloudinaryArquivo(ficheiroProbe, 'healthcheck', 'probe-' + Date.now(), 'raw');
+      console.log('✅ Cloudinary OK — vídeos vão para o Buffer sem Firebase\n');
+      return 'cloudinary';
+    }
+
+    const bucketName = process.env.FIREBASE_STORAGE_BUCKET;
+    if (!bucketName) {
+      throw new Error('FIREBASE_STORAGE_BUCKET não definido');
+    }
+
     inicializarFirebase();
     const bucket = getStorage().bucket(bucketName);
     const destino = 'healthcheck/probe-' + Date.now() + '.txt';
@@ -273,9 +295,9 @@ export async function verificarGravacaoStorage(): Promise<ProvedorStorage> {
     console.log('✅ Firebase Storage OK — gravação disponível\n');
     return 'firebase';
   } catch (erro) {
-    if (cloudinaryConfigurado()) {
+    if (cloudinaryConfigurado() && !usarCloudinaryComoPrincipal()) {
       await uploadCloudinaryArquivo(ficheiroProbe, 'healthcheck', 'probe-' + Date.now(), 'raw');
-      console.log('✅ Cloudinary OK — Firebase sem billing, fallback activo\n');
+      console.log('✅ Cloudinary OK — Firebase indisponível, fallback activo\n');
       return 'cloudinary';
     }
     throw new Error(mensagemErroStoragePt(erro));
