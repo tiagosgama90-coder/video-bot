@@ -76,9 +76,9 @@ export const CTA_AFILIADOS_PT =
 export const CTA_AFILIADOS_EN =
   '💰 50% commission → sidusastro.com/en';
 
-/** Palavras-chave para ManyChat / resposta manual — legendas Instagram */
+/** Palavras-chave para ManyChat / resposta manual — legendas Instagram (só Buffer, nunca no vídeo) */
 export const CTA_COMENTARIO_INSTAGRAM_PT =
-  '💬 Comenta MAPA (mapa grátis) ou PREMIUM (acesso vitalício) - respondemos no direct.';
+  '🔮 Mapa astral, tarot e oráculo grátis — acesse sidusastro.com/login (link na bio).';
 
 export const CTA_COMENTARIO_INSTAGRAM_EN =
-  '💬 Comment MAP (free chart) or PREMIUM (lifetime access) - we reply in DM.';
+  '🔮 Free birth chart, tarot and oracle — sidusastro.com/en/login (link in bio).';

@@ -32,7 +32,8 @@ exigirTexto('./src/lib/ganchos-virais.ts', 'escolherGanchoViral', 'Diário: ganc
 exigirTexto('./src/lib/ganchos-virais.ts', 'trânsito astrológico raro', 'Viral: gancho finanças');
 exigirTexto('./src/lib/ganchos-virais.ts', 'Me diz em qual Casa está sua Vênus', 'Viral: gancho amor');
 exigirTexto('./src/lib/ganchos-virais.ts', 'verdadeira missão de vida', 'Viral: gancho ego');
-exigirTexto('./src/lib/ganchos-diario.ts', 'escolherGanchoViral', 'Diário: rotação ganchos virais');
+exigirTexto('./src/lib/ganchos-diario.ts', 'escolherGanchoLegendaBuffer', 'Diário: gancho Buffer sem viral no vídeo');
+exigirTexto('./src/lib/texto-publico.ts', 'filtrarTextoParaVideo', 'Vídeo: filtro anti legenda/comenta mapa');
 exigirTexto('./src/components/OverlayLegibilidadeTexto.tsx', 'OverlayLegibilidadeTexto', 'Vídeo: overlay legibilidade');
 exigirTexto('./src/components/FundoCosmicoSidus.tsx', 'EstrelasRealistas', 'Vídeo: estrelas realistas');
 exigirTexto('./src/components/FundoCosmicoSidus.tsx', 'NebulosasCosmicas', 'Vídeo: nebulosas animadas');
@@ -40,7 +41,7 @@ exigirTexto('./src/components/FundoCosmicoSidus.tsx', 'GeometriaCosmicaCentro', 
 exigirTexto('./src/components/GeometriaCosmicaCentro.tsx', 'OPACIDADE_GEOMETRIA_CENTRO', 'Vídeo: geometria opacidade baixa');
 exigirTexto('./src/components/GeometriaCosmicaCentro.tsx', 'VarianteMetatron', 'Vídeo: variantes geometria cósmica');
 exigirTexto('./src/components/OverlayLegibilidadeTexto.tsx', 'modoImagemZen', 'Vídeo: overlay leve com imagem zen');
-exigirTexto('./src/lib/legenda.ts', 'URGENTE - leia a legenda completa', 'Instagram: urgência gancho viral');
+exigirTexto('./src/lib/legenda.ts', 'prefixoInstagramProfissional', 'Instagram: prefixo profissional sem urgência');
 exigirTexto('./src/lib/ganchos-diario.ts', 'escolherGanchoDiario', 'Diário: ganchos emocionais');
 exigirTexto('./src/lib/ganchos-diario.ts', 'GANCHOS_NARRACAO_BR', 'Diário: ganchos brasileiros narração');
 exigirTexto('./src/lib/ganchos-diario.ts', 'parou o scroll', 'Diário: gancho psicológico PT');
@@ -55,7 +56,7 @@ exigirTexto('./src/lib/fechos-narracao.ts', 'escolherFechoNarracao', 'Diário: f
 exigirTexto('./src/lib/fechos-narracao.ts', 'FECHOS_FINANCAS_PT', 'Fecho: pool dinheiro');
 exigirTexto('./src/lib/fechos-narracao.ts', 'FECHOS_AMOR_PT', 'Fecho: pool amor');
 exigirTexto('./src/lib/fechos-narracao.ts', 'afinidade do seu parceiro', 'Fecho: afinidade parceiro só em amor');
-exigirTexto('./gerar-e-publicar.ts', 'escolherFechoVoz(legendas.tema', 'Diário: fecho zen na voz');
+exigirTexto('./gerar-e-publicar.ts', 'filtrarTextoParaVideo', 'Diário: texto do vídeo filtrado');
 exigirTexto('./gerar-e-publicar.ts', 'segmentosEcra', 'Diário: legendas sincronizadas com voz');
 exigirTexto('./src/lib/legenda.ts', 'tema: TemaNarracao', 'Diário: legendas devolvem tema do gancho');
 exigirTexto('./src/lib/paleta-visual.ts', 'PALETA_SIDUS', 'Visual: regra 60-30-10');

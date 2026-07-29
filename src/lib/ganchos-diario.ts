@@ -2,9 +2,8 @@
 import crypto from 'crypto';
 import { isLocaleUS } from './locale';
 import { obterNomeSigno, type SignoZodiaco } from './signos';
-import { escolherGanchoViralComTema } from './ganchos-virais';
 import type { GanchoComTema, TemaNarracao } from './fechos-narracao';
-import { sanitizarTextoPublico } from './texto-publico';
+import { filtrarTextoParaVideo, sanitizarTextoPublico } from './texto-publico';
 
 type GanchoFn = (n: string) => string;
 
@@ -86,14 +85,7 @@ const GANCHOS_NARRACAO_BR: GanchoTemado[] = [
 
 /** Remove instruções de legenda/comentário que só devem ir para o Buffer */
 export function limparGanchoParaNarracao(texto: string): string {
-  return sanitizarTextoPublico(texto)
-    .replace(/\bleia\s+a\s+legenda[^.!?]*/gi, '')
-    .replace(/\blegenda\s+urgente/gi, '')
-    .replace(/\bcomenta\s+(mapa|premium)[^.!?]*/gi, '')
-    .replace(/\burgente\s*$/gi, '')
-    .replace(/\s{2,}/g, ' ')
-    .replace(/\s+([,.])/g, '$1')
-    .trim();
+  return filtrarTextoParaVideo(texto);
 }
 
 /** Alias histórico — pools psicológicos BR (narração + atalho para legendas) */
@@ -226,16 +218,12 @@ export function escolherGanchoDiario(
   return escolherGanchoNarracao(signo, previsao, data);
 }
 
-/** Gancho extra só para texto da legenda Buffer (não entra no vídeo) */
+/** Gancho extra só para texto da legenda Buffer (nunca entra no vídeo) */
 export function escolherGanchoLegendaBuffer(
   signo: SignoZodiaco,
   previsao: string,
   data?: string,
 ): GanchoComTema {
-  const dataRef = data ?? new Date().toISOString().slice(0, 10);
-  if (!isLocaleUS() && escolherIndiceGancho(signo, dataRef + '-viral-cap', 100) < 35) {
-    return escolherGanchoViralComTema(signo, dataRef);
-  }
   return escolherGanchoNarracao(signo, previsao, data);
 }
 

@@ -266,7 +266,7 @@ const ETIQUETAS_GANCHO_MOTIVACIONAL_PT = [
   'ISSO É PRA VOCÊ',
   'O CÉU MANDOU ISSO',
   'NÃO É COINCIDÊNCIA',
-  'LEIA COM ATENÇÃO',
+  'RESPIRA FUNDO',
   'SALVE ESTE REEL',
   'PARA QUEM PRECISAVA',
   'O UNIVERSO FALA',
@@ -298,13 +298,10 @@ export function obterTituloMotivacional(): string {
   return obterEtiquetaGanchoMotivacional('1970-01-01', 'segunda');
 }
 
-function prefixoUrgenciaMotivacionalInstagram(gancho: string): string {
-  if (gancho.length < 120) {
-    return '';
-  }
+function prefixoInstagramMotivacional(): string {
   return isLocaleUS()
-    ? '🚨 URGENT - read the full caption!\n\n'
-    : '🚨 URGENTE - leia a legenda completa!\n\n';
+    ? '✨ A message for your day\n\n'
+    : '✨ Uma mensagem para o seu dia\n\n';
 }
 
 export function obterLegendasMotivacional(
@@ -321,7 +318,7 @@ export function obterLegendasMotivacional(
         hook + '\n\n' + resumo + '\n\n' + CTA_MOTIVACIONAL_EN + '\n\n' + HASHTAGS_MOTIVACIONAL_EN_TIKTOK,
       ),
       instagram: sanitizarTextoPublico(
-        prefixoUrgenciaMotivacionalInstagram(hook) +
+        prefixoInstagramMotivacional() +
           hook +
           '\n\n' +
           resumo +
@@ -339,7 +336,7 @@ export function obterLegendasMotivacional(
       hook + '\n\n' + resumo + '\n\n' + CTA_MOTIVACIONAL_PT + '\n\n' + HASHTAGS_MOTIVACIONAL_PT_TIKTOK,
     ),
     instagram: sanitizarTextoPublico(
-      prefixoUrgenciaMotivacionalInstagram(hook) +
+      prefixoInstagramMotivacional() +
         hook +
         '\n\n' +
         resumo +

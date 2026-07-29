@@ -10,7 +10,6 @@ import {
   HASHTAGS_DIARIO_PT_TIKTOK,
 } from './legendas-marketing';
 import { escolherGanchoNarracao } from './ganchos-diario';
-import { ehGanchoViralLongo } from './ganchos-virais';
 import type { TemaNarracao } from './fechos-narracao';
 import { isLocaleUS } from './locale';
 import { obterNomeSigno, type SignoZodiaco } from './signos';
@@ -48,21 +47,17 @@ function sufixoTikTok(signo: SignoZodiaco): string {
   return CTA_DIARIO_PT + '\n\n' + HASHTAGS_DIARIO_PT_TIKTOK + ' ' + tagSigno;
 }
 
-function prefixoUrgenciaInstagram(hook: string): string {
-  if (!ehGanchoViralLongo(hook)) {
-    return '';
-  }
+function prefixoInstagramProfissional(): string {
   return isLocaleUS()
-    ? '🚨 URGENT - read the full caption!\n\n'
-    : '🚨 URGENTE - leia a legenda completa!\n\n';
+    ? '✨ Your daily cosmic message\n\n'
+    : '✨ Sua mensagem cósmica do dia\n\n';
 }
 
-function sufixoInstagram(signo: SignoZodiaco, hook: string): string {
+function sufixoInstagram(signo: SignoZodiaco, _hook: string): string {
   const tagSigno = hashtagSigno(signo);
-  const urgencia = prefixoUrgenciaInstagram(hook);
   if (isLocaleUS()) {
     return (
-      urgencia +
+      prefixoInstagramProfissional() +
       CTA_DIARIO_EN +
       '\n\n' +
       CTA_COMENTARIO_INSTAGRAM_EN +
@@ -73,7 +68,7 @@ function sufixoInstagram(signo: SignoZodiaco, hook: string): string {
     );
   }
   return (
-    urgencia +
+    prefixoInstagramProfissional() +
     CTA_DIARIO_PT +
     '\n\n' +
     CTA_COMENTARIO_INSTAGRAM_PT +

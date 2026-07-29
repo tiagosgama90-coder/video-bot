@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import { publicarEmTodosOsCanais } from './src/lib/buffer';
 import { obterTextoHoroscopo, extrairAteSegundoPontoFinal } from './src/lib/horoscopo';
 import { gerarLegendas } from './src/lib/legenda';
-import { escolherFechoEcra, escolherFechoVoz } from './src/lib/fechos-narracao';
+import { escolherFechoVoz } from './src/lib/fechos-narracao';
 import { escolherFundoVideoZen } from './src/lib/fundo-video';
 import { calcularDuracaoFrames, DURACAO_MAXIMA_DIARIO_SEG } from './src/lib/duracao-video';
 import { calcularSegmentosProgressivos } from './src/lib/texto-progressivo';
@@ -28,7 +28,7 @@ import { obterVolumeMusica } from './src/lib/project-config';
 import { gerarNarracao, obterPreferenciaVozConfig } from './src/lib/voz';
 import { inicializarFirebaseSeNecessario } from './src/lib/inicializar-app';
 import { isLocaleUS, sufixoVideoDiario, urlSiteMarca } from './src/lib/locale';
-import { sanitizarTextoPublico } from './src/lib/texto-publico';
+import { sanitizarTextoPublico, filtrarTextoParaVideo } from './src/lib/texto-publico';
 dotenv.config();
 
 inicializarFirebaseSeNecessario({ obrigatorio: process.env.SKIP_PUBLICAR !== '1' });
@@ -113,9 +113,9 @@ async function processarSigno(
   const musicaFundoArquivo = await prepararMusicaParaVideo(signo, data, slotMusica);
 
   const legendas = gerarLegendas(signo, previsaoVideo, data);
-  const hookTexto = sanitizarTextoPublico(legendas.hook);
-  const fechoVoz = escolherFechoVoz(legendas.tema, signo, data);
-  const fechoEcra = sanitizarTextoPublico(escolherFechoEcra(legendas.tema, signo, data));
+  const hookTexto = filtrarTextoParaVideo(legendas.hook);
+  const fechoVoz = filtrarTextoParaVideo(escolherFechoVoz(legendas.tema, signo, data));
+  const fechoEcra = fechoVoz;
 
   const partesNarracao = {
     hook: hookTexto,
@@ -136,7 +136,7 @@ async function processarSigno(
     duracaoFrames,
   );
   const segmentosEcra = calcularSegmentosProgressivos(
-    [hookTexto, previsaoVideo, fechoEcra],
+    [hookTexto, filtrarTextoParaVideo(previsaoVideo), fechoEcra],
     duracaoFrames,
   );
   console.log(
