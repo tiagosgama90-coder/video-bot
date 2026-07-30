@@ -1,5 +1,7 @@
 name: Horóscopo Diário SidusAstro
 
+run-name: Diário PT #${{ github.run_number }}${{ github.event.inputs.forcar == 'true' && ' · FORÇADO' || '' }}
+
 # Primário: cron-job.org às 07:15 Europe/Lisbon (scripts/configurar-cron-externo.sh).
 # Backup: monitor-crons.yml dispara recuperação se o cron externo falhar.
 # Sem schedule GitHub — evita execuções duplicadas e falhas vermelhas por limite de billing.
