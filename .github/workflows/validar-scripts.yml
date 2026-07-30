@@ -1,9 +1,8 @@
 name: Validar scripts de produção
 
 # Impede merges que quebrem verificar-deploy (como o bug do slot especial).
+# Só em pull_request — evita ruído no Actions a cada merge no main.
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
