@@ -27,6 +27,9 @@ export const HOROSCOPOS_EM_DIA_AFILIADOS = 2;
 /** Horas mínimas recomendadas entre publicações no mesmo canal */
 export const INTERVALO_MINIMO_HORAS_ENTRE_POSTS = 3;
 
+/** Não repetir o mesmo signo no horóscopo diário durante N dias (Buffer). */
+export const DIAS_SEM_REPETIR_SIGNO = 7;
+
 /**
  * Slots locais (Lisboa / New York) — 3 posts espaçados para o algoritmo.
  * 09:00 → test pool de manhã | 13:30 → tarde | 19:00 → pico nocturno
