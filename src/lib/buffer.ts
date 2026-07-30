@@ -46,6 +46,28 @@ const CREATE_POST_MUTATION = `
   }
 `;
 
+/** Limite do plano Buffer (posts com horário fixo por canal). */
+const LIMITE_POSTS_AGENDADOS_BUFFER = 10;
+
+const POSTS_AGENDADOS_QUERY = `
+  query PostsAgendados($organizationId: OrganizationId!, $channelId: ChannelId!, $first: Int!, $after: String) {
+    posts(
+      first: $first
+      after: $after
+      input: {
+        organizationId: $organizationId
+        filter: {
+          status: [scheduled]
+          channelIds: [$channelId]
+        }
+      }
+    ) {
+      edges { node { id } }
+      pageInfo { hasNextPage endCursor }
+    }
+  }
+`;
+
 function obterAccessToken(): string {
   const token = process.env.BUFFER_ACCESS_TOKEN;
   if (!token) {
@@ -101,6 +123,98 @@ async function chamarBuffer<T>(query: string, variables?: Record<string, unknown
   }
 
   throw ultimoErro;
+}
+
+async function obterOrganizationId(): Promise<string> {
+  const orgPayload = await chamarBuffer<{
+    data?: { account?: { organizations?: Array<{ id: string; name: string }> } };
+  }>(ORGANIZATIONS_QUERY);
+
+  const organizacoes = orgPayload.data?.account?.organizations ?? [];
+  if (organizacoes.length === 0) {
+    throw new Error('Nenhuma organização Buffer encontrada.');
+  }
+
+  return process.env.BUFFER_ORGANIZATION_ID ?? organizacoes[0].id;
+}
+
+/** Conta posts agendados (customScheduled) num canal — limite Buffer = 10. */
+export async function contarPostsAgendados(channelId: string): Promise<number> {
+  const organizationId = await obterOrganizationId();
+  let total = 0;
+  let after: string | undefined;
+
+  for (;;) {
+    const payload = await chamarBuffer<{
+      data?: {
+        posts?: {
+          edges?: Array<{ node?: { id: string } }>;
+          pageInfo?: { hasNextPage?: boolean; endCursor?: string };
+        };
+      };
+    }>(POSTS_AGENDADOS_QUERY, {
+      organizationId,
+      channelId,
+      first: 50,
+      after: after ?? null,
+    });
+
+    const posts = payload.data?.posts;
+    total += posts?.edges?.length ?? 0;
+
+    if (!posts?.pageInfo?.hasNextPage) {
+      break;
+    }
+    after = posts.pageInfo.endCursor;
+  }
+
+  return total;
+}
+
+/** Verifica fila Buffer antes de renderizar — evita 30+ min de CI à toa. */
+export async function verificarCapacidadeBuffer(): Promise<void> {
+  if (!process.env.BUFFER_ACCESS_TOKEN || process.env.SKIP_PUBLICAR === '1') {
+    return;
+  }
+
+  const canais = await resolverCanaisPublicacao();
+  for (const canal of canais) {
+    const agendados = await contarPostsAgendados(canal.id);
+    console.log(
+      '📊 Buffer [' + canal.service + ' / ' + canal.name + ']: ' + agendados + '/' + LIMITE_POSTS_AGENDADOS_BUFFER + ' posts agendados',
+    );
+    if (agendados >= LIMITE_POSTS_AGENDADOS_BUFFER) {
+      console.log(
+        '⚠️ Limite Buffer atingido — novos vídeos vão para addToQueue (sem horário fixo). ' +
+          'Limpa posts antigos em publish.buffer.com para voltar aos slots automáticos.',
+      );
+    }
+  }
+}
+
+function erroLimiteAgendados(message: string | undefined): boolean {
+  return (message ?? '').toLowerCase().includes('scheduled posts limit reached');
+}
+
+async function criarPostBuffer(input: Record<string, unknown>, etiqueta: string): Promise<string> {
+  const payload = await chamarBuffer<{
+    data?: {
+      createPost?: { post?: { id?: string }; message?: string };
+    };
+  }>(CREATE_POST_MUTATION, { input });
+
+  const resultado = payload.data?.createPost;
+  if (resultado?.message) {
+    throw new Error('Buffer [' + etiqueta + ']: ' + resultado.message);
+  }
+
+  if (!resultado?.post?.id) {
+    throw new Error(
+      'Buffer: resposta inesperada — ' + JSON.stringify(payload.data),
+    );
+  }
+
+  return resultado.post.id;
 }
 
 export async function listarCanaisBuffer(): Promise<BufferChannel[]> {
@@ -227,6 +341,7 @@ export async function publicarVideoNoCanal(
 
   let mode: 'addToQueue' | 'customScheduled' = 'addToQueue';
   let dueAt: string | undefined;
+  let filaPorLimiteBuffer = false;
 
   if (dueAtCustom) {
     dueAt = resolverDueAtFuturo(dueAtCustom);
@@ -236,10 +351,35 @@ export async function publicarVideoNoCanal(
 
   if (dueAt) {
     mode = 'customScheduled';
+    try {
+      const agendados = await contarPostsAgendados(canal.id);
+      if (agendados >= LIMITE_POSTS_AGENDADOS_BUFFER) {
+        console.log(
+          '⚠️ Buffer [' +
+            canal.service +
+            ']: ' +
+            agendados +
+            '/' +
+            LIMITE_POSTS_AGENDADOS_BUFFER +
+            ' agendados — a usar addToQueue (sem horário fixo).',
+        );
+        dueAt = undefined;
+        mode = 'addToQueue';
+        filaPorLimiteBuffer = true;
+      }
+    } catch (erro) {
+      console.log('⚠️ Não foi possível verificar fila Buffer — a tentar agendamento normal.');
+    }
+  }
+
+  if (dueAt) {
     console.log(
       '📅 Agendamento Buffer [' + canal.service + '] → ' + dueAt + ' (horário ' + rotuloHorarioAgenda() + ')',
     );
-  } else if (dueAtCustom || (indiceSlot !== undefined && indiceSlot >= 0)) {
+  } else if (
+    !filaPorLimiteBuffer &&
+    (dueAtCustom || (indiceSlot !== undefined && indiceSlot >= 0))
+  ) {
     console.log(
       '⚠️ Horário Buffer já passou hoje [' +
         canal.service +
@@ -260,24 +400,23 @@ export async function publicarVideoNoCanal(
     input.dueAt = dueAt;
   }
 
-  const payload = await chamarBuffer<{
-    data?: {
-      createPost?: { post?: { id?: string }; message?: string };
-    };
-  }>(CREATE_POST_MUTATION, { input });
+  try {
+    return await criarPostBuffer(input, canal.service);
+  } catch (erro) {
+    const mensagem = erro instanceof Error ? erro.message : String(erro);
+    if (!dueAt || !erroLimiteAgendados(mensagem)) {
+      throw erro;
+    }
 
-  const resultado = payload.data?.createPost;
-  if (resultado?.message) {
-    throw new Error('Buffer [' + canal.service + ']: ' + resultado.message);
-  }
-
-  if (!resultado?.post?.id) {
-    throw new Error(
-      'Buffer [' + canal.service + ']: resposta inesperada — ' + JSON.stringify(payload.data),
+    console.log(
+      '⚠️ Buffer [' +
+        canal.service +
+        ']: limite de agendados — a repetir com addToQueue (sem horário fixo).',
     );
+    const inputFila: Record<string, unknown> = { ...input, mode: 'addToQueue' };
+    delete inputFila.dueAt;
+    return await criarPostBuffer(inputFila, canal.service);
   }
-
-  return resultado.post.id;
 }
 
 export async function publicarEmTodosOsCanais(

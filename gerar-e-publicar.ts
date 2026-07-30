@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import dotenv from 'dotenv';
-import { publicarEmTodosOsCanais } from './src/lib/buffer';
+import { publicarEmTodosOsCanais, verificarCapacidadeBuffer } from './src/lib/buffer';
 import { obterTextoHoroscopo, extrairAteSegundoPontoFinal } from './src/lib/horoscopo';
 import { gerarLegendas } from './src/lib/legenda';
 import { escolherFechoVoz } from './src/lib/fechos-narracao';
@@ -192,6 +192,7 @@ async function processarSigno(
 async function executarRoboSidusAstro(): Promise<void> {
   const { verificarGravacaoStorage } = await import('./src/lib/storage-video');
   await verificarGravacaoStorage();
+  await verificarCapacidadeBuffer();
 
   const data = obterDataPublicacao();
   const mercado = isLocaleUS() ? 'US (@sidusastro_en)' : 'PT (Instagram + TikTok)';
