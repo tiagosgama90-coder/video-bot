@@ -192,11 +192,13 @@ async function processarSigno(
 async function executarRoboSidusAstro(): Promise<void> {
   const { verificarGravacaoStorage } = await import('./src/lib/storage-video');
   await verificarGravacaoStorage();
-  await verificarCapacidadeBuffer();
 
   const data = obterDataPublicacao();
-  const mercado = isLocaleUS() ? 'US (@sidusastro_en)' : 'PT (Instagram + TikTok)';
   const diaAfiliados = ehDiaAfiliados();
+  const maxHoroscopos = diaAfiliados ? HOROSCOPOS_EM_DIA_AFILIADOS : VIDEOS_HOROSCOPO_POR_DIA;
+  await verificarCapacidadeBuffer(maxHoroscopos);
+
+  const mercado = isLocaleUS() ? 'US (@sidusastro_en)' : 'PT (Instagram + TikTok)';
   console.log('🌌 SidusAstro Video Bot — automação diária iniciada [' + mercado + ']');
   console.log('📅 Data: ' + data);
   if (diaAfiliados) {
@@ -221,7 +223,6 @@ async function executarRoboSidusAstro(): Promise<void> {
   }
 
   const signosJaGerados = obterSignosJaGerados();
-  const maxHoroscopos = diaAfiliados ? HOROSCOPOS_EM_DIA_AFILIADOS : VIDEOS_HOROSCOPO_POR_DIA;
   
   // 3 vídeos/dia (ou 2 horóscopos + afiliados) — sweet spot algoritmo TikTok
   let signosDoDia = escolherSignosParaExecucao(data, signosJaGerados);

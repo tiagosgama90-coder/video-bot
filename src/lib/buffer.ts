@@ -60,13 +60,28 @@ const POSTS_AGENDADOS_QUERY = `
           status: [scheduled]
           channelIds: [$channelId]
         }
+        sort: [{ field: dueAt, direction: asc }]
       }
     ) {
-      edges { node { id } }
+      edges { node { id dueAt } }
       pageInfo { hasNextPage endCursor }
     }
   }
 `;
+
+const DELETE_POST_MUTATION = `
+  mutation DeletePost($id: PostId!) {
+    deletePost(input: { id: $id }) {
+      ... on DeletePostSuccess { id }
+      ... on MutationError { message }
+    }
+  }
+`;
+
+interface PostAgendado {
+  id: string;
+  dueAt?: string;
+}
 
 function obterAccessToken(): string {
   const token = process.env.BUFFER_ACCESS_TOKEN;
@@ -171,22 +186,116 @@ export async function contarPostsAgendados(channelId: string): Promise<number> {
   return total;
 }
 
+async function listarPostsAgendados(channelId: string): Promise<PostAgendado[]> {
+  const organizationId = await obterOrganizationId();
+  const posts: PostAgendado[] = [];
+  let after: string | undefined;
+
+  for (;;) {
+    const payload = await chamarBuffer<{
+      data?: {
+        posts?: {
+          edges?: Array<{ node?: PostAgendado }>;
+          pageInfo?: { hasNextPage?: boolean; endCursor?: string };
+        };
+      };
+    }>(POSTS_AGENDADOS_QUERY, {
+      organizationId,
+      channelId,
+      first: 50,
+      after: after ?? null,
+    });
+
+    const bloco = payload.data?.posts;
+    for (const edge of bloco?.edges ?? []) {
+      if (edge.node?.id) {
+        posts.push(edge.node);
+      }
+    }
+
+    if (!bloco?.pageInfo?.hasNextPage) {
+      break;
+    }
+    after = bloco.pageInfo.endCursor;
+  }
+
+  return posts.sort((a, b) => {
+    const ta = a.dueAt ? new Date(a.dueAt).getTime() : 0;
+    const tb = b.dueAt ? new Date(b.dueAt).getTime() : 0;
+    return ta - tb;
+  });
+}
+
+async function apagarPostBuffer(postId: string): Promise<void> {
+  const payload = await chamarBuffer<{
+    data?: {
+      deletePost?: { id?: string; message?: string };
+    };
+  }>(DELETE_POST_MUTATION, { id: postId });
+
+  const resultado = payload.data?.deletePost;
+  if (resultado?.message) {
+    throw new Error('Buffer deletePost: ' + resultado.message);
+  }
+}
+
+/** Remove os posts agendados mais antigos para libertar espaço (limite Buffer = 10). */
+export async function liberarEspacoBufferSeNecessario(
+  channelId: string,
+  vagasNecessarias: number,
+): Promise<number> {
+  if (vagasNecessarias <= 0) {
+    return 0;
+  }
+
+  let agendados = await contarPostsAgendados(channelId);
+  const livres = LIMITE_POSTS_AGENDADOS_BUFFER - agendados;
+  if (livres >= vagasNecessarias) {
+    return 0;
+  }
+
+  const aApagar = vagasNecessarias - livres;
+  const posts = await listarPostsAgendados(channelId);
+  let apagados = 0;
+
+  for (const post of posts.slice(0, aApagar)) {
+    await apagarPostBuffer(post.id);
+    apagados++;
+    console.log(
+      '🗑️ Buffer: removido post agendado antigo' +
+        (post.dueAt ? ' (' + post.dueAt + ')' : '') +
+        ' — ' +
+        apagados +
+        '/' +
+        aApagar,
+    );
+  }
+
+  return apagados;
+}
+
 /** Verifica fila Buffer antes de renderizar — evita 30+ min de CI à toa. */
-export async function verificarCapacidadeBuffer(): Promise<void> {
+export async function verificarCapacidadeBuffer(vagasNecessarias = 3): Promise<void> {
   if (!process.env.BUFFER_ACCESS_TOKEN || process.env.SKIP_PUBLICAR === '1') {
     return;
   }
 
   const canais = await resolverCanaisPublicacao();
   for (const canal of canais) {
+    const apagados = await liberarEspacoBufferSeNecessario(canal.id, vagasNecessarias);
+    if (apagados > 0) {
+      console.log(
+        '♻️ Buffer [' + canal.service + ']: ' + apagados + ' post(s) antigo(s) removido(s) para libertar espaço.',
+      );
+    }
+
     const agendados = await contarPostsAgendados(canal.id);
     console.log(
       '📊 Buffer [' + canal.service + ' / ' + canal.name + ']: ' + agendados + '/' + LIMITE_POSTS_AGENDADOS_BUFFER + ' posts agendados',
     );
-    if (agendados >= LIMITE_POSTS_AGENDADOS_BUFFER) {
+    if (agendados + vagasNecessarias > LIMITE_POSTS_AGENDADOS_BUFFER) {
       console.log(
-        '⚠️ Limite Buffer atingido — novos vídeos vão para addToQueue (sem horário fixo). ' +
-          'Limpa posts antigos em publish.buffer.com para voltar aos slots automáticos.',
+        '⚠️ Ainda perto do limite — novos vídeos podem ir para addToQueue se necessário.',
       );
     }
   }
@@ -352,6 +461,7 @@ export async function publicarVideoNoCanal(
   if (dueAt) {
     mode = 'customScheduled';
     try {
+      await liberarEspacoBufferSeNecessario(canal.id, 1);
       const agendados = await contarPostsAgendados(canal.id);
       if (agendados >= LIMITE_POSTS_AGENDADOS_BUFFER) {
         console.log(
