@@ -11,7 +11,7 @@ import { FundoCosmicoSidus } from './components/FundoCosmicoSidus';
 import { LogoSidusVideo } from './components/LogoSidusVideo';
 import { BarraLinkSite } from './components/OverlaysSidus';
 import { PALETA_SIDUS } from './lib/paleta-visual';
-import { SIGNOS_ZODIACO, obterIndiceSigno, type SignoZodiaco } from './lib/signos';
+import { indiceSignoFromChave } from './lib/geometria-zodiaco';
 import type { HoroscopoProps } from './types/horoscopo';
 
 export type { HoroscopoProps } from './types/horoscopo';
@@ -78,10 +78,7 @@ export const HoroscopoVideo: React.FC<HoroscopoProps> = ({
   const segmentoActivo =
     segmentosVisiveis.length > 0 ? segmentosVisiveis[segmentosVisiveis.length - 1] : null;
 
-  const signoIndice =
-    signoChave && SIGNOS_ZODIACO.includes(signoChave as SignoZodiaco)
-      ? obterIndiceSigno(signoChave as SignoZodiaco)
-      : 0;
+  const signoIndice = indiceSignoFromChave(signoChave);
 
   const emFaseHook = Boolean(hookTexto && frame < inicioCorpo);
   const emFaseFecho = Boolean(fechoTexto && frame >= inicioFecho);

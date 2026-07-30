@@ -13,6 +13,13 @@ function exigirTexto(ficheiro: string, trecho: string, etiqueta: string): void {
   }
 }
 
+function proibirTexto(ficheiro: string, trecho: string, etiqueta: string): void {
+  const texto = fs.readFileSync(ficheiro, 'utf8');
+  if (texto.includes(trecho)) {
+    throw new Error(`${etiqueta}: "${trecho}" não pode existir em ${ficheiro}`);
+  }
+}
+
 console.log('🔍 A verificar scripts para produção...');
 if (process.env.GITHUB_SHA) {
   console.log('📌 Commit:', process.env.GITHUB_SHA.slice(0, 7));
@@ -82,6 +89,8 @@ exigirTexto('./src/lib/ganchos-especial.ts', 'escolherGanchoEspecial', 'Especiai
 exigirTexto('./src/MyVideo.tsx', 'LOGO_SIDUS_LARGURA_PX', 'Vídeo: logo Sidus maior');
 exigirTexto('./src/MyVideo.tsx', 'LogoSidusVideo', 'Vídeo: novo logo PNG transparente');
 exigirTexto('./src/MyVideo.tsx', 'FundoCosmicoSidus', 'Vídeo: fundo cósmico preto');
+exigirTexto('./src/MyVideo.tsx', 'indiceSignoFromChave', 'Vídeo: índice signo sem Node crypto');
+proibirTexto('./src/MyVideo.tsx', "from './lib/signos'", 'Vídeo: MyVideo não pode importar signos.ts (crypto Node)');
 exigirTexto('./src/MyVideo.tsx', 'BarraLinkSite', 'Vídeo: link no rodapé seguro');
 exigirFicheiro('./public/logo-sidus-fonte1.png');
 exigirFicheiro('./public/logo-sidus-vertical.png');

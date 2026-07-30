@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { isLocaleUS, type AppLocale } from './locale';
+import { indiceSignoFromChave } from './geometria-zodiaco';
 
 export const CHAVES_FIRESTORE_EN: Record<string, string> = {
   carneiro: 'Aries',
@@ -81,8 +82,7 @@ export const SIGNOS_ZODIACO = [
 export type SignoZodiaco = (typeof SIGNOS_ZODIACO)[number];
 
 export function obterIndiceSigno(signo: SignoZodiaco): number {
-  const indice = SIGNOS_ZODIACO.indexOf(signo);
-  return indice >= 0 ? indice : 0;
+  return indiceSignoFromChave(signo);
 }
 
 export const NOMES_SIGNOS: Record<SignoZodiaco, string> = {
