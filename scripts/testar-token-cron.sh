@@ -16,12 +16,6 @@ fi
 WORKFLOWS=(
   "diario.yml|Diário PT"
   "diario-us.yml|Diário US"
-  "segunda.yml|Segunda motivacional PT"
-  "segunda-us.yml|Segunda motivacional US"
-  "quinta.yml|Quinta motivacional PT"
-  "quinta-us.yml|Quinta motivacional US"
-  "quarta.yml|VIP quarta PT"
-  "quarta-us.yml|VIP quarta US"
   "vip-divulgacao.yml|VIP divulgação PT"
   "vip-divulgacao-us.yml|VIP divulgação US"
 )

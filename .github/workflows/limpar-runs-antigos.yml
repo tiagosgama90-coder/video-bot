@@ -1,0 +1,119 @@
+name: Limpar runs antigos Actions
+
+# Apaga runs falhados e ruído (validações/recuperações) — mantém diário/VIP/monitor recentes.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 4 * * 0'  # domingo 04:15 UTC (após limpar artefactos)
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/limpar-runs-antigos.yml'
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  limpar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apagar runs antigos / falhados
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const DIAS_MANTER_SUCESSO = 14;
+            const DIAS_MANTER_RUIDO = 2;
+            const MS_DIA = 24 * 60 * 60 * 1000;
+            const agora = Date.now();
+
+            const workflowsProtegidos = new Set([
+              'diario.yml',
+              'diario-us.yml',
+              'vip-divulgacao.yml',
+              'vip-divulgacao-us.yml',
+              'monitor-crons.yml',
+            ]);
+
+            const workflowsRuido = [
+              'validar-scripts.yml',
+              'disparar-diario-us-recuperacao.yml',
+              'recuperar-diario-hoje.yml',
+              'disparar-especiais-hoje.yml',
+              'limpar-artefactos.yml',
+              'limpar-runs-antigos.yml',
+              'limpar-cloudinary.yml',
+            ];
+
+            function idadeDias(createdAt) {
+              return (agora - new Date(createdAt).getTime()) / MS_DIA;
+            }
+
+            async function apagarRun(run) {
+              await github.rest.actions.deleteWorkflowRun({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: run.id,
+              });
+            }
+
+            const workflows = await github.paginate(github.rest.actions.listRepoWorkflows, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+            });
+            const idParaFicheiro = Object.fromEntries(
+              workflows.map((w) => [w.id, (w.path ?? '').split('/').pop() ?? '']),
+            );
+
+            let apagados = 0;
+            let mantidos = 0;
+
+            for await (const res of github.paginate.iterator(
+              github.rest.actions.listWorkflowRunsForRepo,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                per_page: 100,
+              },
+            )) {
+              for (const run of res.data) {
+                const ficheiro = idParaFicheiro[run.workflow_id] ?? '';
+                const dias = idadeDias(run.created_at);
+                const sucesso = run.conclusion === 'success';
+                const falhou = run.conclusion === 'failure' || run.conclusion === 'cancelled';
+
+                let apagar = false;
+
+                if (falhou && dias > 0.04) {
+                  // Falhas/cancelamentos com mais de ~1h
+                  apagar = true;
+                } else if (workflowsRuido.some((w) => ficheiro === w) && dias > DIAS_MANTER_RUIDO) {
+                  apagar = true;
+                } else if (!workflowsProtegidos.has(ficheiro) && dias > DIAS_MANTER_RUIDO) {
+                  // Legacy / build / preview / listar — só últimos 2 dias
+                  apagar = true;
+                } else if (workflowsProtegidos.has(ficheiro) && sucesso && dias > DIAS_MANTER_SUCESSO) {
+                  apagar = true;
+                }
+
+                if (apagar) {
+                  try {
+                    await apagarRun(run);
+                    apagados++;
+                    core.info(`Apagado #${run.run_number} ${ficheiro} (${run.conclusion}, ${dias.toFixed(1)}d)`);
+                  } catch (erro) {
+                    core.warning(`Não apagou run ${run.id}: ${erro.message}`);
+                  }
+                } else {
+                  mantidos++;
+                }
+              }
+            }
+
+            core.summary.addHeading('Limpeza de workflow runs');
+            core.summary.addRaw(
+              `**${apagados}** run(s) apagado(s), **${mantidos}** mantido(s) nesta passagem.\n\n` +
+                'Protegidos (sucesso recente): diário PT/US, VIP PT/US, monitor crons.',
+            );
+            await core.summary.write();
