@@ -10,7 +10,7 @@ set -euo pipefail
 
 LOCALE="${LOCALE:-pt}"
 REPO_OWNER="${GITHUB_REPO_OWNER:-tiagosgama90-coder}"
-REPO_NAME="${GITHUB_REPO_NAME:-sidusastro-video-bot}"
+REPO_NAME="${GITHUB_REPO_NAME:-video-bot}"
 BRANCH="${GITHUB_REF_NAME:-main}"
 CRON_API="https://api.cron-job.org"
 

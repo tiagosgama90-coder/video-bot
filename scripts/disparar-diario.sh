@@ -3,7 +3,7 @@
 set -euo pipefail
 
 REPO_OWNER="${GITHUB_REPO_OWNER:-tiagosgama90-coder}"
-REPO_NAME="${GITHUB_REPO_NAME:-sidusastro-video-bot}"
+REPO_NAME="${GITHUB_REPO_NAME:-video-bot}"
 WORKFLOW_FILE="${GITHUB_WORKFLOW_FILE:-diario.yml}"
 BRANCH="${GITHUB_REF_NAME:-main}"
 

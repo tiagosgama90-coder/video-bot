@@ -32,4 +32,4 @@ if (-not (Test-Path "dist-studio/SidusStudio.exe")) {
 Copy-Item -Force dist-studio/SidusStudio.exe (Join-Path $raiz "SidusStudio.exe")
 Write-Host ""
 Write-Host "Pronto: SidusStudio.exe na pasta do projeto" -ForegroundColor Green
-Write-Host "Duplo-clique para abrir (mantem na pasta sidusastro-video-bot)" -ForegroundColor Green
+Write-Host "Duplo-clique para abrir (mantem na pasta video-bot)" -ForegroundColor Green

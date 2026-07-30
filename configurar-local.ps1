@@ -33,9 +33,9 @@ function Atualizar-Env($chave, $valor) {
     $novas | Set-Content $envPath -Encoding UTF8
 }
 
-Write-Host "Precisas de 3 valores dos GitHub Secrets do repo sidusastro-video-bot." -ForegroundColor Yellow
+Write-Host "Precisas de 3 valores dos GitHub Secrets do repo video-bot." -ForegroundColor Yellow
 Write-Host "GitHub > Settings > Secrets and variables > Actions" -ForegroundColor Yellow
-Write-Host "https://github.com/tiagosgama90-coder/sidusastro-video-bot/settings/secrets/actions" -ForegroundColor DarkGray
+Write-Host "https://github.com/tiagosgama90-coder/video-bot/settings/secrets/actions" -ForegroundColor DarkGray
 Write-Host ""
 
 $buffer = Read-Host "1/3 Cola o BUFFER_ACCESS_TOKEN (ou Enter para manter o atual)"
