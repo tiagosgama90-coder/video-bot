@@ -147,55 +147,66 @@ export function obterDataLisboa(): string {
   return new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Lisbon' });
 }
 
-function escolherSignoAleatorio(excluir: SignoZodiaco[] = []): SignoZodiaco {
-  const candidatos = SIGNOS_ZODIACO.filter((s) => !excluir.includes(s));
-  const pool = candidatos.length > 0 ? candidatos : [...SIGNOS_ZODIACO];
-  return pool[crypto.randomInt(0, pool.length)];
-}
-
-function escolherSignosAleatorios(
-  quantidade: number,
-  excluir: SignoZodiaco[],
-  nuncaRepetir: SignoZodiaco[] = [],
-): SignoZodiaco[] {
+function sortearDoPool(quantidade: number, pool: SignoZodiaco[]): SignoZodiaco[] {
   const escolhidos: SignoZodiaco[] = [];
-  let pool = SIGNOS_ZODIACO.filter((s) => !excluir.includes(s));
-
-  if (pool.length < quantidade) {
-    console.log(
-      '⚠️ Poucos signos livres após exclusão — a sortear entre todos (menos os de hoje).',
-    );
-    pool = SIGNOS_ZODIACO.filter((s) => !nuncaRepetir.includes(s));
-  }
-
   const restante = [...pool];
   while (escolhidos.length < quantidade && restante.length > 0) {
     const indice = crypto.randomInt(0, restante.length);
     escolhidos.push(restante.splice(indice, 1)[0]);
+  }
+  return escolhidos;
+}
+
+/**
+ * Escolhe N signos priorizando os que há MAIS TEMPO não saem (rotação pelos 12).
+ * Só exclui os já publicados hoje — o resto sorteia entre os mais "em atraso".
+ */
+function escolherSignosComRodacao(
+  quantidade: number,
+  signosJaPublicadosHoje: SignoZodiaco[],
+  ultimaPublicacao: Map<SignoZodiaco, number>,
+): SignoZodiaco[] {
+  const faltam = Math.max(0, quantidade - signosJaPublicadosHoje.length);
+  if (faltam === 0) {
+    return [];
+  }
+
+  const candidatos = SIGNOS_ZODIACO.filter((s) => !signosJaPublicadosHoje.includes(s));
+  candidatos.sort((a, b) => (ultimaPublicacao.get(a) ?? 0) - (ultimaPublicacao.get(b) ?? 0));
+
+  const nuncaSairam = candidatos.filter((s) => (ultimaPublicacao.get(s) ?? 0) === 0);
+  const escolhidos: SignoZodiaco[] = [];
+
+  if (nuncaSairam.length >= faltam) {
+    escolhidos.push(...sortearDoPool(faltam, nuncaSairam));
+  } else {
+    escolhidos.push(...nuncaSairam);
+    const restantes = faltam - escolhidos.length;
+    const comHistorico = candidatos.filter((s) => !escolhidos.includes(s));
+    const poolAntigos = comHistorico.slice(0, Math.max(restantes + 2, Math.ceil(comHistorico.length * 0.6)));
+    escolhidos.push(...sortearDoPool(restantes, poolAntigos));
   }
 
   return escolhidos;
 }
 
 /**
- * 3 signos aleatórios por dia — exclui os já no Buffer hoje e os usados nos últimos dias.
+ * 3 (ou 2) signos/dia — rotação justa pelos 12, aleatório entre os que há mais tempo não saem.
  */
 export function escolherSignosParaExecucao(
   quantidade: number,
   signosJaPublicadosHoje: SignoZodiaco[] = [],
-  signosRecentes: SignoZodiaco[] = [],
+  ultimaPublicacao: Map<SignoZodiaco, number> = new Map(),
 ): SignoZodiaco[] {
   if (process.env.TESTE_LOCAL === '1') {
-    return [escolherSignoAleatorio([...signosJaPublicadosHoje, ...signosRecentes])];
+    const excluir = [...signosJaPublicadosHoje];
+    const candidatos = SIGNOS_ZODIACO.filter((s) => !excluir.includes(s))
+      .sort((a, b) => (ultimaPublicacao.get(a) ?? 0) - (ultimaPublicacao.get(b) ?? 0));
+    const pool = candidatos.slice(0, Math.max(4, Math.ceil(candidatos.length / 2)));
+    return sortearDoPool(1, pool.length > 0 ? pool : [...SIGNOS_ZODIACO]);
   }
 
-  const faltam = Math.max(0, quantidade - signosJaPublicadosHoje.length);
-  if (faltam === 0) {
-    return [];
-  }
-
-  const excluir = [...new Set([...signosJaPublicadosHoje, ...signosRecentes])];
-  return escolherSignosAleatorios(faltam, excluir, signosJaPublicadosHoje);
+  return escolherSignosComRodacao(quantidade, signosJaPublicadosHoje, ultimaPublicacao);
 }
 
 export function signoChaveFromNome(nome: string): SignoZodiaco | undefined {

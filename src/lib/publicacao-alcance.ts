@@ -27,8 +27,8 @@ export const HOROSCOPOS_EM_DIA_AFILIADOS = 2;
 /** Horas mínimas recomendadas entre publicações no mesmo canal */
 export const INTERVALO_MINIMO_HORAS_ENTRE_POSTS = 3;
 
-/** Não repetir o mesmo signo no horóscopo diário durante N dias (Buffer). */
-export const DIAS_SEM_REPETIR_SIGNO = 7;
+/** Histórico Buffer consultado para rotação justa dos 12 signos (dias). */
+export const DIAS_HISTORICO_RODACAO_SIGNOS = 30;
 
 /**
  * Slots locais (Lisboa / New York) — 3 posts espaçados para o algoritmo.

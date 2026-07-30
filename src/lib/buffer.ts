@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { obterDueAtSlot, resolverDueAtFuturo, rotuloHorarioAgenda } from './buffer-agenda';
 import { isLocaleUS, obterFusoPublicacao, subpastaVideosFirebase } from './locale';
-import { extrairSignoDaLegendaBuffer, type SignoZodiaco } from './signos';
+import { SIGNOS_ZODIACO, extrairSignoDaLegendaBuffer, type SignoZodiaco } from './signos';
 import { uploadVideoPublico } from './storage-video';
 import { sanitizarTextoPublico } from './texto-publico';
 
@@ -332,15 +332,21 @@ export async function obterSignosJaPublicadosHoje(data: string): Promise<SignoZo
   return [...encontrados];
 }
 
-/** Signos publicados no horóscopo diário nos últimos N dias (evita repetição). */
-export async function obterSignosPublicadosRecentes(dias: number): Promise<SignoZodiaco[]> {
-  if (!process.env.BUFFER_ACCESS_TOKEN || process.env.SKIP_PUBLICAR === '1') {
-    return [];
+/**
+ * Data da última publicação de cada signo no Buffer (0 = nunca ou há muito tempo).
+ * Usado para rodar pelos 12 signos — prioriza os que saíram há mais tempo.
+ */
+export async function obterUltimaPublicacaoPorSigno(): Promise<Map<SignoZodiaco, number>> {
+  const ultima = new Map<SignoZodiaco, number>();
+  for (const signo of SIGNOS_ZODIACO) {
+    ultima.set(signo, 0);
   }
 
-  const limiteMs = Date.now() - dias * 24 * 60 * 60 * 1000;
+  if (!process.env.BUFFER_ACCESS_TOKEN || process.env.SKIP_PUBLICAR === '1') {
+    return ultima;
+  }
+
   const canais = await resolverCanaisPublicacao();
-  const encontrados = new Set<SignoZodiaco>();
 
   for (const canal of canais) {
     const posts = await listarPostsCanal(canal.id);
@@ -348,17 +354,19 @@ export async function obterSignosPublicadosRecentes(dias: number): Promise<Signo
       if (!post.text || !legendaPareceHoroscopoDiario(post.text)) {
         continue;
       }
-      if (post.dueAt && new Date(post.dueAt).getTime() < limiteMs) {
+      const signo = extrairSignoDaLegendaBuffer(post.text);
+      if (!signo) {
         continue;
       }
-      const signo = extrairSignoDaLegendaBuffer(post.text);
-      if (signo) {
-        encontrados.add(signo);
+      const quando = post.dueAt ? new Date(post.dueAt).getTime() : Date.now();
+      const atual = ultima.get(signo) ?? 0;
+      if (quando > atual) {
+        ultima.set(signo, quando);
       }
     }
   }
 
-  return [...encontrados];
+  return ultima;
 }
 
 async function apagarPostBuffer(postId: string): Promise<void> {

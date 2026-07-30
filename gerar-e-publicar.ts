@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import dotenv from 'dotenv';
-import { publicarEmTodosOsCanais, verificarCapacidadeBuffer, obterSignosJaPublicadosHoje, obterSignosPublicadosRecentes } from './src/lib/buffer';
+import { publicarEmTodosOsCanais, verificarCapacidadeBuffer, obterSignosJaPublicadosHoje, obterUltimaPublicacaoPorSigno } from './src/lib/buffer';
 import { obterTextoHoroscopo, extrairAteSegundoPontoFinal } from './src/lib/horoscopo';
 import { gerarLegendas } from './src/lib/legenda';
 import { escolherFechoVoz } from './src/lib/fechos-narracao';
@@ -21,7 +21,7 @@ import {
   SIGNOS_ZODIACO,
   type SignoZodiaco,
 } from './src/lib/signos';
-import { VIDEOS_HOROSCOPO_POR_DIA, HOROSCOPOS_EM_DIA_AFILIADOS, DIAS_SEM_REPETIR_SIGNO } from './src/lib/publicacao-alcance';
+import { VIDEOS_HOROSCOPO_POR_DIA, HOROSCOPOS_EM_DIA_AFILIADOS } from './src/lib/publicacao-alcance';
 import { ehDiaAfiliados } from './src/lib/dia-semana';
 import { afiliadosDiaJaGerado, gerarAfiliadosDia } from './src/lib/afiliados-dia';
 import { obterVolumeMusica } from './src/lib/project-config';
@@ -224,7 +224,7 @@ async function executarRoboSidusAstro(): Promise<void> {
 
   const signosLocais = obterSignosJaGerados();
   const signosBufferHoje = await obterSignosJaPublicadosHoje(data);
-  const signosRecentes = await obterSignosPublicadosRecentes(DIAS_SEM_REPETIR_SIGNO);
+  const ultimaPublicacao = await obterUltimaPublicacaoPorSigno();
   const signosJaGerados = [...new Set([...signosLocais, ...signosBufferHoje])];
 
   if (signosBufferHoje.length > 0) {
@@ -232,17 +232,20 @@ async function executarRoboSidusAstro(): Promise<void> {
       '📋 Já no Buffer hoje: ' + signosBufferHoje.map((s) => obterNomeSigno(s)).join(', '),
     );
   }
-  if (signosRecentes.length > 0) {
-    console.log(
-      '🔁 Signos usados nos últimos ' +
-        DIAS_SEM_REPETIR_SIGNO +
-        ' dias (excluídos): ' +
-        signosRecentes.map((s) => obterNomeSigno(s)).join(', '),
-    );
+
+  const candidatosRodacao = SIGNOS_ZODIACO.filter((s) => !signosJaGerados.includes(s)).sort(
+    (a, b) => (ultimaPublicacao.get(a) ?? 0) - (ultimaPublicacao.get(b) ?? 0),
+  );
+  if (candidatosRodacao.length > 0) {
+    const maisAntigos = candidatosRodacao
+      .slice(0, Math.min(6, candidatosRodacao.length))
+      .map((s) => obterNomeSigno(s))
+      .join(', ');
+    console.log('🔄 Rotação 12 signos — prioridade (há mais tempo sem sair): ' + maisAntigos);
   }
 
-  // 3 signos aleatórios/dia — sem repetir os recentes nem os já no Buffer hoje
-  let signosDoDia = escolherSignosParaExecucao(maxHoroscopos, signosJaGerados, signosRecentes);
+  // 3 ou 2 signos/dia — rotação justa pelos 12 (não repete os de hoje)
+  let signosDoDia = escolherSignosParaExecucao(maxHoroscopos, signosJaGerados, ultimaPublicacao);
   signosDoDia = signosDoDia.slice(0, maxHoroscopos);
 
   if (signosDoDia.length === 0) {
@@ -257,7 +260,7 @@ async function executarRoboSidusAstro(): Promise<void> {
   }
 
   console.log(
-    '🎲 Signos aleatórios (' +
+    '🎲 Signos escolhidos (' +
       signosDoDia.length +
       '): ' +
       signosDoDia.map((s) => obterNomeSigno(s)).join(', '),
