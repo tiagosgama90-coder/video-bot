@@ -332,6 +332,35 @@ export async function obterSignosJaPublicadosHoje(data: string): Promise<SignoZo
   return [...encontrados];
 }
 
+/** Signos publicados no horóscopo diário nos últimos N dias (evita repetição). */
+export async function obterSignosPublicadosRecentes(dias: number): Promise<SignoZodiaco[]> {
+  if (!process.env.BUFFER_ACCESS_TOKEN || process.env.SKIP_PUBLICAR === '1') {
+    return [];
+  }
+
+  const limiteMs = Date.now() - dias * 24 * 60 * 60 * 1000;
+  const canais = await resolverCanaisPublicacao();
+  const encontrados = new Set<SignoZodiaco>();
+
+  for (const canal of canais) {
+    const posts = await listarPostsCanal(canal.id);
+    for (const post of posts) {
+      if (!post.text || !legendaPareceHoroscopoDiario(post.text)) {
+        continue;
+      }
+      if (post.dueAt && new Date(post.dueAt).getTime() < limiteMs) {
+        continue;
+      }
+      const signo = extrairSignoDaLegendaBuffer(post.text);
+      if (signo) {
+        encontrados.add(signo);
+      }
+    }
+  }
+
+  return [...encontrados];
+}
+
 async function apagarPostBuffer(postId: string): Promise<void> {
   const payload = await chamarBuffer<{
     data?: {

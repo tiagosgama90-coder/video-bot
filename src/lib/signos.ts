@@ -147,66 +147,55 @@ export function obterDataLisboa(): string {
   return new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Lisbon' });
 }
 
-function hashString(texto: string): number {
-  let hash = 0;
-  for (let i = 0; i < texto.length; i++) {
-    hash = (hash * 31 + texto.charCodeAt(i)) >>> 0;
-  }
-  return hash;
-}
-
-function baralharComSeed<T>(lista: T[], seed: number): T[] {
-  const copia = [...lista];
-  let estado = seed || 1;
-
-  for (let i = copia.length - 1; i > 0; i--) {
-    estado = (estado * 1664525 + 1013904223) >>> 0;
-    const j = estado % (i + 1);
-    [copia[i], copia[j]] = [copia[j], copia[i]];
-  }
-
-  return copia;
-}
-
-/** 3 signos/dia — espaçados no Buffer para o test pool TikTok avaliar cada vídeo */
-export function escolherSignosDoDia(data: string): SignoZodiaco[] {
-  const seed = hashString('sidusastro-' + data);
-  const baralhado = baralharComSeed([...SIGNOS_ZODIACO], seed);
-  return baralhado.slice(0, 3);
-}
-
 function escolherSignoAleatorio(excluir: SignoZodiaco[] = []): SignoZodiaco {
   const candidatos = SIGNOS_ZODIACO.filter((s) => !excluir.includes(s));
   const pool = candidatos.length > 0 ? candidatos : [...SIGNOS_ZODIACO];
   return pool[crypto.randomInt(0, pool.length)];
 }
 
+function escolherSignosAleatorios(
+  quantidade: number,
+  excluir: SignoZodiaco[],
+  nuncaRepetir: SignoZodiaco[] = [],
+): SignoZodiaco[] {
+  const escolhidos: SignoZodiaco[] = [];
+  let pool = SIGNOS_ZODIACO.filter((s) => !excluir.includes(s));
+
+  if (pool.length < quantidade) {
+    console.log(
+      '⚠️ Poucos signos livres após exclusão — a sortear entre todos (menos os de hoje).',
+    );
+    pool = SIGNOS_ZODIACO.filter((s) => !nuncaRepetir.includes(s));
+  }
+
+  const restante = [...pool];
+  while (escolhidos.length < quantidade && restante.length > 0) {
+    const indice = crypto.randomInt(0, restante.length);
+    escolhidos.push(restante.splice(indice, 1)[0]);
+  }
+
+  return escolhidos;
+}
+
 /**
- * Local (TESTE_LOCAL=1): 1 signo aleatório por execução — diferente a cada npm run gerar.
- * Local (produção simulada): signos do dia que ainda não têm vídeo em output/.
- * GitHub Actions (CI): signos do dia que ainda não estão no Buffer (evita duplicados com Forçar).
+ * 3 signos aleatórios por dia — exclui os já no Buffer hoje e os usados nos últimos dias.
  */
 export function escolherSignosParaExecucao(
-  data: string,
-  signosJaGerados: SignoZodiaco[] = [],
+  quantidade: number,
+  signosJaPublicadosHoje: SignoZodiaco[] = [],
+  signosRecentes: SignoZodiaco[] = [],
 ): SignoZodiaco[] {
-  const signosDoDia = escolherSignosDoDia(data);
-  const pendentes = signosDoDia.filter((s) => !signosJaGerados.includes(s));
-
   if (process.env.TESTE_LOCAL === '1') {
-    const signo = escolherSignoAleatorio(signosJaGerados);
-    return [signo];
+    return [escolherSignoAleatorio([...signosJaPublicadosHoje, ...signosRecentes])];
   }
 
-  if (pendentes.length > 0) {
-    return pendentes;
+  const faltam = Math.max(0, quantidade - signosJaPublicadosHoje.length);
+  if (faltam === 0) {
+    return [];
   }
 
-  if (process.env.CI !== 'true') {
-    return [escolherSignoAleatorio(signosJaGerados)];
-  }
-
-  return [];
+  const excluir = [...new Set([...signosJaPublicadosHoje, ...signosRecentes])];
+  return escolherSignosAleatorios(faltam, excluir, signosJaPublicadosHoje);
 }
 
 export function signoChaveFromNome(nome: string): SignoZodiaco | undefined {
