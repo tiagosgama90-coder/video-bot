@@ -184,29 +184,29 @@ function escolherSignoAleatorio(excluir: SignoZodiaco[] = []): SignoZodiaco {
 /**
  * Local (TESTE_LOCAL=1): 1 signo aleatório por execução — diferente a cada npm run gerar.
  * Local (produção simulada): signos do dia que ainda não têm vídeo em output/.
- * GitHub Actions (CI): até 3 signos fixos do dia.
+ * GitHub Actions (CI): signos do dia que ainda não estão no Buffer (evita duplicados com Forçar).
  */
 export function escolherSignosParaExecucao(
   data: string,
   signosJaGerados: SignoZodiaco[] = [],
 ): SignoZodiaco[] {
-  if (process.env.CI === 'true') {
-    return escolherSignosDoDia(data);
-  }
+  const signosDoDia = escolherSignosDoDia(data);
+  const pendentes = signosDoDia.filter((s) => !signosJaGerados.includes(s));
 
   if (process.env.TESTE_LOCAL === '1') {
     const signo = escolherSignoAleatorio(signosJaGerados);
     return [signo];
   }
 
-  const signosDoDia = escolherSignosDoDia(data);
-  const pendentes = signosDoDia.filter((s) => !signosJaGerados.includes(s));
-
   if (pendentes.length > 0) {
     return pendentes;
   }
 
-  return [escolherSignoAleatorio(signosJaGerados)];
+  if (process.env.CI !== 'true') {
+    return [escolherSignoAleatorio(signosJaGerados)];
+  }
+
+  return [];
 }
 
 export function signoChaveFromNome(nome: string): SignoZodiaco | undefined {
@@ -223,5 +223,37 @@ export function signoChaveFromNome(nome: string): SignoZodiaco | undefined {
       return chave as SignoZodiaco;
     }
   }
+  return undefined;
+}
+
+/** Extrai signo de uma legenda Buffer (#leo, Forecast Leo, etc.). */
+export function extrairSignoDaLegendaBuffer(texto: string): SignoZodiaco | undefined {
+  const hashtags = texto.match(/#[\w\u00C0-\u024f]+/gi) ?? [];
+  for (const tag of hashtags) {
+    const nome = tag.slice(1);
+    const porHashtag = signoChaveFromNome(nome);
+    if (porHashtag) {
+      return porHashtag;
+    }
+    const chave = SIGNOS_ZODIACO.find(
+      (s) =>
+        obterNomeSigno(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, '') ===
+        nome.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(),
+    );
+    if (chave) {
+      return chave;
+    }
+  }
+
+  const forecast = texto.match(/Forecast\s+([A-Za-z\u00C0-\u024f]+)/i);
+  if (forecast?.[1]) {
+    return signoChaveFromNome(forecast[1]);
+  }
+
+  const previsao = texto.match(/Previs[aã]o\s+([A-Za-z\u00C0-\u024f]+)/i);
+  if (previsao?.[1]) {
+    return signoChaveFromNome(previsao[1]);
+  }
+
   return undefined;
 }

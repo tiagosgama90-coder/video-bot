@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import dotenv from 'dotenv';
-import { publicarEmTodosOsCanais, verificarCapacidadeBuffer } from './src/lib/buffer';
+import { publicarEmTodosOsCanais, verificarCapacidadeBuffer, obterSignosJaPublicadosHoje } from './src/lib/buffer';
 import { obterTextoHoroscopo, extrairAteSegundoPontoFinal } from './src/lib/horoscopo';
 import { gerarLegendas } from './src/lib/legenda';
 import { escolherFechoVoz } from './src/lib/fechos-narracao';
@@ -222,11 +222,24 @@ async function executarRoboSidusAstro(): Promise<void> {
     }
   }
 
-  const signosJaGerados = obterSignosJaGerados();
+  const signosLocais = obterSignosJaGerados();
+  const signosBuffer = await obterSignosJaPublicadosHoje(data);
+  const signosJaGerados = [...new Set([...signosLocais, ...signosBuffer])];
+
+  if (signosBuffer.length > 0) {
+    console.log(
+      '📋 Já no Buffer hoje: ' + signosBuffer.map((s) => obterNomeSigno(s)).join(', '),
+    );
+  }
   
   // 3 vídeos/dia (ou 2 horóscopos + afiliados) — sweet spot algoritmo TikTok
   let signosDoDia = escolherSignosParaExecucao(data, signosJaGerados);
   signosDoDia = signosDoDia.slice(0, maxHoroscopos);
+
+  if (signosDoDia.length === 0) {
+    console.log('✅ Todos os signos de hoje já estão no Buffer — nada a gerar/publicar.');
+    return;
+  }
 
   if (process.env.TESTE_LOCAL === '1') {
     console.log('🧪 Modo teste local: 1 signo aleatório por execução');
