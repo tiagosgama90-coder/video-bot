@@ -30,3 +30,6 @@ jobs:
 
       - name: Compilar TypeScript (scripts de produção)
         run: npx tsc --noEmit
+
+      - name: Verificar bundle Remotion (sem módulos Node no browser)
+        run: npx remotion bundle src/index.ts

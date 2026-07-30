@@ -14,6 +14,30 @@ export const SIMBOLOS_ZODIACO_UNICODE = [
   '♓',
 ] as const;
 
+/** Chaves internas dos signos — seguro para Remotion (sem Node crypto) */
+export const CHAVES_SIGNOS_ZODIACO = [
+  'carneiro',
+  'touro',
+  'gemeos',
+  'caranguejo',
+  'leao',
+  'virgem',
+  'balanca',
+  'escorpiao',
+  'sagitario',
+  'capricornio',
+  'aquario',
+  'peixes',
+] as const;
+
+export function indiceSignoFromChave(chave: string | undefined): number {
+  if (!chave) {
+    return 0;
+  }
+  const idx = CHAVES_SIGNOS_ZODIACO.indexOf(chave as (typeof CHAVES_SIGNOS_ZODIACO)[number]);
+  return idx >= 0 ? idx : 0;
+}
+
 /** Cores tradicionais por signo — fogo, terra, ar, água */
 export const CORES_SIGNO_ZODIACO = [
   '#ff5c5c', // carneiro — vermelho fogo
