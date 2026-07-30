@@ -5,6 +5,7 @@ import { obterConteudoAfiliados } from './conteudo-especial';
 import { ehDiaAfiliados, nomeDiasAfiliados } from './dia-semana';
 import { isLocaleUS, sufixoIdVideoEspecial } from './locale';
 import { SLOT_MUSICA } from './musicas';
+import { videoJaPublicadoNoBuffer } from './buffer';
 
 const ID_BASE = 'afiliados-diario';
 
@@ -12,8 +13,14 @@ export function idAfiliadosDia(): string {
   return sufixoIdVideoEspecial(ID_BASE);
 }
 
-export function afiliadosDiaJaGerado(): boolean {
-  return fs.existsSync(path.resolve('./output/' + idAfiliadosDia() + '.mp4'));
+export async function afiliadosDiaJaGerado(data?: string): Promise<boolean> {
+  if (fs.existsSync(path.resolve('./output/' + idAfiliadosDia() + '.mp4'))) {
+    return true;
+  }
+  if (data && process.env.BUFFER_ACCESS_TOKEN && process.env.SKIP_PUBLICAR !== '1') {
+    return videoJaPublicadoNoBuffer(idAfiliadosDia(), data);
+  }
+  return false;
 }
 
 /** Vídeo afiliados — terças e sábados; publicação na fila Buffer (hora livre). */
@@ -23,8 +30,8 @@ export async function gerarAfiliadosDia(data: string): Promise<void> {
     return;
   }
 
-  if (afiliadosDiaJaGerado()) {
-    console.log('✅ Vídeo afiliados já gerado hoje — a saltar.');
+  if (await afiliadosDiaJaGerado(data)) {
+    console.log('✅ Vídeo afiliados já gerado/publicado hoje — a saltar.');
     return;
   }
 

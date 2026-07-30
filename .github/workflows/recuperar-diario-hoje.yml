@@ -24,9 +24,9 @@ jobs:
               repo: context.repo.repo,
               workflow_id: 'diario.yml',
               ref: 'main',
-              inputs: { forcar: 'true' },
+              inputs: { forcar: 'false' },
             });
-            core.info('Workflow diario.yml disparado com forcar=true.');
+            core.info('Workflow diario.yml disparado (sem forçar — anti-duplicado Buffer activo).');
 
   disparar-us:
     runs-on: ubuntu-latest
@@ -40,6 +40,6 @@ jobs:
               repo: context.repo.repo,
               workflow_id: 'diario-us.yml',
               ref: 'main',
-              inputs: { forcar: 'true' },
+              inputs: { forcar: 'false' },
             });
-            core.info('Workflow diario-us.yml disparado com forcar=true.');
+            core.info('Workflow diario-us.yml disparado (sem forçar — anti-duplicado Buffer activo).');

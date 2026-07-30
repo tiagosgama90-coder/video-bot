@@ -201,6 +201,10 @@ exigirTexto('./src/lib/storage-video.ts', 'preservar', 'Buffer: preservar tokens
 exigirTexto('./src/lib/storage-video.ts', 'verificarGravacaoStorage', 'Storage: verificação antes de renderizar');
 exigirTexto('./src/lib/storage-video.ts', 'usarCloudinaryComoPrincipal', 'Storage: Cloudinary sem cartão Google');
 exigirTexto('./src/lib/storage-video.ts', 'limparCloudinaryAntigos', 'Storage: limpeza automática Cloudinary');
+exigirFicheiro('./src/lib/anti-duplicado.ts');
+exigirTexto('./src/lib/anti-duplicado.ts', 'postCorrespondeAoVideo', 'Anti-duplicado: detecção central');
+exigirTexto('./src/lib/buffer.ts', 'videoJaPublicadoNoBuffer', 'Buffer: bloquear vídeos repetidos');
+exigirTexto('./src/lib/buffer.ts', 'criarMarcadorVideo', 'Buffer: marcador invisível nas legendas');
 exigirFicheiro('./scripts/limpar-cloudinary.ts');
 exigirTexto('./verificar-config.ts', 'CLOUDINARY_API_KEY', 'Config: validar API key Cloudinary');
 exigirTexto('./.github/workflows/preview-us-voz.yml', 'workflow_dispatch', 'Preview US: só manual');
