@@ -36,6 +36,10 @@ jobs:
               }
             )) {
               for (const artifact of res.data) {
+                if (artifact.name === 'SidusStudio-Windows') {
+                  core.info(`Mantido: ${artifact.name} (build SidusStudio)`);
+                  continue;
+                }
                 await github.rest.actions.deleteArtifact({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
