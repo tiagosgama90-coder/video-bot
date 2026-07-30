@@ -21,7 +21,7 @@ if not defined NODE_CMD (
 
 if not exist "studio\launcher.cjs" (
     echo.
-    echo  Pasta errada — este ficheiro tem de estar dentro de sidusastro-video-bot
+    echo  Pasta errada — este ficheiro tem de estar dentro de video-bot
     echo.
     pause
     exit /b 1
@@ -36,7 +36,7 @@ echo.
 if errorlevel 1 (
     echo.
     echo  Erro ao iniciar. Tenta descarregar SidusStudio.exe do GitHub:
-    echo  https://github.com/tiagosgama90-coder/sidusastro-video-bot/actions
+    echo  https://github.com/tiagosgama90-coder/video-bot/actions
     echo.
     pause
 )

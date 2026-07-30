@@ -219,6 +219,10 @@ proibirScheduleGitHub('./.github/workflows/vip-divulgacao.yml', 'VIP PT');
 exigirFicheiro('./.github/workflows/vip-divulgacao-us.yml');
 proibirScheduleGitHub('./.github/workflows/vip-divulgacao-us.yml', 'VIP US');
 
+exigirTexto('./scripts/configurar-cron-externo.sh', 'video-bot', 'Cron PT: nome repo video-bot');
+exigirTexto('./scripts/configurar-cron-us.sh', 'video-bot', 'Cron US: nome repo video-bot');
+exigirTexto('./package.json', '"name": "video-bot"', 'Package: nome video-bot');
+
 exigirFicheiro('./.github/workflows/monitor-crons.yml');
 exigirTexto('./.github/workflows/monitor-crons.yml', 'verificar-pt', 'Monitor: recuperação PT');
 exigirTexto('./.github/workflows/monitor-crons.yml', 'verificar-us', 'Monitor: recuperação US');

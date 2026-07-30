@@ -4,7 +4,7 @@
 set -euo pipefail
 
 REPO_OWNER="${GITHUB_REPO_OWNER:-tiagosgama90-coder}"
-REPO_NAME="${GITHUB_REPO_NAME:-sidusastro-video-bot}"
+REPO_NAME="${GITHUB_REPO_NAME:-video-bot}"
 WORKFLOW_FILE="${WORKFLOW_FILE:-diario-us.yml}"
 # ID numérico estável (evita 404 se o nome do ficheiro mudar)
 WORKFLOW_ID="${WORKFLOW_ID:-313950729}"

@@ -5,7 +5,7 @@
 OPÇÃO 1 — Duplo-clique (mais simples)
 ────────────────────────────────────
 1. Abre a pasta do projeto no Explorador:
-   C:\Users\PC\sidusastro-video-bot
+   C:\Users\PC\video-bot
 
 2. Duplo-clique em:
    Abrir Sidus Studio.bat
@@ -18,14 +18,14 @@ OPÇÃO 1 — Duplo-clique (mais simples)
 OPÇÃO 2 — Executável .exe (sem Node no PATH)
 ────────────────────────────────────────────
 1. Vai a:
-   https://github.com/tiagosgama90-coder/sidusastro-video-bot/actions
+   https://github.com/tiagosgama90-coder/video-bot/actions
 
 2. Clica no workflow "Build SidusStudio.exe" (último run verde)
 
 3. Em "Artifacts" descarrega: SidusStudio-Windows
 
 4. Extrai SidusStudio.exe para a pasta:
-   C:\Users\PC\sidusastro-video-bot
+   C:\Users\PC\video-bot
 
 5. Duplo-clique em SidusStudio.exe
 
@@ -39,7 +39,7 @@ Se não tens os ficheiros .bat novos:
 
 NOTAS
 ─────
-• O .exe e o .bat têm de ficar DENTRO da pasta sidusastro-video-bot
+• O .exe e o .bat têm de ficar DENTRO da pasta video-bot
 • Precisas de Node.js instalado (https://nodejs.org) — exceto se usares só o .exe
 • Para músicas Enigma: tab Música → Preset Zen Enigma → Guardar
 
