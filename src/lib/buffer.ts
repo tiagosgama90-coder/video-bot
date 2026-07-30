@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { obterDueAtSlot, resolverDueAtFuturo, rotuloHorarioAgenda } from './buffer-agenda';
-import { isLocaleUS, subpastaVideosFirebase } from './locale';
+import { isLocaleUS, obterFusoPublicacao, subpastaVideosFirebase } from './locale';
+import { extrairSignoDaLegendaBuffer, type SignoZodiaco } from './signos';
 import { uploadVideoPublico } from './storage-video';
 import { sanitizarTextoPublico } from './texto-publico';
 
@@ -81,7 +82,27 @@ const DELETE_POST_MUTATION = `
 interface PostAgendado {
   id: string;
   dueAt?: string;
+  text?: string;
 }
+
+const POSTS_CANAL_QUERY = `
+  query PostsCanal($organizationId: OrganizationId!, $channelId: ChannelId!, $first: Int!, $after: String) {
+    posts(
+      first: $first
+      after: $after
+      input: {
+        organizationId: $organizationId
+        filter: {
+          status: [scheduled, sent]
+          channelIds: [$channelId]
+        }
+      }
+    ) {
+      edges { node { id dueAt text } }
+      pageInfo { hasNextPage endCursor }
+    }
+  }
+`;
 
 function obterAccessToken(): string {
   const token = process.env.BUFFER_ACCESS_TOKEN;
@@ -224,6 +245,91 @@ async function listarPostsAgendados(channelId: string): Promise<PostAgendado[]> 
     const tb = b.dueAt ? new Date(b.dueAt).getTime() : 0;
     return ta - tb;
   });
+}
+
+function legendaPareceHoroscopoDiario(texto: string): boolean {
+  const t = texto.toLowerCase();
+  return (
+    t.includes('#horoscope') ||
+    t.includes('#horoscopo') ||
+    t.includes('forecast ') ||
+    t.includes('previsão') ||
+    t.includes('previsao') ||
+    t.includes('sidusastro')
+  );
+}
+
+function postHoroscopoDeHoje(post: PostAgendado, data: string, fuso: string): boolean {
+  if (!post.text || !legendaPareceHoroscopoDiario(post.text)) {
+    return false;
+  }
+  if (!post.dueAt) {
+    return true;
+  }
+  const dia = new Date(post.dueAt).toLocaleDateString('en-CA', { timeZone: fuso });
+  return dia === data;
+}
+
+async function listarPostsCanal(channelId: string): Promise<PostAgendado[]> {
+  const organizationId = await obterOrganizationId();
+  const posts: PostAgendado[] = [];
+  let after: string | undefined;
+
+  for (;;) {
+    const payload = await chamarBuffer<{
+      data?: {
+        posts?: {
+          edges?: Array<{ node?: PostAgendado }>;
+          pageInfo?: { hasNextPage?: boolean; endCursor?: string };
+        };
+      };
+    }>(POSTS_CANAL_QUERY, {
+      organizationId,
+      channelId,
+      first: 50,
+      after: after ?? null,
+    });
+
+    const bloco = payload.data?.posts;
+    for (const edge of bloco?.edges ?? []) {
+      if (edge.node?.id) {
+        posts.push(edge.node);
+      }
+    }
+
+    if (!bloco?.pageInfo?.hasNextPage) {
+      break;
+    }
+    after = bloco.pageInfo.endCursor;
+  }
+
+  return posts;
+}
+
+/** Signos com horóscopo diário já na fila Buffer hoje (evita republicar com Forçar). */
+export async function obterSignosJaPublicadosHoje(data: string): Promise<SignoZodiaco[]> {
+  if (!process.env.BUFFER_ACCESS_TOKEN || process.env.SKIP_PUBLICAR === '1') {
+    return [];
+  }
+
+  const fuso = obterFusoPublicacao();
+  const canais = await resolverCanaisPublicacao();
+  const encontrados = new Set<SignoZodiaco>();
+
+  for (const canal of canais) {
+    const posts = await listarPostsCanal(canal.id);
+    for (const post of posts) {
+      if (!postHoroscopoDeHoje(post, data, fuso)) {
+        continue;
+      }
+      const signo = extrairSignoDaLegendaBuffer(post.text ?? '');
+      if (signo) {
+        encontrados.add(signo);
+      }
+    }
+  }
+
+  return [...encontrados];
 }
 
 async function apagarPostBuffer(postId: string): Promise<void> {
