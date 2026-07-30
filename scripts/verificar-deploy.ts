@@ -13,6 +13,13 @@ function exigirTexto(ficheiro: string, trecho: string, etiqueta: string): void {
   }
 }
 
+function proibirScheduleGitHub(ficheiro: string, etiqueta: string): void {
+  const texto = fs.readFileSync(ficheiro, 'utf8');
+  if (/^\s*schedule:\s*$/m.test(texto) || texto.includes("cron: '")) {
+    throw new Error(`${etiqueta}: remover cron GitHub — usar cron-job.org`);
+  }
+}
+
 function proibirTexto(ficheiro: string, trecho: string, etiqueta: string): void {
   const texto = fs.readFileSync(ficheiro, 'utf8');
   if (texto.includes(trecho)) {
@@ -196,11 +203,21 @@ exigirTexto('./src/lib/storage-video.ts', 'usarCloudinaryComoPrincipal', 'Storag
 exigirTexto('./src/lib/storage-video.ts', 'limparCloudinaryAntigos', 'Storage: limpeza automática Cloudinary');
 exigirFicheiro('./scripts/limpar-cloudinary.ts');
 exigirTexto('./verificar-config.ts', 'CLOUDINARY_API_KEY', 'Config: validar API key Cloudinary');
-exigirFicheiro('./scripts/verificar-storage.ts');
-exigirTexto('./.github/workflows/diario.yml', "cron: '15 6 * * *'", 'Diário PT: cron backup verão Lisboa');
+exigirTexto('./.github/workflows/preview-us-voz.yml', 'workflow_dispatch', 'Preview US: só manual');
+proibirTexto('./.github/workflows/preview-us-voz.yml', 'push:', 'Preview US: sem trigger em push');
+exigirFicheiro('./.github/workflows/diario.yml');
+exigirTexto('./.github/workflows/diario.yml', 'workflow_dispatch', 'Diário PT: disparo externo cron-job.org');
+proibirScheduleGitHub('./.github/workflows/diario.yml', 'Diário PT');
 
 exigirFicheiro('./.github/workflows/diario-us.yml');
 exigirTexto('./.github/workflows/diario-us.yml', 'workflow_dispatch', 'Diário US: disparo externo');
+proibirScheduleGitHub('./.github/workflows/diario-us.yml', 'Diário US');
+
+exigirFicheiro('./.github/workflows/vip-divulgacao.yml');
+proibirScheduleGitHub('./.github/workflows/vip-divulgacao.yml', 'VIP PT');
+
+exigirFicheiro('./.github/workflows/vip-divulgacao-us.yml');
+proibirScheduleGitHub('./.github/workflows/vip-divulgacao-us.yml', 'VIP US');
 
 exigirFicheiro('./.github/workflows/monitor-crons.yml');
 exigirTexto('./.github/workflows/monitor-crons.yml', 'verificar-pt', 'Monitor: recuperação PT');
@@ -211,24 +228,15 @@ exigirTexto('./src/lib/pool-musicas-zen.ts', 'filtrarEntradasZen', 'Música: fil
 exigirTexto('./src/lib/pool-musicas-zen.ts', 'POOL_MUSICAS_ZEN_ASTRO', 'Música: pool zen/Enigma curado');
 exigirFicheiro('./.github/workflows/segunda.yml');
 exigirTexto('./.github/workflows/segunda.yml', 'workflow_dispatch', 'Segunda: disparo externo');
-const segundaWorkflow = fs.readFileSync('./.github/workflows/segunda.yml', 'utf8');
-if (/^\s*schedule:\s*$/m.test(segundaWorkflow) || segundaWorkflow.includes("cron: '")) {
-  throw new Error('segunda.yml: remover cron GitHub — usar cron-job.org');
-}
+proibirScheduleGitHub('./.github/workflows/segunda.yml', 'Segunda PT');
 
 exigirFicheiro('./.github/workflows/quarta.yml');
 exigirTexto('./.github/workflows/quarta.yml', 'workflow_dispatch', 'Quarta: disparo externo');
-const quartaWorkflow = fs.readFileSync('./.github/workflows/quarta.yml', 'utf8');
-if (/^\s*schedule:\s*$/m.test(quartaWorkflow) || quartaWorkflow.includes("cron: '")) {
-  throw new Error('quarta.yml: remover cron GitHub — usar cron-job.org');
-}
+proibirScheduleGitHub('./.github/workflows/quarta.yml', 'Quarta PT');
 
 exigirFicheiro('./.github/workflows/quinta.yml');
 exigirTexto('./.github/workflows/quinta.yml', 'workflow_dispatch', 'Quinta: disparo externo');
-const quintaWorkflow = fs.readFileSync('./.github/workflows/quinta.yml', 'utf8');
-if (/^\s*schedule:\s*$/m.test(quintaWorkflow) || quintaWorkflow.includes("cron: '")) {
-  throw new Error('quinta.yml: remover cron GitHub — usar cron-job.org');
-}
+proibirScheduleGitHub('./.github/workflows/quinta.yml', 'Quinta PT');
 
 exigirFicheiro('./.github/workflows/quinta-us.yml');
 exigirTexto('./.github/workflows/quinta-us.yml', 'workflow_dispatch', 'Quinta US: disparo externo');
