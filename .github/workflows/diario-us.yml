@@ -12,9 +12,7 @@ on:
         default: false
         type: boolean
 
-concurrency:
-  group: horoscopo-diario-us
-  cancel-in-progress: false
+# Sem concurrency no workflow — evitar-duplicado já impede 2 publicações no mesmo dia.
 
 permissions:
   actions: read
