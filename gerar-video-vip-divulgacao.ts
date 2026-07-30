@@ -33,7 +33,7 @@ async function executar(): Promise<void> {
   exigirDiasVipDivulgacao();
 
   const data = obterDataPublicacao();
-  const conteudo = obterConteudoVipDivulgacao();
+  const conteudo = obterConteudoVipDivulgacao(data);
   const id = sufixoIdVideoEspecial(ID_BASE);
   const mercado = isLocaleUS() ? 'US (@sidusastro_en)' : 'PT';
 

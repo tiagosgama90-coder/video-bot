@@ -35,7 +35,7 @@ export async function gerarAfiliadosDia(data: string): Promise<void> {
     return;
   }
 
-  const conteudo = obterConteudoAfiliados();
+  const conteudo = obterConteudoAfiliados(data);
   const mercado = isLocaleUS() ? 'US (@sidusastro_en)' : 'PT';
 
   console.log('\n══════════════════════════════════════');
