@@ -9,7 +9,12 @@ import {
   HASHTAGS_DIARIO_PT_INSTAGRAM,
   HASHTAGS_DIARIO_PT_TIKTOK,
 } from './legendas-marketing';
-import { escolherGanchoNarracao } from './ganchos-diario';
+import { escolherGanchoNarracao, escolherGanchoLegendaTikTok } from './ganchos-diario';
+import { escolherGanchoViral } from './ganchos-virais';
+import {
+  escolherCtaCorpoDiario,
+  escolherPrefixoInstagramDiario,
+} from './legendas-rotativas';
 import type { TemaNarracao } from './fechos-narracao';
 import { isLocaleUS } from './locale';
 import { obterNomeSigno, type SignoZodiaco } from './signos';
@@ -30,12 +35,10 @@ function hashtagSigno(signo: SignoZodiaco): string {
   return '#' + normalizarHashtag(nome);
 }
 
-function gerarCorpoLegenda(previsao: string, hook: string): string {
+function gerarCorpoLegenda(previsao: string, hook: string, signo: SignoZodiaco, data?: string): string {
   const limpa = sanitizarTextoPublico(previsao);
   const resumo = limpa.length > 95 ? limpa.slice(0, 92).trim() + '...' : limpa;
-  const linhaCta = isLocaleUS()
-    ? 'The full chart is free - link in bio (sidusastro.com/en)'
-    : 'Mapa astral, tarot e vidente grátis - link na bio (sidusastro.com)';
+  const linhaCta = escolherCtaCorpoDiario(signo, data ?? new Date().toISOString().slice(0, 10));
   return sanitizarTextoPublico(hook + '\n\n' + resumo + '\n\n' + linhaCta);
 }
 
@@ -47,17 +50,15 @@ function sufixoTikTok(signo: SignoZodiaco): string {
   return CTA_DIARIO_PT + '\n\n' + HASHTAGS_DIARIO_PT_TIKTOK + ' ' + tagSigno;
 }
 
-function prefixoInstagramProfissional(): string {
-  return isLocaleUS()
-    ? '✨ Your daily cosmic message\n\n'
-    : '✨ Sua mensagem cósmica do dia\n\n';
+function prefixoInstagramProfissional(signo: SignoZodiaco, data?: string): string {
+  return escolherPrefixoInstagramDiario(signo, data ?? new Date().toISOString().slice(0, 10));
 }
 
-function sufixoInstagram(signo: SignoZodiaco, _hook: string): string {
+function sufixoInstagram(signo: SignoZodiaco, data?: string): string {
   const tagSigno = hashtagSigno(signo);
   if (isLocaleUS()) {
     return (
-      prefixoInstagramProfissional() +
+      prefixoInstagramProfissional(signo, data) +
       CTA_DIARIO_EN +
       '\n\n' +
       CTA_COMENTARIO_INSTAGRAM_EN +
@@ -68,7 +69,7 @@ function sufixoInstagram(signo: SignoZodiaco, _hook: string): string {
     );
   }
   return (
-    prefixoInstagramProfissional() +
+    prefixoInstagramProfissional(signo, data) +
     CTA_DIARIO_PT +
     '\n\n' +
     CTA_COMENTARIO_INSTAGRAM_PT +
@@ -79,43 +80,53 @@ function sufixoInstagram(signo: SignoZodiaco, _hook: string): string {
   );
 }
 
-/** Legenda TikTok - gancho emocional + previsão + CTA */
+/** Legenda TikTok - gancho próprio + previsão + CTA (diferente da narração) */
 export function gerarLegendaTikTok(
   signo: SignoZodiaco,
   previsao: string,
   data?: string,
 ): string {
-  const { texto: hook } = escolherGanchoNarracao(signo, previsao, data);
+  const dataRef = data ?? new Date().toISOString().slice(0, 10);
+  const hook = escolherGanchoLegendaTikTok(signo, previsao, dataRef);
   return sanitizarTextoPublico(
-    gerarCorpoLegenda(previsao, hook) + '\n\n' + sufixoTikTok(signo),
+    gerarCorpoLegenda(previsao, hook, signo, dataRef) + '\n\n' + sufixoTikTok(signo),
   );
 }
 
-/** Legenda Instagram - gancho emocional + previsão + CTA */
+/** Legenda Instagram - gancho viral + previsão + CTA rotativo */
 export function gerarLegendaInstagram(
   signo: SignoZodiaco,
   previsao: string,
   data?: string,
 ): string {
-  const { texto: hook } = escolherGanchoNarracao(signo, previsao, data);
+  const dataRef = data ?? new Date().toISOString().slice(0, 10);
+  const hook = escolherGanchoViral(signo, dataRef);
   return sanitizarTextoPublico(
-    gerarCorpoLegenda(previsao, hook) + '\n\n' + sufixoInstagram(signo, hook),
+    gerarCorpoLegenda(previsao, hook, signo, dataRef) + '\n\n' + sufixoInstagram(signo, dataRef),
   );
 }
 
-/** Gera ambas as legendas: gancho do vídeo (narração) + corpo; caption pode ter extra viral */
+/** Gera ambas as legendas: gancho do vídeo (narração) + legendas distintas por plataforma */
 export function gerarLegendas(
   signo: SignoZodiaco,
   previsao: string,
   data?: string,
 ): { tiktok: string; instagram: string; hook: string; tema: TemaNarracao } {
-  const { texto: hook, tema } = escolherGanchoNarracao(signo, previsao, data);
-  const corpo = gerarCorpoLegenda(previsao, hook);
+  const dataRef = data ?? new Date().toISOString().slice(0, 10);
+  const { texto: hook, tema } = escolherGanchoNarracao(signo, previsao, dataRef);
+  const hookTiktok = escolherGanchoLegendaTikTok(signo, previsao, dataRef);
+  const hookInstagram = escolherGanchoViral(signo, dataRef);
   return {
     hook,
     tema,
-    tiktok: sanitizarTextoPublico(corpo + '\n\n' + sufixoTikTok(signo)),
-    instagram: sanitizarTextoPublico(corpo + '\n\n' + sufixoInstagram(signo, hook)),
+    tiktok: sanitizarTextoPublico(
+      gerarCorpoLegenda(previsao, hookTiktok, signo, dataRef) + '\n\n' + sufixoTikTok(signo),
+    ),
+    instagram: sanitizarTextoPublico(
+      gerarCorpoLegenda(previsao, hookInstagram, signo, dataRef) +
+        '\n\n' +
+        sufixoInstagram(signo, dataRef),
+    ),
   };
 }
 

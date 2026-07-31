@@ -23,7 +23,7 @@ async function executar(): Promise<void> {
   const frase = escolherFraseMotivacional(data, 'segunda');
   const gancho = escolherGanchoEspecial('motivacao-segunda', data);
   const etiqueta = obterEtiquetaGanchoMotivacional(data, 'segunda');
-  const legendas = obterLegendasMotivacional(gancho, frase);
+  const legendas = obterLegendasMotivacional(gancho, frase, data, 'segunda');
   const id = sufixoIdVideoEspecial('motivacao-segunda');
   const mercado = isLocaleUS() ? 'US (@sidusastro_en)' : 'PT';
 

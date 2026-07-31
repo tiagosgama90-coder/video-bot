@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import dotenv from 'dotenv';
-import { publicarEmTodosOsCanais, verificarCapacidadeBuffer, obterSignosJaPublicadosHoje, obterUltimaPublicacaoPorSigno } from './src/lib/buffer';
+import { publicarEmTodosOsCanais, verificarCapacidadeBuffer, obterSignosJaPublicadosHoje, obterUltimaPublicacaoPorSigno, videoJaPublicadoNoBuffer } from './src/lib/buffer';
 import { obterTextoHoroscopo, extrairAteSegundoPontoFinal } from './src/lib/horoscopo';
 import { gerarLegendas } from './src/lib/legenda';
 import { escolherFechoVoz } from './src/lib/fechos-narracao';
@@ -101,6 +101,12 @@ async function processarSigno(
   console.log('\n══════════════════════════════════════');
   console.log('🔮 A processar signo: ' + obterNomeSigno(signo));
   console.log('══════════════════════════════════════\n');
+
+  const idPublicacao = signo + (isLocaleUS() ? '-diario-us' : '-diario');
+  if (await videoJaPublicadoNoBuffer(idPublicacao, data)) {
+    console.log('⏭️ Horóscopo já no Buffer — a saltar ' + obterNomeSigno(signo) + '.');
+    return;
+  }
 
   const previsao = await obterTextoHoroscopo(signo, data);
   const previsaoVideo = sanitizarTextoPublico(extrairAteSegundoPontoFinal(previsao));
@@ -209,7 +215,7 @@ async function executarRoboSidusAstro(): Promise<void> {
   garantirPasta('./output');
 
   if (diaAfiliados) {
-    if (!afiliadosDiaJaGerado()) {
+    if (!(await afiliadosDiaJaGerado(data))) {
       try {
         await gerarAfiliadosDia(data);
       } catch (erro) {
@@ -267,7 +273,7 @@ async function executarRoboSidusAstro(): Promise<void> {
   );
 
   let erros = 0;
-  let sucessos = diaAfiliados && afiliadosDiaJaGerado() ? 1 : 0;
+  let sucessos = diaAfiliados && (await afiliadosDiaJaGerado(data)) ? 1 : 0;
   for (let i = 0; i < signosDoDia.length; i++) {
     try {
       await processarSigno(signosDoDia[i], data, signosJaGerados.length + i);

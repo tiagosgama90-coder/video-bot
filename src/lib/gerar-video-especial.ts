@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
-import { publicarEmTodosOsCanais } from './buffer';
+import { publicarEmTodosOsCanais, videoJaPublicadoNoBuffer } from './buffer';
 import { horaFusoParaISO, resolverDueAtFuturo } from './buffer-agenda';
 import { calcularDuracaoFrames } from './duracao-video';
 import { escolherGanchoEspecialComTema } from './ganchos-especial';
@@ -88,6 +88,16 @@ export async function gerarVideoEspecial(opcoes: OpcoesVideoEspecial): Promise<v
   await verificarGravacaoStorage();
 
   const idPublicacao = sufixoIdVideoEspecial(opcoes.id);
+
+  if (await videoJaPublicadoNoBuffer(idPublicacao, opcoes.data)) {
+    console.log(
+      '⏭️ Vídeo especial já no Buffer hoje — renderização/publicação ignorada (' +
+        idPublicacao +
+        ').',
+    );
+    return;
+  }
+
   const signoChave = 'caranguejo' as SignoZodiaco;
 
   let fundoVideoTema: TemaFundoMistico | undefined;

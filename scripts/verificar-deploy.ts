@@ -201,6 +201,15 @@ exigirTexto('./src/lib/storage-video.ts', 'preservar', 'Buffer: preservar tokens
 exigirTexto('./src/lib/storage-video.ts', 'verificarGravacaoStorage', 'Storage: verificação antes de renderizar');
 exigirTexto('./src/lib/storage-video.ts', 'usarCloudinaryComoPrincipal', 'Storage: Cloudinary sem cartão Google');
 exigirTexto('./src/lib/storage-video.ts', 'limparCloudinaryAntigos', 'Storage: limpeza automática Cloudinary');
+exigirFicheiro('./src/lib/anti-duplicado.ts');
+exigirTexto('./src/lib/anti-duplicado.ts', 'postCorrespondeAoVideo', 'Anti-duplicado: detecção central');
+exigirTexto('./src/lib/buffer.ts', 'videoJaPublicadoNoBuffer', 'Buffer: bloquear vídeos repetidos');
+exigirTexto('./src/lib/buffer.ts', 'criarMarcadorVideo', 'Buffer: marcador invisível nas legendas');
+exigirFicheiro('./src/lib/legendas-rotativas.ts');
+exigirTexto('./src/lib/legendas-rotativas.ts', 'obterLegendasVip', 'Legendas: VIP rotativo por data');
+exigirTexto('./src/lib/legendas-rotativas.ts', 'obterLegendasAfiliados', 'Legendas: afiliados rotativo por data');
+exigirTexto('./src/lib/legenda.ts', 'escolherGanchoViral', 'Diário: legenda Instagram viral');
+exigirTexto('./src/lib/ganchos-diario.ts', 'escolherGanchoLegendaTikTok', 'Diário: legenda TikTok distinta');
 exigirFicheiro('./scripts/limpar-cloudinary.ts');
 exigirTexto('./verificar-config.ts', 'CLOUDINARY_API_KEY', 'Config: validar API key Cloudinary');
 exigirTexto('./.github/workflows/preview-us-voz.yml', 'workflow_dispatch', 'Preview US: só manual');
@@ -230,19 +239,31 @@ exigirTexto('./.github/workflows/monitor-crons.yml', 'verificar-us', 'Monitor: r
 exigirFicheiro('./src/lib/pool-musicas-zen.ts');
 exigirTexto('./src/lib/pool-musicas-zen.ts', 'filtrarEntradasZen', 'Música: filtro anti-gregoriano');
 exigirTexto('./src/lib/pool-musicas-zen.ts', 'POOL_MUSICAS_ZEN_ASTRO', 'Música: pool zen/Enigma curado');
-exigirFicheiro('./.github/workflows/segunda.yml');
-exigirTexto('./.github/workflows/segunda.yml', 'workflow_dispatch', 'Segunda: disparo externo');
-proibirScheduleGitHub('./.github/workflows/segunda.yml', 'Segunda PT');
 
-exigirFicheiro('./.github/workflows/quarta.yml');
-exigirTexto('./.github/workflows/quarta.yml', 'workflow_dispatch', 'Quarta: disparo externo');
-proibirScheduleGitHub('./.github/workflows/quarta.yml', 'Quarta PT');
+// Workflows legacy (segunda/quarta/quinta) desactivados — só referência em workflows-disabled/
+exigirFicheiro('./.github/workflows-disabled/segunda.yml');
+exigirTexto('./.github/workflows-disabled/segunda.yml', 'workflow_dispatch', 'Segunda legacy: disparo manual');
+proibirScheduleGitHub('./.github/workflows-disabled/segunda.yml', 'Segunda legacy');
 
-exigirFicheiro('./.github/workflows/quinta.yml');
-exigirTexto('./.github/workflows/quinta.yml', 'workflow_dispatch', 'Quinta: disparo externo');
-proibirScheduleGitHub('./.github/workflows/quinta.yml', 'Quinta PT');
+exigirFicheiro('./.github/workflows-disabled/quarta.yml');
+exigirTexto('./.github/workflows-disabled/quarta.yml', 'workflow_dispatch', 'Quarta legacy: disparo manual');
+proibirScheduleGitHub('./.github/workflows-disabled/quarta.yml', 'Quarta legacy');
 
-exigirFicheiro('./.github/workflows/quinta-us.yml');
-exigirTexto('./.github/workflows/quinta-us.yml', 'workflow_dispatch', 'Quinta US: disparo externo');
+exigirFicheiro('./.github/workflows-disabled/quinta.yml');
+exigirTexto('./.github/workflows-disabled/quinta.yml', 'workflow_dispatch', 'Quinta legacy: disparo manual');
+proibirScheduleGitHub('./.github/workflows-disabled/quinta.yml', 'Quinta legacy');
+
+exigirFicheiro('./.github/workflows-disabled/quinta-us.yml');
+exigirTexto('./.github/workflows-disabled/quinta-us.yml', 'workflow_dispatch', 'Quinta US legacy: disparo manual');
+
+if (fs.existsSync('./.github/workflows/segunda.yml')) {
+  throw new Error('Segunda: remover segunda.yml de workflows/ — usar vip-divulgacao.yml');
+}
+if (fs.existsSync('./.github/workflows/quarta.yml')) {
+  throw new Error('Quarta: remover quarta.yml de workflows/ — usar vip-divulgacao.yml');
+}
+if (fs.existsSync('./.github/workflows/quinta.yml')) {
+  throw new Error('Quinta: remover quinta.yml de workflows/ — legacy em workflows-disabled/');
+}
 
 console.log('✅ Todos os scripts e workflows estão actualizados para produção.');

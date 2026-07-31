@@ -1,6 +1,11 @@
 import axios from 'axios';
 import { obterDueAtSlot, resolverDueAtFuturo, rotuloHorarioAgenda } from './buffer-agenda';
 import { isLocaleUS, obterFusoPublicacao, subpastaVideosFirebase } from './locale';
+import {
+  criarMarcadorVideo,
+  postCorrespondeAoVideo,
+  type PostBufferParaDuplicado,
+} from './anti-duplicado';
 import { SIGNOS_ZODIACO, extrairSignoDaLegendaBuffer, type SignoZodiaco } from './signos';
 import { uploadVideoPublico } from './storage-video';
 import { sanitizarTextoPublico } from './texto-publico';
@@ -79,11 +84,39 @@ const DELETE_POST_MUTATION = `
   }
 `;
 
-interface PostAgendado {
+interface PostAgendado extends PostBufferParaDuplicado {
   id: string;
-  dueAt?: string;
-  text?: string;
 }
+
+const POSTS_CANAL_QUERY_COM_ASSETS = `
+  query PostsCanal($organizationId: OrganizationId!, $channelId: ChannelId!, $first: Int!, $after: String) {
+    posts(
+      first: $first
+      after: $after
+      input: {
+        organizationId: $organizationId
+        filter: {
+          status: [scheduled, sent]
+          channelIds: [$channelId]
+        }
+      }
+    ) {
+      edges {
+        node {
+          id
+          dueAt
+          text
+          assets {
+            ... on VideoAsset {
+              url
+            }
+          }
+        }
+      }
+      pageInfo { hasNextPage endCursor }
+    }
+  }
+`;
 
 const POSTS_CANAL_QUERY = `
   query PostsCanal($organizationId: OrganizationId!, $channelId: ChannelId!, $first: Int!, $after: String) {
@@ -103,6 +136,8 @@ const POSTS_CANAL_QUERY = `
     }
   }
 `;
+
+let usarQueryPostsComAssets = true;
 
 function obterAccessToken(): string {
   const token = process.env.BUFFER_ACCESS_TOKEN;
@@ -274,27 +309,46 @@ async function listarPostsCanal(channelId: string): Promise<PostAgendado[]> {
   const organizationId = await obterOrganizationId();
   const posts: PostAgendado[] = [];
   let after: string | undefined;
+  const query = usarQueryPostsComAssets ? POSTS_CANAL_QUERY_COM_ASSETS : POSTS_CANAL_QUERY;
 
   for (;;) {
-    const payload = await chamarBuffer<{
+    let payload: {
       data?: {
         posts?: {
-          edges?: Array<{ node?: PostAgendado }>;
+          edges?: Array<{ node?: PostAgendado & { assets?: Array<{ url?: string }> } }>;
           pageInfo?: { hasNextPage?: boolean; endCursor?: string };
         };
       };
-    }>(POSTS_CANAL_QUERY, {
-      organizationId,
-      channelId,
-      first: 50,
-      after: after ?? null,
-    });
+    };
+
+    try {
+      payload = await chamarBuffer(query, {
+        organizationId,
+        channelId,
+        first: 50,
+        after: after ?? null,
+      });
+    } catch (erro) {
+      const msg = erro instanceof Error ? erro.message : String(erro);
+      if (usarQueryPostsComAssets && (msg.includes('assets') || msg.includes('VideoAsset'))) {
+        console.log('⚠️ Buffer API sem campo assets — a usar query simplificada.');
+        usarQueryPostsComAssets = false;
+        return listarPostsCanal(channelId);
+      }
+      throw erro;
+    }
 
     const bloco = payload.data?.posts;
     for (const edge of bloco?.edges ?? []) {
-      if (edge.node?.id) {
-        posts.push(edge.node);
+      const node = edge.node;
+      if (!node?.id) {
+        continue;
       }
+      const videoUrls =
+        usarQueryPostsComAssets && node.assets
+          ? node.assets.map((a) => a.url).filter((u): u is string => Boolean(u))
+          : [];
+      posts.push({ id: node.id, dueAt: node.dueAt, text: node.text, videoUrls });
     }
 
     if (!bloco?.pageInfo?.hasNextPage) {
@@ -304,6 +358,43 @@ async function listarPostsCanal(channelId: string): Promise<PostAgendado[]> {
   }
 
   return posts;
+}
+
+/**
+ * Verifica se o vídeo (identificador + data) já está no Buffer — todos os jobs.
+ * Cobre horóscopo, VIP, afiliados e especiais. Respeita FORCE_PUBLICAR=1 para emergências.
+ */
+export async function videoJaPublicadoNoBuffer(identificador: string, data: string): Promise<boolean> {
+  if (!process.env.BUFFER_ACCESS_TOKEN || process.env.SKIP_PUBLICAR === '1') {
+    return false;
+  }
+  if (process.env.FORCE_PUBLICAR === '1') {
+    console.log('⚠️ FORCE_PUBLICAR=1 — verificação de duplicados desactivada.');
+    return false;
+  }
+
+  const fuso = obterFusoPublicacao();
+  const canais = await resolverCanaisPublicacao();
+
+  for (const canal of canais) {
+    const posts = await listarPostsCanal(canal.id);
+    for (const post of posts) {
+      if (postCorrespondeAoVideo(post, identificador, data, fuso)) {
+        console.log(
+          '🔁 Duplicado detectado no Buffer [' +
+            canal.service +
+            '] — ' +
+            identificador +
+            ' (' +
+            data +
+            ')',
+        );
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 /** Signos com horóscopo diário já na fila Buffer hoje (evita republicar com Forçar). */
@@ -689,6 +780,13 @@ export async function publicarEmTodosOsCanais(
     return;
   }
 
+  if (await videoJaPublicadoNoBuffer(identificador, data)) {
+    console.log(
+      '⏭️ Vídeo já publicado no Buffer — republicação bloqueada (' + identificador + ', ' + data + ').',
+    );
+    return;
+  }
+
   const canais = await resolverCanaisPublicacao();
   console.log(
     '📱 Canais selecionados: ' +
@@ -702,8 +800,10 @@ export async function publicarEmTodosOsCanais(
     opcoes?.subpasta ?? subpastaVideosFirebase(),
   );
 
+  const marcador = criarMarcadorVideo(identificador, data);
+
   for (const canal of canais) {
-    const legenda = sanitizarTextoPublico(obterLegenda(canal.service));
+    const legenda = sanitizarTextoPublico(obterLegenda(canal.service) + marcador);
     console.log('📱 A enfileirar em ' + canal.service + ' (' + canal.name + ')...');
     console.log('📋 Legenda [' + canal.service + ']:\n' + legenda);
     const postId = await publicarVideoNoCanal(canal, legenda, videoUrl, {

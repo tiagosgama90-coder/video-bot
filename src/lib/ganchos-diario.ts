@@ -4,6 +4,7 @@ import { isLocaleUS } from './locale';
 import { obterNomeSigno, type SignoZodiaco } from './signos';
 import type { GanchoComTema, TemaNarracao } from './fechos-narracao';
 import { filtrarTextoParaVideo, sanitizarTextoPublico } from './texto-publico';
+import { escolherGanchoViralComTema } from './ganchos-virais';
 
 type GanchoFn = (n: string) => string;
 
@@ -218,13 +219,33 @@ export function escolherGanchoDiario(
   return escolherGanchoNarracao(signo, previsao, data);
 }
 
-/** Gancho extra só para texto da legenda Buffer (nunca entra no vídeo) */
+/** Gancho extra só para texto da legenda TikTok (nunca entra no vídeo) — índice distinto da narração */
+export function escolherGanchoLegendaTikTok(
+  signo: SignoZodiaco,
+  previsao: string,
+  data?: string,
+): string {
+  const nomeSigno = obterNomeSigno(signo);
+  const dataRef = data ?? new Date().toISOString().slice(0, 10);
+
+  if (isLocaleUS()) {
+    const indice = escolherIndiceGancho(signo, dataRef + '-legenda-tt', GANCHOS_HOROSCOPO_EN.length);
+    return sanitizarTextoPublico(GANCHOS_HOROSCOPO_EN[indice](nomeSigno));
+  }
+
+  const indice = escolherIndiceGancho(signo, dataRef + '-legenda-tt', GANCHOS_NARRACAO_BR.length);
+  const escolhido = GANCHOS_NARRACAO_BR[indice];
+  return sanitizarTextoPublico(escolhido.fn(nomeSigno));
+}
+
+/** Gancho extra só para texto da legenda Buffer Instagram (nunca entra no vídeo) */
 export function escolherGanchoLegendaBuffer(
   signo: SignoZodiaco,
   previsao: string,
   data?: string,
 ): GanchoComTema {
-  return escolherGanchoNarracao(signo, previsao, data);
+  const dataRef = data ?? new Date().toISOString().slice(0, 10);
+  return escolherGanchoViralComTema(signo, dataRef);
 }
 
 export function escolherTextoGanchoDiario(

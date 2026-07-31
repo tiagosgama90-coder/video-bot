@@ -24,6 +24,7 @@ import {
 } from './legendas-marketing';
 import { isLocaleUS } from './locale';
 import { obterVarianteQuarta, type VarianteQuarta } from './quarta-alternada';
+import { obterLegendasAfiliados, obterLegendasVip, escolherCtaMotivacionalRotativo } from './legendas-rotativas';
 import { sanitizarTextoPublico } from './texto-publico';
 
 export const TITULO_VIP_DIVULGACAO = 'SEU PREMIUM VITALÍCIO';
@@ -307,15 +308,18 @@ function prefixoInstagramMotivacional(): string {
 export function obterLegendasMotivacional(
   gancho: string,
   frase: string,
+  data: string,
+  variante: 'segunda' | 'quinta' = 'segunda',
 ): { tiktok: string; instagram: string } {
   const hook = sanitizarTextoPublico(gancho);
   const corpo = sanitizarTextoPublico(frase);
   const resumo = corpo.length > 95 ? corpo.slice(0, 92).trim() + '...' : corpo;
+  const cta = escolherCtaMotivacionalRotativo(data, variante);
 
   if (isLocaleUS()) {
     return {
       tiktok: sanitizarTextoPublico(
-        hook + '\n\n' + resumo + '\n\n' + CTA_MOTIVACIONAL_EN + '\n\n' + HASHTAGS_MOTIVACIONAL_EN_TIKTOK,
+        hook + '\n\n' + resumo + '\n\n' + cta + '\n\n' + HASHTAGS_MOTIVACIONAL_EN_TIKTOK,
       ),
       instagram: sanitizarTextoPublico(
         prefixoInstagramMotivacional() +
@@ -325,7 +329,7 @@ export function obterLegendasMotivacional(
           '\n\n' +
           CTA_COMENTARIO_INSTAGRAM_EN +
           '\n\n' +
-          CTA_MOTIVACIONAL_EN +
+          cta +
           '\n\n' +
           HASHTAGS_MOTIVACIONAL_EN_INSTAGRAM,
       ),
@@ -333,7 +337,7 @@ export function obterLegendasMotivacional(
   }
   return {
     tiktok: sanitizarTextoPublico(
-      hook + '\n\n' + resumo + '\n\n' + CTA_MOTIVACIONAL_PT + '\n\n' + HASHTAGS_MOTIVACIONAL_PT_TIKTOK,
+      hook + '\n\n' + resumo + '\n\n' + cta + '\n\n' + HASHTAGS_MOTIVACIONAL_PT_TIKTOK,
     ),
     instagram: sanitizarTextoPublico(
       prefixoInstagramMotivacional() +
@@ -343,59 +347,52 @@ export function obterLegendasMotivacional(
         '\n\n' +
         CTA_COMENTARIO_INSTAGRAM_PT +
         '\n\n' +
-        CTA_MOTIVACIONAL_PT +
+        cta +
         '\n\n' +
         HASHTAGS_MOTIVACIONAL_PT_INSTAGRAM,
     ),
   };
 }
 
-export function obterConteudoAfiliados(): {
+export function obterConteudoAfiliados(data: string): {
   titulo: string;
   textoEcra: string;
   textoNarracao: string;
   segmentosEcra?: string[];
   legendas: { tiktok: string; instagram: string };
 } {
+  const legendas = obterLegendasAfiliados(data);
   if (isLocaleUS()) {
     return {
       titulo: TITULO_AFILIADOS_EN,
       textoEcra: sanitizarTextoPublico(TEXTO_AFILIADOS_ECRA_EN),
       textoNarracao: sanitizarTextoPublico(TEXTO_AFILIADOS_FALADO_EN),
-      legendas: {
-        tiktok: sanitizarTextoPublico(LEGENDA_AFILIADOS_TIKTOK_EN),
-        instagram: sanitizarTextoPublico(LEGENDA_AFILIADOS_INSTAGRAM_EN),
-      },
+      legendas,
     };
   }
   return {
     titulo: TITULO_AFILIADOS,
     textoEcra: sanitizarTextoPublico(TEXTO_AFILIADOS_ECRA),
     textoNarracao: sanitizarTextoPublico(TEXTO_AFILIADOS_FALADO),
-    legendas: {
-      tiktok: sanitizarTextoPublico(LEGENDA_AFILIADOS_TIKTOK),
-      instagram: sanitizarTextoPublico(LEGENDA_AFILIADOS_INSTAGRAM),
-    },
+    legendas,
   };
 }
 
-export function obterConteudoVipDivulgacao(): {
+export function obterConteudoVipDivulgacao(data: string): {
   titulo: string;
   textoEcra: string;
   textoNarracao: string;
   segmentosEcra: string[];
   legendas: { tiktok: string; instagram: string };
 } {
+  const legendas = obterLegendasVip(data);
   if (isLocaleUS()) {
     return {
       titulo: TITULO_VIP_DIVULGACAO_EN,
       textoEcra: sanitizarTextoPublico(SEGMENTOS_VIP_ECRA_EN[0]),
       textoNarracao: sanitizarTextoPublico(TEXTO_VIP_FALADO_EN),
       segmentosEcra: SEGMENTOS_VIP_ECRA_EN.map(sanitizarTextoPublico),
-      legendas: {
-        tiktok: sanitizarTextoPublico(LEGENDA_VIP_TIKTOK_EN),
-        instagram: sanitizarTextoPublico(LEGENDA_VIP_INSTAGRAM_EN),
-      },
+      legendas,
     };
   }
   return {
@@ -403,10 +400,7 @@ export function obterConteudoVipDivulgacao(): {
     textoEcra: sanitizarTextoPublico(SEGMENTOS_VIP_ECRA[0]),
     textoNarracao: sanitizarTextoPublico(TEXTO_VIP_FALADO),
     segmentosEcra: SEGMENTOS_VIP_ECRA.map(sanitizarTextoPublico),
-    legendas: {
-      tiktok: sanitizarTextoPublico(LEGENDA_VIP_TIKTOK),
-      instagram: sanitizarTextoPublico(LEGENDA_VIP_INSTAGRAM),
-    },
+    legendas,
   };
 }
 
@@ -424,7 +418,7 @@ export function obterConteudoQuarta(data: string): {
 } {
   const variante = obterVarianteQuarta(data);
   const conteudo =
-    variante === 'vip' ? obterConteudoVipDivulgacao() : obterConteudoAfiliados();
+    variante === 'vip' ? obterConteudoVipDivulgacao(data) : obterConteudoAfiliados(data);
   return { variante, conteudo };
 }
 
