@@ -1,9 +1,8 @@
 import axios from 'axios';
 import { obterDueAtSlot, resolverDueAtFuturo, rotuloHorarioAgenda } from './buffer-agenda';
-import { isLocaleUS, obterFusoPublicacao, subpastaVideosFirebase } from './locale';
+import { isLocaleUS, subpastaVideosFirebase } from './locale';
 import {
   criarMarcadorVideo,
-  type PostBufferParaDuplicado,
 } from './anti-duplicado';
 import { SIGNOS_ZODIACO, type SignoZodiaco } from './signos';
 import { uploadVideoPublico } from './storage-video';
@@ -108,21 +107,8 @@ async function chamarBuffer<T>(query: string, variables?: Record<string, unknown
   throw ultimoErro;
 }
 
-async function obterOrganizationId(): Promise<string> {
-  const orgPayload = await chamarBuffer<{
-    data?: { account?: { organizations?: Array<{ id: string; name: string }> } };
-  }>(ORGANIZATIONS_QUERY);
-
-  const organizacoes = orgPayload.data?.account?.organizations ?? [];
-  if (organizacoes.length === 0) {
-    throw new Error('Nenhuma organização Buffer encontrada.');
-  }
-
-  return process.env.BUFFER_ORGANIZATION_ID ?? organizacoes[0].id;
-}
-
 /** Conta posts agendados — DESATIVADO PARA POUPAR COTA */
-export async function contarPostsAgendados(channelId: string): Promise<number> {
+export async function contarPostsAgendados(_channelId: string): Promise<number> {
   return 0;
 }
 
@@ -130,12 +116,12 @@ export async function contarPostsAgendados(channelId: string): Promise<number> {
  * Verifica se o vídeo já está no Buffer.
  * DESATIVADO: Devolve sempre false para poupar requisições GraphQL.
  */
-export async function videoJaPublicadoNoBuffer(identificador: string, data: string): Promise<boolean> {
+export async function videoJaPublicadoNoBuffer(_identificador: string, _data: string): Promise<boolean> {
   return false;
 }
 
 /** Signos com horóscopo diário — DESATIVADO PARA POUPAR COTA */
-export async function obterSignosJaPublicadosHoje(data: string): Promise<SignoZodiaco[]> {
+export async function obterSignosJaPublicadosHoje(_data: string): Promise<SignoZodiaco[]> {
   return [];
 }
 
@@ -150,14 +136,14 @@ export async function obterUltimaPublicacaoPorSigno(): Promise<Map<SignoZodiaco,
 
 /** Remove posts antigos — DESATIVADO PARA POUPAR COTA */
 export async function liberarEspacoBufferSeNecessario(
-  channelId: string,
-  vagasNecessarias: number,
+  _channelId: string,
+  _vagasNecessarias: number,
 ): Promise<number> {
   return 0;
 }
 
 /** Verifica capacidade Buffer — DESATIVADO PARA POUPAR COTA */
-export async function verificarCapacidadeBuffer(vagasNecessarias = 3): Promise<void> {
+export async function verificarCapacidadeBuffer(_vagasNecessarias = 3): Promise<void> {
   return;
 }
 
