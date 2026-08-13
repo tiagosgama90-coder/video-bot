@@ -54,8 +54,8 @@ export async function gerarNarracao(
   destinoRelativo = './public/narracao.mp3',
   preferenciaVoz?: PreferenciaVoz
 ): Promise<void> {
-  const destino = path.resolve(destinoRelativo);
-  const pastaDestino = path.dirname(destino);
+  const destinoFinal = path.resolve(destinoRelativo);
+  const pastaDestino = path.dirname(destinoFinal);
 
   if (!fs.existsSync(pastaDestino)) {
     fs.mkdirSync(pastaDestino, { recursive: true });
@@ -89,9 +89,21 @@ export async function gerarNarracao(
       </voice>
     </speak>`;
 
-    await tts.toFile(destino, ssml);
+    // msedge-tts guarda o ficheiro na pasta especificada com o nome "audio.mp3"
+    const resultado = await tts.toFile(pastaDestino, ssml);
+    const caminhoGerado = (resultado && typeof resultado === 'string') 
+      ? resultado 
+      : path.join(pastaDestino, 'audio.mp3');
 
-    console.log(`✅ Áudio de narração gravado com sucesso em: ${destino}`);
+    // Se o ficheiro gerado for diferente do destino final (ex: narracao.mp3), renomeia/move
+    if (fs.existsSync(caminhoGerado) && caminhoGerado !== destinoFinal) {
+      if (fs.existsSync(destinoFinal)) {
+        fs.unlinkSync(destinoFinal);
+      }
+      fs.renameSync(caminhoGerado, destinoFinal);
+    }
+
+    console.log(`✅ Áudio de narração gravado com sucesso em: ${destinoFinal}`);
   } catch (erro) {
     console.error(`❌ Erro ao gerar narração com Edge-TTS:`, erro);
     throw erro;
