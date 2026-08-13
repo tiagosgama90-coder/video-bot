@@ -12,20 +12,20 @@ interface VozEdge {
 }
 
 /**
- * Seleciona as vozes Neurais gratuitas da Microsoft via Edge TTS.
+ * Seleciona as vozes Neurais brasileiras suaves, calmas e "Zen" gratuitas da Microsoft via Edge TTS.
  */
 function obterVozesEdge(): { feminina: VozEdge; masculina: VozEdge } {
   if (isLocaleUS()) {
     return {
-      feminina: { id: 'en-US-AvaNeural', genero: 'feminina', lang: 'en-US' },
-      masculina: { id: 'en-US-AndrewNeural', genero: 'masculina', lang: 'en-US' },
+      feminina: { id: 'en-US-JennyNeural', genero: 'feminina', lang: 'en-US' },
+      masculina: { id: 'en-US-GuyNeural', genero: 'masculina', lang: 'en-US' },
     };
   }
 
-  // Padrão em Português
+  // Vozes do Brasil com tom suave e tom zen/narrativo
   return {
-    feminina: { id: 'pt-BR-ThalitaNeural', genero: 'feminina', lang: 'pt-BR' },
-    masculina: { id: 'pt-BR-AntonioNeural', genero: 'masculina', lang: 'pt-BR' },
+    feminina: { id: 'pt-BR-FranciscaNeural', genero: 'feminina', lang: 'pt-BR' },
+    masculina: { id: 'pt-BR-FabioNeural', genero: 'masculina', lang: 'pt-BR' },
   };
 }
 
@@ -47,7 +47,7 @@ export function escolherVoz(preferencia: PreferenciaVoz = 'aleatoria'): VozEdge 
 }
 
 /**
- * Gera a narração de áudio via Microsoft Edge TTS (Gratuito, sem necessidade de Azure/Keys)
+ * Gera a narração de áudio em PT-BR via Microsoft Edge TTS com SSML para tom suave/zen e sincronização de legendas.
  */
 export async function gerarNarracao(
   texto: string,
@@ -57,7 +57,6 @@ export async function gerarNarracao(
   const destino = path.resolve(destinoRelativo);
   const pastaDestino = path.dirname(destino);
 
-  // Garante que a pasta de destino existe
   if (!fs.existsSync(pastaDestino)) {
     fs.mkdirSync(pastaDestino, { recursive: true });
   }
@@ -71,18 +70,26 @@ export async function gerarNarracao(
   const vozEscolhida = escolherVoz(pref);
 
   console.log(
-    `🗣️ A gerar áudio via Edge-TTS | Voz: ${vozEscolhida.id} (${vozEscolhida.genero}, ${vozEscolhida.lang})`
+    `🗣️ Gerando áudio via Edge-TTS (PT-BR Suave/Zen) | Voz: ${vozEscolhida.id} (${vozEscolhida.genero}, ${vozEscolhida.lang})`
   );
 
   try {
     const tts = new MsEdgeTTS();
     await tts.setMetadata(
       vozEscolhida.id,
-      OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_STEREO
+      OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3
     );
-    
-    // Na lib 'msedge-tts', o primeiro argumento de toFile é o caminho do ficheiro e o segundo é o texto
-    await tts.toFile(destino, textoLimpo);
+
+    // Formatação SSML em PT-BR para cadência suave, pausada e sincronizada com as legendas
+    const ssml = `<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='${vozEscolhida.lang}'>
+      <voice name='${vozEscolhida.id}'>
+        <prosody rate='-5%' pitch='0%'>
+          ${textoLimpo}
+        </prosody>
+      </voice>
+    </speak>`;
+
+    await tts.toFile(destino, ssml);
 
     console.log(`✅ Áudio de narração gravado com sucesso em: ${destino}`);
   } catch (erro) {
