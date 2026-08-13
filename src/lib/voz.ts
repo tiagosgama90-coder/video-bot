@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { MsEdgeTTS, OUTPUT_FORMAT } from 'edge-tts';
+import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts';
 import { isLocaleUS } from './locale';
 import { carregarConfigProjeto, type PreferenciaVoz } from './project-config';
 import { prepararTextoNarracao } from './texto-publico';
@@ -43,7 +43,6 @@ export function escolherVoz(preferencia: PreferenciaVoz = 'aleatoria'): VozEdge 
     return vozes.masculina;
   }
 
-  // Escolha aleatória entre masculina e feminina
   return Math.random() > 0.5 ? vozes.feminina : vozes.masculina;
 }
 
@@ -81,6 +80,8 @@ export async function gerarNarracao(
       vozEscolhida.id,
       OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_STEREO
     );
+    
+    // Na lib 'msedge-tts', o primeiro argumento de toFile é o caminho do ficheiro e o segundo é o texto
     await tts.toFile(destino, textoLimpo);
 
     console.log(`✅ Áudio de narração gravado com sucesso em: ${destino}`);
