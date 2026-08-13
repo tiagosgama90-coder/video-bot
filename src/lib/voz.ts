@@ -22,7 +22,7 @@ function obterVozesEdge(): { feminina: VozEdge; masculina: VozEdge } {
     };
   }
 
-  // Vozes do Brasil com tom suave e tom zen/narrativo
+  // Vozes PT-BR muito fluidas e naturais
   return {
     feminina: { id: 'pt-BR-FranciscaNeural', genero: 'feminina', lang: 'pt-BR' },
     masculina: { id: 'pt-BR-FabioNeural', genero: 'masculina', lang: 'pt-BR' },
@@ -47,7 +47,7 @@ export function escolherVoz(preferencia: PreferenciaVoz = 'aleatoria'): VozEdge 
 }
 
 /**
- * Gera a narração de áudio em PT-BR via Microsoft Edge TTS com SSML para tom suave/zen e sincronização de legendas.
+ * Gera a narração de áudio em PT-BR via Microsoft Edge TTS com tratamento correto de ficheiros.
  */
 export async function gerarNarracao(
   texto: string,
@@ -70,7 +70,7 @@ export async function gerarNarracao(
   const vozEscolhida = escolherVoz(pref);
 
   console.log(
-    `🗣️ Gerando áudio via Edge-TTS (PT-BR Suave/Zen) | Voz: ${vozEscolhida.id} (${vozEscolhida.genero}, ${vozEscolhida.lang})`
+    `🗣️ Gerando áudio via Edge-TTS (PT-BR) | Voz: ${vozEscolhida.id} (${vozEscolhida.genero}, ${vozEscolhida.lang})`
   );
 
   try {
@@ -80,22 +80,13 @@ export async function gerarNarracao(
       OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3
     );
 
-    // Formatação SSML em PT-BR para cadência suave, pausada e sincronizada com as legendas
-    const ssml = `<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='${vozEscolhida.lang}'>
-      <voice name='${vozEscolhida.id}'>
-        <prosody rate='-5%' pitch='0%'>
-          ${textoLimpo}
-        </prosody>
-      </voice>
-    </speak>`;
-
-    // msedge-tts guarda o ficheiro na pasta especificada com o nome "audio.mp3"
-    const resultado = await tts.toFile(pastaDestino, ssml);
+    // Passamos o texto sanitizado simples para evitar fecho abrupto de WebSocket
+    const resultado = await tts.toFile(pastaDestino, textoLimpo);
     const caminhoGerado = (resultado && typeof resultado === 'string') 
       ? resultado 
       : path.join(pastaDestino, 'audio.mp3');
 
-    // Se o ficheiro gerado for diferente do destino final (ex: narracao.mp3), renomeia/move
+    // Renomeia o ficheiro gerado para o nome do destino final se necessário
     if (fs.existsSync(caminhoGerado) && caminhoGerado !== destinoFinal) {
       if (fs.existsSync(destinoFinal)) {
         fs.unlinkSync(destinoFinal);
