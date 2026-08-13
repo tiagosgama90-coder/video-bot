@@ -84,7 +84,7 @@ jobs:
           ffprobe -version | head -1
 
       - name: Instalar dependências
-        run: npm ci
+        run: npm install
 
       # Validação de código: só em validar-scripts.yml (push/PR). Não bloquear produção.
 
