@@ -47,7 +47,41 @@ export function escolherVoz(preferencia: PreferenciaVoz = 'aleatoria'): VozEdge 
 }
 
 /**
- * Gera a narração de áudio em PT-BR via Microsoft Edge TTS com tratamento correto de ficheiros.
+ * Executa a síntese com até 4 tentativas para evitar falhas de fecho de WebSocket.
+ */
+async function sintetizarComRetry(
+  vozId: string,
+  texto: string,
+  pastaDestino: string,
+  maxTentativas = 4
+): Promise<string> {
+  let erroUltimo: any = null;
+
+  for (let tentativa = 1; tentativa <= maxTentativas; tentativa++) {
+    try {
+      const tts = new MsEdgeTTS();
+      await tts.setMetadata(vozId, OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3);
+
+      const resultado = await tts.toFile(pastaDestino, texto);
+      const caminhoGerado = (resultado && typeof resultado === 'string')
+        ? resultado
+        : path.join(pastaDestino, 'audio.mp3');
+
+      if (fs.existsSync(caminhoGerado) && fs.statSync(caminhoGerado).size > 0) {
+        return caminhoGerado;
+      }
+    } catch (err) {
+      erroUltimo = err;
+      console.warn(`⚠️ Tentativa ${tentativa}/${maxTentativas} falhou ao sintetizar áudio (${vozId}). A tentar novamente...`);
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+    }
+  }
+
+  throw erroUltimo || new Error('Falha ao sintetizar áudio após várias tentativas.');
+}
+
+/**
+ * Gera a narração de áudio em PT-BR via Microsoft Edge TTS com retries e tratamento de ficheiros.
  */
 export async function gerarNarracao(
   texto: string,
@@ -74,19 +108,8 @@ export async function gerarNarracao(
   );
 
   try {
-    const tts = new MsEdgeTTS();
-    await tts.setMetadata(
-      vozEscolhida.id,
-      OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3
-    );
+    const caminhoGerado = await sintetizarComRetry(vozEscolhida.id, textoLimpo, pastaDestino);
 
-    // Passamos o texto sanitizado simples para evitar fecho abrupto de WebSocket
-    const resultado = await tts.toFile(pastaDestino, textoLimpo);
-    const caminhoGerado = (resultado && typeof resultado === 'string') 
-      ? resultado 
-      : path.join(pastaDestino, 'audio.mp3');
-
-    // Renomeia o ficheiro gerado para o nome do destino final se necessário
     if (fs.existsSync(caminhoGerado) && caminhoGerado !== destinoFinal) {
       if (fs.existsSync(destinoFinal)) {
         fs.unlinkSync(destinoFinal);
