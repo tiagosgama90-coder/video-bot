@@ -11,16 +11,21 @@ export function obterPreferenciaVozConfig(): PreferenciaVoz {
 
 /**
  * Descarrega o áudio via requisição HTTP direta (Google TTS fallback).
- * Inviolável no GitHub Actions porque usa REST HTTP simples em vez de WebSockets instáveis.
  */
 function descarregarAudioHTTP(texto: string, lang: string, caminhoDestino: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const textoCodificado = encodeURIComponent(texto);
     const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${textoCodificado}&tl=${lang}&client=tw-ob`;
 
+    const options = {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+      },
+    };
+
     const file = fs.createWriteStream(caminhoDestino);
 
-    https.get(url, (response) => {
+    https.get(url, options, (response) => {
       if (response.statusCode !== 200) {
         return reject(new Error(`Falha no download HTTP TTS: Status Code ${response.statusCode}`));
       }
@@ -58,7 +63,11 @@ export async function gerarNarracao(
   console.log(`🗣️ Gerando áudio via HTTP TTS Gratuito (Lang: ${lang})...`);
 
   try {
-    // Caso o texto seja muito longo, divide em blocos para respeitar o limite HTTP
+    // Apaga o ficheiro antigo para não dar conflitos no Remotion
+    if (fs.existsSync(destinoFinal)) {
+      fs.unlinkSync(destinoFinal);
+    }
+
     const frases = textoLimpo.match(/[^.!?]+[.!?]+/g) || [textoLimpo];
     const ficheirosTemporarios: string[] = [];
 
@@ -71,19 +80,17 @@ export async function gerarNarracao(
       ficheirosTemporarios.push(tempFile);
     }
 
-    // Se gerou apenas 1 ficheiro, move diretamente para o destino
     if (ficheirosTemporarios.length === 1) {
-      if (fs.existsSync(destinoFinal)) fs.unlinkSync(destinoFinal);
       fs.renameSync(ficheirosTemporarios[0], destinoFinal);
     } else {
-      // Junta os fragmentos no ficheiro final
-      const writeStream = fs.createWriteStream(destinoFinal);
+      // Junta os buffers em memória primeiro para garantir que o MP3 fica gravado a 100%
+      const buffers = ficheirosTemporarios.map((f) => fs.readFileSync(f));
+      fs.writeFileSync(destinoFinal, Buffer.concat(buffers));
+
+      // Limpa os temporários só depois de o ficheiro final estar totalmente gravado
       for (const f of ficheirosTemporarios) {
-        const buf = fs.readFileSync(f);
-        writeStream.write(buf);
-        fs.unlinkSync(f);
+        if (fs.existsSync(f)) fs.unlinkSync(f);
       }
-      writeStream.end();
     }
 
     console.log(`✅ Áudio de narração gravado com sucesso em: ${destinoFinal}`);
